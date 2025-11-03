@@ -5,7 +5,11 @@ using System.Data.SqlClient;
 public class DBHelper
 {
     // UPDATE THIS CONNECTION STRING WITH YOUR SQL SERVER DETAILS
-    private static string connString = @"Data Source=(LocalDB)\MSSQLLocalDB;Initial Catalog=GeoExpertDB;Integrated Security=True";
+    private static string connString = @"Data Source=(LocalDB)\MSSQLLocalDB;
+                                    AttachDbFilename=|DataDirectory|\GeoExpertDB.mdf;
+                                    Integrated Security=True;
+                                    Connect Timeout=30";
+
 
     // Alternative if using SQL Server Express:
     // private static string connString = @"Data Source=.\SQLEXPRESS;Initial Catalog=GeoExpertDB;Integrated Security=True";

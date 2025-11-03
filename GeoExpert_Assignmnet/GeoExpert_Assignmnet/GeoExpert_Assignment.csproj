@@ -104,9 +104,9 @@
     <Content Include="Admin\ManageCountries.aspx" />
     <Content Include="Admin\ManageQuizzes.aspx" />
     <Content Include="Admin\ManageUsers.aspx" />
-    <Content Include="App_Data\GeoExperDB.mdf" />
-    <Content Include="App_Data\GeoExperDB_log.ldf">
-      <DependentUpon>GeoExperDB.mdf</DependentUpon>
+    <Content Include="App_Data\GeoExpertDB.mdf" />
+    <Content Include="App_Data\GeoExpertDB_log.ldf">
+      <DependentUpon>GeoExpertDB.mdf</DependentUpon>
     </Content>
     <Content Include="Contact.aspx" />
     <Content Include="Content\bootstrap-grid.css" />
