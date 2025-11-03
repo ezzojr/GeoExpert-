@@ -1,0 +1,32 @@
+﻿<%@ Page Title="Login" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Login.aspx.cs" Inherits="GeoExpert_Assignment.Pages.Login" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
+    <h2>Login</h2>
+    
+    <!-- TODO: Member C - Implement login form with validation -->
+    
+    <div class="form-group">
+        <label>Username:</label>
+        <asp:TextBox ID="txtUsername" runat="server" CssClass="form-control"></asp:TextBox>
+        <asp:RequiredFieldValidator ID="rfvUsername" runat="server" 
+            ControlToValidate="txtUsername" 
+            ErrorMessage="Username is required" 
+            ForeColor="Red">
+        </asp:RequiredFieldValidator>
+    </div>
+    
+    <div class="form-group">
+        <label>Password:</label>
+        <asp:TextBox ID="txtPassword" runat="server" TextMode="Password" CssClass="form-control"></asp:TextBox>
+        <asp:RequiredFieldValidator ID="rfvPassword" runat="server" 
+            ControlToValidate="txtPassword" 
+            ErrorMessage="Password is required" 
+            ForeColor="Red">
+        </asp:RequiredFieldValidator>
+    </div>
+    
+    <asp:Button ID="btnLogin" runat="server" Text="Login" CssClass="btn btn-primary" OnClick="btnLogin_Click" />
+    <asp:Label ID="lblMessage" runat="server" ForeColor="Red"></asp:Label>
+    
+    <p>Don't have an account? <a href="Register.aspx">Register here</a></p>
+</asp:Content>
