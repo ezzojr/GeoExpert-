@@ -3,8 +3,10 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <h2>Explore Countries 🌍</h2>
     
-    <!-- TODO: Member C - Display all countries with flags and basic info -->
-    
+    <!-- Searchbox -->
+    <asp:TextBox ID="txtSearch" runat="server" CssClass="form-control" Placeholder="Search by country name..." />
+<asp:Button ID="btnSearch" runat="server" Text="Search" CssClass="btn btn-primary" OnClick="btnSearch_Click" />
+    <!-- Country display -->
     <asp:Repeater ID="rptCountries" runat="server" OnItemCommand="rptCountries_ItemCommand">
         <HeaderTemplate>
             <div class="countries-grid">
