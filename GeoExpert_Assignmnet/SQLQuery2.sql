@@ -1,0 +1,1 @@
+﻿ALTER TABLE Countries ADD Region NVARCHAR(50);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -19,31 +20,26 @@ namespace GeoExpert_Assignment.Pages
         private void LoadCountries(string searchQuery = "", string region = "")
         {
             
-            string query = "SELECT CountryID, Name, FoodName, FunFact, Region FROM Countries WHERE 1 = 1";
+            string query = "SELECT CountryID, Name, FoodName, FunFact FROM Countries WHERE 1 = 1";
 
-            SqlParameter[] parameters = null;
+            List<SqlParameter> parameters = new List<SqlParameter>();
 
             // Search active
             if (!string.IsNullOrWhiteSpace(searchQuery))
             {
-                query += " WHERE Name LIKE @Search";
-            
-                parameters = new SqlParameter[]
-                {
-                    new SqlParameter("@Search", "%" + searchQuery + "%")
-                };
+                query += " AND Name LIKE @Search";
+
+                parameters.Add(new SqlParameter("@Search", "%" + searchQuery + "%"));
             }
-            if (!string.IsNullOrWhiteSpace(searchQuery))
+
+            if (!string.IsNullOrWhiteSpace(region))
             {
-                query += " WHERE Name LIKE @Search";
+                query += " ANd Region = @Region";
 
-                parameters = new SqlParameter[]
-                {
-                    new SqlParameter("@Search", "%" + searchQuery + "%")
-                };
+                parameters.Add( new SqlParameter("@Region", region ));
             }
 
-            DataTable countries = DBHelper.ExecuteReader(query, parameters);
+            DataTable countries = DBHelper.ExecuteReader(query, parameters.ToArray());
             rptCountries.DataSource = countries;
             rptCountries.DataBind();
         }
@@ -52,6 +48,12 @@ namespace GeoExpert_Assignment.Pages
         {
             string searchTerm = txtSearch.Text.Trim();
             LoadCountries(searchTerm);
+        }
+
+        protected void regionFilter_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string region = regionFilter.SelectedValue;
+            LoadCountries(txtSearch.Text, region);
         }
 
         protected void rptCountries_ItemCommand(object source, System.Web.UI.WebControls.RepeaterCommandEventArgs e)
