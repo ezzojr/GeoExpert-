@@ -45,11 +45,10 @@ namespace GeoExpert_Assignment.Pages
 
         private void LoadCountryDetails()
         {
-            // Check if a country ID exists in query string
-            if (Request.QueryString["id"] == null)
-                return;
-
-            int countryId = Convert.ToInt32(Request.QueryString["id"]);
+            // TODO: Get country ID from query string and display details
+            if (Request.QueryString["id"] != null)
+            {
+                int countryId = Convert.ToInt32(Request.QueryString["id"]);
 
             // ✅ Increment the view count safely
             string updateQuery = "UPDATE Countries SET ViewCount = ISNULL(ViewCount, 0) + 1 WHERE CountryID = @CountryID";
@@ -83,6 +82,17 @@ namespace GeoExpert_Assignment.Pages
             {
                 litVideo.Text = "<p><em>No video available for this country.</em></p>";
             }
+
+        }
+        protected void btnView_Click(object sender, EventArgs e)
+        {
+            int countryId = Convert.ToInt32(Request.QueryString["id"]);
+
+            string query = "UPDATE Countries SET ViewCount = ViewCount + 1 WHERE CountryID = @CountryID";
+            SqlParameter[] parameters = {
+        new SqlParameter("@CountryID", countryId)
+    };
+            DBHelper.ExecuteNonQuery(query, parameters);
         }
 
     }

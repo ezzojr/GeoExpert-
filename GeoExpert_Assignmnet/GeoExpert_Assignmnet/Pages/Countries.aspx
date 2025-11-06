@@ -29,7 +29,7 @@
                 <h3><%# Eval("Name") %></h3>
                 <p><strong>Food:</strong> <%# Eval("FoodName") %></p>
                 <p><%# Eval("FunFact") %></p>
-                <a href='CountryDetail.aspx?id=<%# Eval("CountryID") %>' class="btn btn-primary">Learn More</a>
+                <a href='CountryDetail.aspx?id=<%# Eval("CountryID") %>' class="btn btn-primary" OnClick="btnView_Click" >Learn More</a>
             </div>
         </ItemTemplate>
         <FooterTemplate>
