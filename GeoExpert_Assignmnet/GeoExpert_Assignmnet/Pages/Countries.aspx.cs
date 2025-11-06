@@ -50,6 +50,7 @@ namespace GeoExpert_Assignment.Pages
             LoadCountries(searchTerm);
         }
 
+      
         protected void regionFilter_SelectedIndexChanged(object sender, EventArgs e)
         {
             string region = regionFilter.SelectedValue;
