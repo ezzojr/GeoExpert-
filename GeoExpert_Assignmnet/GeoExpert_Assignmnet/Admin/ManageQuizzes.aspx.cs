@@ -27,7 +27,8 @@ namespace GeoExpert_Assignment.Admin
         private void LoadCountries()
         {
             string query = "SELECT CountryID, Name FROM Countries ORDER BY Name";
-            DataTable dt = DBHelper.ExecuteReader(query); ddlCountry.DataSource = dt;
+            DataTable dt = DBHelper.ExecuteReader(query);
+            ddlCountry.DataSource = dt;
             ddlCountry.DataTextField = "Name";
             ddlCountry.DataValueField = "CountryID";
             ddlCountry.DataBind();
@@ -36,10 +37,16 @@ namespace GeoExpert_Assignment.Admin
 
         private void LoadQuizzes()
         {
-            string query = @"SELECT Q.QuizID, C.Name as CountryName, Q.Question 
-                       FROM Quizzes Q 
-                       INNER JOIN Countries C ON Q.CountryID = C.CountryID 
-                       ORDER BY C.Name, Q.QuizID";
+            string query = @"
+                SELECT Q.QuizID, C.Name AS CountryName, Q.Question,
+                       COUNT(O.OptionID) AS TotalOptions,
+                       SUM(CASE WHEN O.IsCorrect = 1 THEN 1 ELSE 0 END) AS CorrectAnswers
+                FROM Quizzes Q
+                INNER JOIN Countries C ON Q.CountryID = C.CountryID
+                LEFT JOIN QuizOptions O ON Q.QuizID = O.QuizID
+                GROUP BY Q.QuizID, C.Name, Q.Question
+                ORDER BY C.Name, Q.QuizID";
+
             DataTable dt = DBHelper.ExecuteReader(query);
             gvQuizzes.DataSource = dt;
             gvQuizzes.DataBind();
@@ -47,7 +54,6 @@ namespace GeoExpert_Assignment.Admin
 
         protected void btnAddQuiz_Click(object sender, EventArgs e)
         {
-            // TODO: Member D - Insert quiz and options
             try
             {
                 if (ddlCountry.SelectedValue == "0")
@@ -57,12 +63,32 @@ namespace GeoExpert_Assignment.Admin
                     return;
                 }
 
+                // Validate inputs
+                if (string.IsNullOrWhiteSpace(txtQuestion.Text) ||
+                    string.IsNullOrWhiteSpace(txtOption1.Text) ||
+                    string.IsNullOrWhiteSpace(txtOption2.Text) ||
+                    string.IsNullOrWhiteSpace(txtOption3.Text) ||
+                    string.IsNullOrWhiteSpace(txtOption4.Text))
+                {
+                    lblMessage.Text = "Please fill in all 4 options and a question.";
+                    lblMessage.ForeColor = System.Drawing.Color.Red;
+                    return;
+                }
+
+                bool hasCorrect = chkCorrect1.Checked || chkCorrect2.Checked || chkCorrect3.Checked || chkCorrect4.Checked;
+                if (!hasCorrect)
+                {
+                    lblMessage.Text = "Please mark at least one correct answer!";
+                    lblMessage.ForeColor = System.Drawing.Color.Red;
+                    return;
+                }
+
                 // Insert quiz question
                 string quizQuery = "INSERT INTO Quizzes (CountryID, Question) VALUES (@CountryID, @Question); SELECT SCOPE_IDENTITY();";
                 SqlParameter[] quizParams = {
-                new SqlParameter("@CountryID", ddlCountry.SelectedValue),
-                new SqlParameter("@Question", txtQuestion.Text)
-            };
+                    new SqlParameter("@CountryID", ddlCountry.SelectedValue),
+                    new SqlParameter("@Question", txtQuestion.Text)
+                };
 
                 int newQuizID = Convert.ToInt32(DBHelper.ExecuteScalar(quizQuery, quizParams));
 
@@ -72,7 +98,7 @@ namespace GeoExpert_Assignment.Admin
                 InsertOption(newQuizID, txtOption3.Text, chkCorrect3.Checked);
                 InsertOption(newQuizID, txtOption4.Text, chkCorrect4.Checked);
 
-                lblMessage.Text = "Quiz added successfully!";
+                lblMessage.Text = "✅ Quiz added successfully!";
                 lblMessage.ForeColor = System.Drawing.Color.Green;
                 ClearFields();
                 LoadQuizzes();
@@ -90,10 +116,10 @@ namespace GeoExpert_Assignment.Admin
             {
                 string query = "INSERT INTO QuizOptions (QuizID, OptionText, IsCorrect) VALUES (@QuizID, @OptionText, @IsCorrect)";
                 SqlParameter[] parameters = {
-                new SqlParameter("@QuizID", quizId),
-                new SqlParameter("@OptionText", optionText),
-                new SqlParameter("@IsCorrect", isCorrect)
-            };
+                    new SqlParameter("@QuizID", quizId),
+                    new SqlParameter("@OptionText", optionText),
+                    new SqlParameter("@IsCorrect", isCorrect)
+                };
 
                 DBHelper.ExecuteNonQuery(query, parameters);
             }
@@ -103,19 +129,17 @@ namespace GeoExpert_Assignment.Admin
         {
             if (e.CommandName == "DeleteQuiz")
             {
-                // TODO: Member D - Delete quiz (options will be deleted automatically due to CASCADE)
                 int quizId = Convert.ToInt32(e.CommandArgument);
-
                 string query = "DELETE FROM Quizzes WHERE QuizID = @QuizID";
                 SqlParameter[] parameters = {
-                new SqlParameter("@QuizID", quizId)
-            };
+                    new SqlParameter("@QuizID", quizId)
+                };
 
                 int result = DBHelper.ExecuteNonQuery(query, parameters);
 
                 if (result > 0)
                 {
-                    lblMessage.Text = "Quiz deleted successfully!";
+                    lblMessage.Text = "🗑️ Quiz deleted successfully!";
                     lblMessage.ForeColor = System.Drawing.Color.Green;
                     LoadQuizzes();
                 }
@@ -129,10 +153,7 @@ namespace GeoExpert_Assignment.Admin
             txtOption2.Text = "";
             txtOption3.Text = "";
             txtOption4.Text = "";
-            chkCorrect1.Checked = false;
-            chkCorrect2.Checked = false;
-            chkCorrect3.Checked = false;
-            chkCorrect4.Checked = false;
+            chkCorrect1.Checked = chkCorrect2.Checked = chkCorrect3.Checked = chkCorrect4.Checked = false;
             ddlCountry.SelectedIndex = 0;
         }
     }
