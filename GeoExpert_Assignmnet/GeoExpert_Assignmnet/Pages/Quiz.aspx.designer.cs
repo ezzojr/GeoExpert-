@@ -15,6 +15,51 @@ namespace GeoExpert_Assignment.Pages
     {
 
         /// <summary>
+        /// pnlCooldown control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlCooldown;
+
+        /// <summary>
+        /// litCooldownTime control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litCooldownTime;
+
+        /// <summary>
+        /// pnlQuizHeader control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlQuizHeader;
+
+        /// <summary>
+        /// litCountryName control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litCountryName;
+
+        /// <summary>
+        /// litProgress control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litProgress;
+
+        /// <summary>
         /// pnlQuiz control.
         /// </summary>
         /// <remarks>
@@ -42,39 +87,21 @@ namespace GeoExpert_Assignment.Pages
         protected global::System.Web.UI.WebControls.Button btnSubmit;
 
         /// <summary>
-        /// pnlResults control.
+        /// lblError control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlResults;
+        protected global::System.Web.UI.WebControls.Label lblError;
 
         /// <summary>
-        /// litScore control.
+        /// pnlNoQuiz control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litScore;
-
-        /// <summary>
-        /// litTotal control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litTotal;
-
-        /// <summary>
-        /// litBadge control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litBadge;
+        protected global::System.Web.UI.WebControls.Panel pnlNoQuiz;
     }
 }
