@@ -1,13 +1,40 @@
 ﻿<%@ Page Title="Manage Users" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ManageUsers.aspx.cs" Inherits="GeoExpert_Assignment.Admin.ManageUsers" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
-    <h2>Manage Users 👥</h2>
-    
-    <!-- TODO: Member D - View and manage users -->
-    
-    <h3>All Registered Users</h3>
-    <asp:GridView ID="gvUsers" runat="server" AutoGenerateColumns="False" 
-                  CssClass="data-table" OnRowCommand="gvUsers_RowCommand">
+    <style>
+        .search-row { display:flex; justify-content:center; gap:10px; margin-bottom:20px; }
+        .form-control { width:300px; padding:10px 14px; border-radius:8px; border:1px solid #ccc; font-size:15px; }
+        .btn { border-radius:8px; padding:9px 16px; font-weight:600; cursor:pointer; }
+        .btn-primary { background-color:#0078d7; color:#fff; border:none; }
+        .btn-secondary { background-color:#ddd; color:#000; border:none; }
+        .btn-danger { background-color:#ff4d4d; color:#fff; border:none; }
+        .data-table { width:100%; border-collapse:collapse; margin-top:10px; }
+        .data-table th { text-align:left; padding:10px; border-bottom:2px solid #eee; }
+        .data-table td { padding:10px; border-bottom:1px solid #f3f3f3; }
+
+        /* Modal */
+        .modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,0.6); display:none; justify-content:center; align-items:center; z-index:9999; }
+        .modal-card { background:#141414; color:#fff; padding:20px; border-radius:10px; width:420px; box-shadow:0 8px 30px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.03); }
+        .modal-header { font-size:18px; margin-bottom:8px; }
+        .modal-body { color:#ddd; margin-bottom:16px; }
+        .modal-actions { display:flex; justify-content:flex-end; gap:8px; }
+        .btn-cancel { background:#2b2b2b; color:#fff; border:1px solid #3a3a3a; padding:8px 12px; border-radius:8px; }
+        .btn-confirm { background:#ff4d4d; color:#fff; border:none; padding:8px 12px; border-radius:8px; }
+    </style>
+
+    <h2 style="text-align:center; margin-bottom:18px;">Manage Users 👥</h2>
+
+    <!-- Search -->
+    <div class="search-row">
+        <asp:TextBox ID="txtSearch" runat="server" CssClass="form-control" placeholder="🔍 Search by username or email..." />
+        <asp:Button ID="btnSearch" runat="server" Text="Search" CssClass="btn btn-primary" OnClick="btnSearch_Click" />
+        <asp:Button ID="btnClear" runat="server" Text="Clear" CssClass="btn btn-secondary" OnClick="btnClear_Click" />
+    </div>
+
+    <asp:Label ID="lblMessage" runat="server" ForeColor="Green" Style="display:block; text-align:center; margin-bottom:10px;"></asp:Label>
+
+    <!-- Users Grid -->
+    <asp:GridView ID="gvUsers" runat="server" AutoGenerateColumns="False" CssClass="data-table">
         <Columns>
             <asp:BoundField DataField="UserID" HeaderText="ID" />
             <asp:BoundField DataField="Username" HeaderText="Username" />
@@ -15,17 +42,85 @@
             <asp:BoundField DataField="Role" HeaderText="Role" />
             <asp:BoundField DataField="CurrentStreak" HeaderText="Streak" />
             <asp:BoundField DataField="CreatedDate" HeaderText="Joined" DataFormatString="{0:MMM dd, yyyy}" />
+
             <asp:TemplateField HeaderText="Actions">
                 <ItemTemplate>
-                    <asp:Button ID="btnDelete" runat="server" Text="Delete" 
-                                CommandName="DeleteUser" 
-                                CommandArgument='<%# Eval("UserID") %>' 
-                                CssClass="btn btn-danger" 
-                                OnClientClick="return confirm('Are you sure you want to delete this user?');" />
+                    <!-- Use simple data attributes to avoid messy Eval concatenation -->
+                    <asp:Button runat="server" ID="btnToggleRoleJS" CssClass="btn btn-primary"
+                        Text='<%# Convert.ToString(Eval("Role")) == "Admin" ? "Demote" : "Promote" %>'
+                        OnClientClick="handleAction(this); return false;"
+                        data-action='<%# Convert.ToString(Eval("Role")) == "Admin" ? "toggle-demote" : "toggle-promote" %>'
+                        data-userid='<%# Eval("UserID") %>'
+                        data-username='<%# Eval("Username") %>' />
+                    
+                    <asp:Button runat="server" ID="btnDeleteJS" CssClass="btn btn-danger"
+                        Text="Delete"
+                        OnClientClick="handleAction(this); return false;"
+                        data-action="delete"
+                        data-userid='<%# Eval("UserID") %>'
+                        data-username='<%# Eval("Username") %>' />
                 </ItemTemplate>
             </asp:TemplateField>
         </Columns>
     </asp:GridView>
-    
-    <asp:Label ID="lblMessage" runat="server" ForeColor="Green"></asp:Label>
+
+    <!-- Hidden fields + hidden server buttons -->
+    <asp:HiddenField ID="hfTargetUserId" runat="server" />
+    <asp:HiddenField ID="hfTargetUsername" runat="server" />
+    <asp:Button ID="btnConfirmDelete" runat="server" Style="display:none" OnClick="btnConfirmDelete_Click" />
+    <asp:Button ID="btnConfirmToggle" runat="server" Style="display:none" OnClick="btnConfirmToggle_Click" />
+
+    <!-- Modal -->
+    <div id="modalBackdrop" class="modal-backdrop">
+        <div class="modal-card">
+            <div class="modal-header" id="modalTitle">Confirm action</div>
+            <div class="modal-body" id="modalBody">Are you sure?</div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+                <button type="button" id="modalConfirmBtn" class="btn-confirm">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // handleAction reads data-* attributes and opens modal, then triggers hidden server button
+        function handleAction(btn) {
+            var action = btn.getAttribute('data-action');
+            var userId = btn.getAttribute('data-userid');
+            var username = btn.getAttribute('data-username');
+
+            // store selected values into hidden fields (server-side IDs)
+            document.getElementById('<%= hfTargetUserId.ClientID %>').value = userId;
+            document.getElementById('<%= hfTargetUsername.ClientID %>').value = username;
+
+            if (action === 'delete') {
+                openModal('Delete user', "Are you sure you want to delete user '" + username + "'? This cannot be undone.", function() {
+                    document.getElementById('<%= btnConfirmDelete.ClientID %>').click();
+                });
+            } else if (action.indexOf('toggle') === 0) {
+                openModal('Change role', "Change role for '" + username + "'? This will switch between Admin and User.", function() {
+                    document.getElementById('<%= btnConfirmToggle.ClientID %>').click();
+                });
+            }
+        }
+
+        function openModal(title, message, confirmCallback) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalBody').innerText = message;
+            var backdrop = document.getElementById('modalBackdrop');
+            backdrop.style.display = 'flex';
+
+            var confirmBtn = document.getElementById('modalConfirmBtn');
+            var newBtn = confirmBtn.cloneNode(true);
+            confirmBtn.parentNode.replaceChild(newBtn, confirmBtn);
+            newBtn.addEventListener('click', function () {
+                closeModal();
+                confirmCallback();
+            });
+        }
+
+        function closeModal() {
+            document.getElementById('modalBackdrop').style.display = 'none';
+        }
+    </script>
 </asp:Content>
