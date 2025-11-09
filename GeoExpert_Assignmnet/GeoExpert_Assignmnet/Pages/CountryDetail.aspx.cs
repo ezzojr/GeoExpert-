@@ -17,7 +17,7 @@ namespace GeoExpert_Assignment.Pages
 
         private void LoadCountryDetails()
         {
-            // TODO: Member C - Get country ID from query string and display details
+            // TODO: Get country ID from query string and display details
             if (Request.QueryString["id"] != null)
             {
                 int countryId = Convert.ToInt32(Request.QueryString["id"]);
@@ -45,6 +45,17 @@ namespace GeoExpert_Assignment.Pages
                     }
                 }
             }
+
+        }
+        protected void btnView_Click(object sender, EventArgs e)
+        {
+            int countryId = Convert.ToInt32(Request.QueryString["id"]);
+
+            string query = "UPDATE Countries SET ViewCount = ViewCount + 1 WHERE CountryID = @CountryID";
+            SqlParameter[] parameters = {
+        new SqlParameter("@CountryID", countryId)
+    };
+            DBHelper.ExecuteNonQuery(query, parameters);
         }
     }
 }
