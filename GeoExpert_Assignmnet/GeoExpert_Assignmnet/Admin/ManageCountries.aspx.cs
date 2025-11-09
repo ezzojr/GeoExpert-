@@ -1,10 +1,8 @@
-﻿using GeoExpert_Assignment.Pages;
-using System;
+﻿using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Xml.Linq;
 
 namespace GeoExpert_Assignment.Admin
 {
@@ -12,7 +10,7 @@ namespace GeoExpert_Assignment.Admin
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            // Check if user is admin
+            // Redirect non-admin users to login
             if (Session["Role"] == null || Session["Role"].ToString() != "Admin")
             {
                 Response.Redirect("~/Pages/Login.aspx");
@@ -20,24 +18,24 @@ namespace GeoExpert_Assignment.Admin
             }
 
             if (!IsPostBack)
-            {
                 LoadCountries();
-            }
         }
 
+        // Load all countries
         private void LoadCountries()
         {
-            string query = "SELECT CountryID, Name, FoodName, FunFact FROM Countries ORDER BY Name";
+            string query = "SELECT CountryID, Name, FlagImage, FoodName, FunFact, ViewCount FROM Countries ORDER BY Name";
             DataTable dt = DBHelper.ExecuteReader(query);
             gvCountries.DataSource = dt;
             gvCountries.DataBind();
         }
 
+        // Add new country
         protected void btnAdd_Click(object sender, EventArgs e)
         {
-            // TODO: Member D - Insert new country
-            string query = @"INSERT INTO Countries (Name, FlagImage, FoodName, FoodDescription, CultureInfo, VideoURL, FunFact) 
-                           VALUES (@Name, @Flag, @FoodName, @FoodDesc, @Culture, @Video, @Fact)";
+            string query = @"INSERT INTO Countries 
+                            (Name, FlagImage, FoodName, FoodDescription, CultureInfo, VideoURL, FunFact, ViewCount) 
+                            VALUES (@Name, @Flag, @FoodName, @FoodDesc, @Culture, @Video, @Fact, 0)";
 
             SqlParameter[] parameters = {
                 new SqlParameter("@Name", txtName.Text),
@@ -53,29 +51,27 @@ namespace GeoExpert_Assignment.Admin
 
             if (result > 0)
             {
-                lblMessage.Text = "Country added successfully!";
+                lblMessage.Text = "✅ Country added successfully!";
                 lblMessage.ForeColor = System.Drawing.Color.Green;
                 ClearFields();
                 LoadCountries();
             }
             else
             {
-                lblMessage.Text = "Error adding country.";
+                lblMessage.Text = "❌ Error adding country.";
                 lblMessage.ForeColor = System.Drawing.Color.Red;
             }
         }
 
+        // Edit / Delete button actions
         protected void gvCountries_RowCommand(object sender, GridViewCommandEventArgs e)
         {
             int countryId = Convert.ToInt32(e.CommandArgument);
 
             if (e.CommandName == "EditCountry")
             {
-                // TODO: Member D - Load country data for editing
                 string query = "SELECT * FROM Countries WHERE CountryID = @CountryID";
-                SqlParameter[] parameters = {
-                    new SqlParameter("@CountryID", countryId)
-                };
+                SqlParameter[] parameters = { new SqlParameter("@CountryID", countryId) };
 
                 DataTable dt = DBHelper.ExecuteReader(query, parameters);
                 if (dt.Rows.Count > 0)
@@ -94,35 +90,39 @@ namespace GeoExpert_Assignment.Admin
                     btnAdd.Visible = false;
                     btnUpdate.Visible = true;
                     btnCancel.Visible = true;
+                    lblFormTitle.Text = "Edit Country ✏️";
                 }
             }
             else if (e.CommandName == "DeleteCountry")
             {
-                // TODO: Member D - Delete country
                 string query = "DELETE FROM Countries WHERE CountryID = @CountryID";
-                SqlParameter[] parameters = {
-                    new SqlParameter("@CountryID", countryId)
-                };
+                SqlParameter[] parameters = { new SqlParameter("@CountryID", countryId) };
 
                 int result = DBHelper.ExecuteNonQuery(query, parameters);
 
                 if (result > 0)
                 {
-                    lblMessage.Text = "Country deleted successfully!";
+                    lblMessage.Text = "🗑️ Country deleted successfully!";
                     lblMessage.ForeColor = System.Drawing.Color.Green;
                     LoadCountries();
                 }
             }
         }
 
+        // Update country info
         protected void btnUpdate_Click(object sender, EventArgs e)
         {
-            // TODO: Member D - Update country
             int countryId = Convert.ToInt32(ViewState["EditCountryID"]);
 
-            string query = @"UPDATE Countries SET Name = @Name, FlagImage = @Flag, FoodName = @FoodName, 
-                           FoodDescription = @FoodDesc, CultureInfo = @Culture, VideoURL = @Video, FunFact = @Fact 
-                           WHERE CountryID = @CountryID";
+            string query = @"UPDATE Countries SET 
+                            Name = @Name, 
+                            FlagImage = @Flag, 
+                            FoodName = @FoodName, 
+                            FoodDescription = @FoodDesc, 
+                            CultureInfo = @Culture, 
+                            VideoURL = @Video, 
+                            FunFact = @Fact 
+                            WHERE CountryID = @CountryID";
 
             SqlParameter[] parameters = {
                 new SqlParameter("@CountryID", countryId),
@@ -139,7 +139,7 @@ namespace GeoExpert_Assignment.Admin
 
             if (result > 0)
             {
-                lblMessage.Text = "Country updated successfully!";
+                lblMessage.Text = "✅ Country updated successfully!";
                 lblMessage.ForeColor = System.Drawing.Color.Green;
                 ClearFields();
                 LoadCountries();
@@ -147,17 +147,21 @@ namespace GeoExpert_Assignment.Admin
                 btnAdd.Visible = true;
                 btnUpdate.Visible = false;
                 btnCancel.Visible = false;
+                lblFormTitle.Text = "Add New Country";
             }
         }
 
+        // Cancel editing
         protected void btnCancel_Click(object sender, EventArgs e)
         {
             ClearFields();
             btnAdd.Visible = true;
             btnUpdate.Visible = false;
             btnCancel.Visible = false;
+            lblFormTitle.Text = "Add New Country";
         }
 
+        // Clear form inputs
         private void ClearFields()
         {
             txtName.Text = "";

@@ -124,7 +124,7 @@
             font-size: 1rem;
             display: inline-block;
         }
-
+        /*theme*/
         .btn-primary {
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             color: #000000;
