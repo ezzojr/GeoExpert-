@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Web.UI;
 
 namespace GeoExpert_Assignment.Admin
@@ -7,7 +8,7 @@ namespace GeoExpert_Assignment.Admin
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            // Check if user is admin
+            // Restrict access to admins
             if (Session["Role"] == null || Session["Role"].ToString() != "Admin")
             {
                 Response.Redirect("~/Pages/Login.aspx");
@@ -17,16 +18,50 @@ namespace GeoExpert_Assignment.Admin
             if (!IsPostBack)
             {
                 LoadStatistics();
+                LoadRecentActivity();
+                LoadTopCountries();
             }
         }
 
         private void LoadStatistics()
         {
-            // TODO: Member D - Load statistics from database
-            litTotalUsers.Text = DBHelper.ExecuteScalar("SELECT COUNT(*) FROM Users").ToString();
-            litTotalCountries.Text = DBHelper.ExecuteScalar("SELECT COUNT(*) FROM Countries").ToString();
-            litTotalQuizzes.Text = DBHelper.ExecuteScalar("SELECT COUNT(*) FROM Quizzes").ToString();
-            litTotalBadges.Text = DBHelper.ExecuteScalar("SELECT COUNT(*) FROM Badges").ToString();
+            try
+            {
+                litTotalUsers.Text = DBHelper.ExecuteScalar("SELECT COUNT(*) FROM Users").ToString();
+                litTotalCountries.Text = DBHelper.ExecuteScalar("SELECT COUNT(*) FROM Countries").ToString();
+                litTotalQuizzes.Text = DBHelper.ExecuteScalar("SELECT COUNT(*) FROM Quizzes").ToString();
+                litTotalBadges.Text = DBHelper.ExecuteScalar("SELECT COUNT(*) FROM Badges").ToString();
+            }
+            catch (Exception ex)
+            {
+                Response.Write("<p style='color:red'>Error loading stats: " + ex.Message + "</p>");
+            }
+        }
+
+        private void LoadRecentActivity()
+        {
+            string query = @"
+                SELECT TOP 10 U.Username, Q.Question AS QuizName, UP.Score, UP.TotalQuestions, UP.CompletedDate
+                FROM UserProgress UP
+                INNER JOIN Users U ON UP.UserID = U.UserID
+                INNER JOIN Quizzes Q ON UP.QuizID = Q.QuizID
+                ORDER BY UP.CompletedDate DESC";
+
+            DataTable dt = DBHelper.ExecuteReader(query);
+            gvRecentActivity.DataSource = dt;
+            gvRecentActivity.DataBind();
+        }
+
+        private void LoadTopCountries()
+        {
+            string query = @"
+                SELECT TOP 5 Name, ViewCount
+                FROM Countries
+                ORDER BY ViewCount DESC";
+
+            DataTable dt = DBHelper.ExecuteReader(query);
+            gvTopCountries.DataSource = dt;
+            gvTopCountries.DataBind();
         }
     }
 }

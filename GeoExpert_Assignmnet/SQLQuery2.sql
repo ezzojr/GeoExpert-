@@ -1,0 +1,2 @@
+﻿ALTER TABLE Countries
+ADD ViewCount INT DEFAULT 0;
