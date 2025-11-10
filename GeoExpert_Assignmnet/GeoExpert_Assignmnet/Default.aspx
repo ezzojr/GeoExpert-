@@ -6,15 +6,619 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GeoExpert - Explore the World 🌍</title>
-
+    
     <style>
-        /* All your existing CSS (unchanged) */
-        /* Keep everything as you have it */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 100%);
+            color: #ffffff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        .bg-animation::before {
+            content: '🌍🗺️🏔️🏖️🌆🗼🎭🍕🍣🌮';
+            position: absolute;
+            font-size: 3rem;
+            white-space: nowrap;
+            animation: scroll 30s linear infinite;
+        }
+
+        @keyframes scroll {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* Header */
+        .header {
+            background: rgba(0, 0, 0, 0.95);
+            border-bottom: 1px solid rgba(79, 172, 254, 0.3);
+            box-shadow: 0 4px 20px rgba(79, 172, 254, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .logo-text {
+            font-size: 1.75rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: #999;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            transition: width 0.3s;
+        }
+
+        .nav-link:hover {
+            color: #4facfe;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: #000000;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(79, 172, 254, 0.5);
+        }
+
+        .btn-secondary {
+            color: #4facfe;
+            border: 2px solid rgba(79, 172, 254, 0.5);
+            background: transparent;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(79, 172, 254, 0.1);
+            border-color: #4facfe;
+        }
+
+        /* Hero Section */
+        .hero {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 5rem 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-content h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-content .highlight {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-content .globe-emoji {
+            display: inline-block;
+            animation: spin 4s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hero-content p {
+            font-size: 1.35rem;
+            color: #999;
+            margin-bottom: 2.5rem;
+            line-height: 1.8;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-image {
+            position: relative;
+            height: 500px;
+        }
+
+        .globe-container {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(79, 172, 254, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .globe-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .floating-country {
+            position: absolute;
+            font-size: 2.5rem;
+            animation: float-around 8s ease-in-out infinite;
+        }
+
+        .country-1 { top: 10%; right: -10%; animation-delay: 0s; }
+        .country-2 { bottom: 10%; left: -10%; animation-delay: 2s; }
+        .country-3 { top: 50%; right: -15%; animation-delay: 4s; }
+        .country-4 { bottom: 30%; right: -5%; animation-delay: 6s; }
+
+        @keyframes float-around {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(10px, -20px) rotate(10deg); }
+            50% { transform: translate(-10px, -10px) rotate(-10deg); }
+            75% { transform: translate(15px, 10px) rotate(5deg); }
+        }
+
+        /* Stats Section */
+        .stats {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(79, 172, 254, 0.05);
+            border: 1px solid rgba(79, 172, 254, 0.2);
+            border-radius: 16px;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: rgba(79, 172, 254, 0.1);
+            border-color: #4facfe;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            color: #999;
+            margin-top: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        /* Features Section */
+        .features {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 5rem 2rem;
+            border-top: 1px solid rgba(79, 172, 254, 0.2);
+            border-bottom: 1px solid rgba(79, 172, 254, 0.2);
+        }
+
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .features h2 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .features-subtitle {
+            text-align: center;
+            color: #999;
+            font-size: 1.25rem;
+            margin-bottom: 4rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(10, 10, 26, 0.8) 100%);
+            border: 1px solid rgba(79, 172, 254, 0.2);
+            padding: 2.5rem;
+            border-radius: 24px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(79, 172, 254, 0.1) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(79, 172, 254, 0.3);
+            border-color: #4facfe;
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+        }
+
+        .feature-card h3 {
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            color: #999;
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+
+        /* Countries Showcase */
+        .countries-showcase {
+            max-width: 1200px;
+            margin: 5rem auto;
+            padding: 0 2rem;
+        }
+
+        .countries-showcase h2 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .countries-showcase-subtitle {
+            text-align: center;
+            color: #999;
+            font-size: 1.25rem;
+            margin-bottom: 3rem;
+        }
+
+        .countries-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .country-card {
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(10, 10, 26, 0.8) 100%);
+            border: 1px solid rgba(79, 172, 254, 0.2);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .country-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(79, 172, 254, 0.3);
+            border-color: #4facfe;
+        }
+
+        .country-flag {
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+        }
+
+        .country-info {
+            padding: 1.5rem;
+        }
+
+        .country-info h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .country-info p {
+            color: #999;
+            font-size: 0.95rem;
+        }
+
+        /* CTA Section */
+        .cta {
+            max-width: 1200px;
+            margin: 5rem auto;
+            padding: 0 2rem;
+        }
+
+        .cta-box {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-radius: 24px;
+            padding: 5rem 3rem;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(79, 172, 254, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-box::before {
+            content: '🌍';
+            position: absolute;
+            font-size: 20rem;
+            opacity: 0.1;
+            right: -50px;
+            bottom: -50px;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .cta-box h2 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: #000000;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .cta-box p {
+            font-size: 1.4rem;
+            color: #000000;
+            opacity: 0.8;
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+
+        .cta-box .btn {
+            background: #000000;
+            color: #4facfe;
+            font-size: 1.2rem;
+            padding: 1rem 2.5rem;
+            position: relative;
+        }
+
+        .cta-box .btn:hover {
+            background: #1a1a1a;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(0, 0, 0, 0.9);
+            border-top: 1px solid rgba(79, 172, 254, 0.2);
+            padding: 4rem 2rem 2rem;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-section h4 {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            color: #4facfe;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-section a {
+            color: #999;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: #4facfe;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(79, 172, 254, 0.2);
+            text-align: center;
+            color: #666;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .nav {
+                display: none;
+            }
+
+            .hero {
+                grid-template-columns: 1fr;
+                padding: 3rem 2rem;
+            }
+
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-image {
+                height: 400px;
+            }
+
+            .features h2,
+            .countries-showcase h2,
+            .cta-box h2 {
+                font-size: 2.5rem;
+            }
+
+            .globe-container {
+                font-size: 5rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+
+            .stat-number {
+                font-size: 2rem;
+            }
+
+            .cta-box {
+                padding: 3rem 2rem;
+            }
+
+            .cta-box h2 {
+                font-size: 2rem;
+            }
+        }
     </style>
 </head>
 <body>
     <form id="form1" runat="server">
-
         <!-- Animated Background -->
         <div class="bg-animation"></div>
 
@@ -39,7 +643,7 @@
         <section class="hero">
             <div class="hero-content">
                 <h1>
-                    Explore the <span class="globe-emoji">🌍</span><br />
+                    Explore the <span class="globe-emoji">🌍</span><br/>
                     <span class="highlight">World</span> Like Never Before
                 </h1>
                 <p>
@@ -59,18 +663,22 @@
             </div>
         </section>
 
-        <!-- Stats Section (Dynamic) -->
+        <!-- Stats Section -->
         <section class="stats">
             <div class="stat-card">
-                <div class="stat-number"><asp:Label ID="lblCountries" runat="server" Text="0" /></div>
+                <div class="stat-number">50+</div>
                 <div class="stat-label">Countries to Explore</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number"><asp:Label ID="lblQuizzes" runat="server" Text="0" /></div>
+                <div class="stat-number">200+</div>
                 <div class="stat-label">Fun Quizzes</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number"><asp:Label ID="lblUsers" runat="server" Text="0" /></div>
+                <div class="stat-number">15+</div>
+                <div class="stat-label">Badges to Earn</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">1000+</div>
                 <div class="stat-label">Active Learners</div>
             </div>
         </section>
@@ -80,34 +688,126 @@
             <div class="features-container">
                 <h2>Why Learn With GeoExpert?</h2>
                 <p class="features-subtitle">Everything you need to become a geography master</p>
-                <!-- Your existing feature cards stay exactly the same -->
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🎯</div>
+                        <h3>Interactive Quizzes</h3>
+                        <p>Test your knowledge with fun, challenging quizzes on flags, foods, cultures, and more. Instant feedback keeps you engaged!</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🏆</div>
+                        <h3>Gamified Learning</h3>
+                        <p>Earn badges, maintain streaks, and track your progress. Compete with yourself and reach new milestones every day!</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🌍</div>
+                        <h3>Rich Content</h3>
+                        <p>Explore detailed country profiles with flags, traditional foods, cultural insights, and educational videos.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3>Progress Tracking</h3>
+                        <p>Monitor your learning journey with detailed statistics, quiz history, and achievement tracking.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🎨</div>
+                        <h3>Beautiful Design</h3>
+                        <p>Modern, intuitive interface designed specifically for teens. Dark mode, smooth animations, and mobile-friendly.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🆓</div>
+                        <h3>100% Free</h3>
+                        <p>All features completely free. No ads, no subscriptions, no hidden costs. Just pure learning!</p>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <!-- Countries Showcase (Dynamic) -->
+        <!-- Countries Showcase -->
         <section class="countries-showcase">
             <h2>Featured Countries</h2>
             <p class="countries-showcase-subtitle">Start exploring these amazing destinations</p>
             <div class="countries-grid">
-                <asp:Repeater ID="rptCountries" runat="server">
-                    <ItemTemplate>
-                        <div class="country-card">
-                            <div class="country-flag">
-                                <img src='<%# Eval("FlagImage") %>' alt='<%# Eval("Name") %>' style="width:100px;height:60px;" />
-                            </div>
-                            <div class="country-info">
-                                <h3><%# Eval("Name") %></h3>
-                                <p>Views: <%# Eval("ViewCount") %></p>
-                            </div>
-                        </div>
-                    </ItemTemplate>
-                </asp:Repeater>
+                <div class="country-card">
+                    <div class="country-flag">🇯🇵</div>
+                    <div class="country-info">
+                        <h3>Japan</h3>
+                        <p>Discover sushi, samurai culture, and cherry blossoms</p>
+                    </div>
+                </div>
+                <div class="country-card">
+                    <div class="country-flag">🇮🇹</div>
+                    <div class="country-info">
+                        <h3>Italy</h3>
+                        <p>Explore pizza, ancient Rome, and Renaissance art</p>
+                    </div>
+                </div>
+                <div class="country-card">
+                    <div class="country-flag">🇲🇽</div>
+                    <div class="country-info">
+                        <h3>Mexico</h3>
+                        <p>Experience tacos, Day of the Dead, and Mayan ruins</p>
+                    </div>
+                </div>
+                <div class="country-card">
+                    <div class="country-flag">🇫🇷</div>
+                    <div class="country-info">
+                        <h3>France</h3>
+                        <p>Learn about croissants, the Eiffel Tower, and fashion</p>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <!-- CTA + Footer (unchanged) -->
-        <!-- Keep your existing CTA and Footer here -->
+        <!-- CTA Section -->
+        <section class="cta">
+            <div class="cta-box">
+                <h2>Ready to Become a Geography Expert?</h2>
+                <p>Join thousands of teens exploring the world from home. Sign up free today!</p>
+                <a href="Pages/Register.aspx" class="btn">Start Learning Free</a>
+            </div>
+        </section>
 
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-container">
+                <div class="footer-section">
+                    <h4>GeoExpert</h4>
+                    <ul>
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#team">Our Team</a></li>
+                        <li><a href="#mission">Mission</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Learn</h4>
+                    <ul>
+                        <li><a href="Pages/Countries.aspx">Countries</a></li>
+                        <li><a href="Pages/Quiz.aspx">Quizzes</a></li>
+                        <li><a href="#features">Features</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Account</h4>
+                    <ul>
+                        <li><a href="Pages/Login.aspx">Sign In</a></li>
+                        <li><a href="Pages/Register.aspx">Register</a></li>
+                        <li><a href="Pages/Profile.aspx">My Profile</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#help">Help Center</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                        <li><a href="#privacy">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 GeoExpert. Made with ❤️ for curious minds worldwide.</p>
+            </div>
+        </footer>
     </form>
 </body>
 </html>

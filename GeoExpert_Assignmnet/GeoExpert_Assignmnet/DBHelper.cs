@@ -10,6 +10,7 @@ public class DBHelper
                                     Integrated Security=True;
                                     Connect Timeout=30";
 
+
     // Alternative if using SQL Server Express:
     // private static string connString = @"Data Source=.\SQLEXPRESS;Initial Catalog=GeoExpertDB;Integrated Security=True";
 
@@ -66,21 +67,5 @@ public class DBHelper
                 return dt;
             }
         }
-    }
-
-    // ==================== MEMBER A METHODS ====================
-    // Added by Member A - Dynamic Homepage
-
-    public static DataTable GetTopViewedCountries(int count)
-    {
-        string query = "SELECT TOP (@Count) Name, FlagImage, ViewCount FROM Countries ORDER BY ViewCount DESC";
-        SqlParameter[] parameters = { new SqlParameter("@Count", count) };
-        return ExecuteReader(query, parameters);
-    }
-
-    public static int GetTotalCount(string tableName)
-    {
-        string query = $"SELECT COUNT(*) FROM {tableName}";
-        return Convert.ToInt32(ExecuteScalar(query));
     }
 }
