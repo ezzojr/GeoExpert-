@@ -50,39 +50,40 @@ namespace GeoExpert_Assignment.Pages
             {
                 int countryId = Convert.ToInt32(Request.QueryString["id"]);
 
-            // ✅ Increment the view count safely
-            string updateQuery = "UPDATE Countries SET ViewCount = ISNULL(ViewCount, 0) + 1 WHERE CountryID = @CountryID";
-            SqlParameter[] updateParams = { new SqlParameter("@CountryID", countryId) };
-            DBHelper.ExecuteNonQuery(updateQuery, updateParams);
+                // ✅ Increment the view count safely
+                string updateQuery = "UPDATE Countries SET ViewCount = ISNULL(ViewCount, 0) + 1 WHERE CountryID = @CountryID";
+                SqlParameter[] updateParams = { new SqlParameter("@CountryID", countryId) };
+                DBHelper.ExecuteNonQuery(updateQuery, updateParams);
 
-            // ✅ Fetch full country details
-            string query = "SELECT * FROM Countries WHERE CountryID = @CountryID";
-            SqlParameter[] selectParams = { new SqlParameter("@CountryID", countryId) };
-            DataTable dt = DBHelper.ExecuteReader(query, selectParams);
+                // ✅ Fetch full country details
+                string query = "SELECT * FROM Countries WHERE CountryID = @CountryID";
+                SqlParameter[] selectParams = { new SqlParameter("@CountryID", countryId) };
+                DataTable dt = DBHelper.ExecuteReader(query, selectParams);
 
-            if (dt.Rows.Count == 0)
-                return;
+                if (dt.Rows.Count == 0)
+                    return;
 
-            DataRow row = dt.Rows[0];
+                DataRow row = dt.Rows[0];
 
-            // ✅ Display data in literals
-            litCountryName.Text = row["Name"].ToString();
-            litFoodName.Text = row["FoodName"].ToString();
-            litFoodDesc.Text = row["FoodDescription"].ToString();
-            litCulture.Text = row["CultureInfo"].ToString();
-            litFunFact.Text = row["FunFact"].ToString();
+                // ✅ Display data in literals
+                litCountryName.Text = row["Name"].ToString();
+                litFoodName.Text = row["FoodName"].ToString();
+                litFoodDesc.Text = row["FoodDescription"].ToString();
+                litCulture.Text = row["CultureInfo"].ToString();
+                litFunFact.Text = row["FunFact"].ToString();
 
-            // ✅ Embed video if available
-            string videoUrl = row["VideoURL"].ToString();
-            if (!string.IsNullOrEmpty(videoUrl))
-            {
-                litVideo.Text = $"<iframe width='560' height='315' src='{videoUrl}' frameborder='0' allowfullscreen></iframe>";
+                // ✅ Embed video if available
+                string videoUrl = row["VideoURL"].ToString();
+                if (!string.IsNullOrEmpty(videoUrl))
+                {
+                    litVideo.Text = $"<iframe width='560' height='315' src='{videoUrl}' frameborder='0' allowfullscreen></iframe>";
+                }
+                else
+                {
+                    litVideo.Text = "<p><em>No video available for this country.</em></p>";
+                }
+
             }
-            else
-            {
-                litVideo.Text = "<p><em>No video available for this country.</em></p>";
-            }
-
         }
         protected void btnView_Click(object sender, EventArgs e)
         {
