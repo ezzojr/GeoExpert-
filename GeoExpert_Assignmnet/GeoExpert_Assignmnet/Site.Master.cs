@@ -8,7 +8,7 @@ namespace GeoExpert_Assignment
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            // Show username greeting if logged in
+            // -Show username greeting if logged in
             if (Session["Username"] != null)
             {
                 lblWelcome.Visible = true;

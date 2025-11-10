@@ -12,7 +12,7 @@ namespace GeoExpert_Assignment.Pages
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            // 🔹 If user is already logged in, redirect based on role
+            //- 🔹 If user is already logged in, redirect based on role
             if (Session["UserID"] != null)
             {
                 RedirectByRole(Session["Role"].ToString());

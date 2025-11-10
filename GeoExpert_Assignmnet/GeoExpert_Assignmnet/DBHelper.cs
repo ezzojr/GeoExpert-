@@ -4,7 +4,7 @@ using System.Data.SqlClient;
 
 public class DBHelper
 {
-    // UPDATE THIS CONNECTION STRING WITH YOUR SQL SERVER DETAILS
+    // -UPDATE THIS CONNECTION STRING WITH YOUR SQL SERVER DETAILS
     private static string connString = @"Data Source=(LocalDB)\MSSQLLocalDB;
                                     AttachDbFilename=|DataDirectory|\GeoExpertDB.mdf;
                                     Integrated Security=True;

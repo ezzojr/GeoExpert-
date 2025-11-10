@@ -18,7 +18,7 @@ namespace GeoExpert_Assignment.Pages
             string email = txtEmail.Text.Trim();
             string password = txtPassword.Text.Trim();
 
-            // 🔹 Password strength check
+            // 🔹 -Password strength check
             if (password.Length < 6)
             {
                 lblMessage.Text = "Password must be at least 6 characters long.";
