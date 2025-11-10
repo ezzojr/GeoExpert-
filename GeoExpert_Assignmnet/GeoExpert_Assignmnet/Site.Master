@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%: Page.Title %> - GeoExpert</title>
     <link href="~/Styles/site.css" rel="stylesheet" />
-    
+
     <style>
         * {
             margin: 0;
@@ -147,18 +147,6 @@
             border-color: #4facfe;
         }
 
-        /* Mobile Menu Toggle */
-        .mobile-menu-toggle {
-            display: none;
-            background: transparent;
-            border: 2px solid #4facfe;
-            color: #4facfe;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1.5rem;
-        }
-
         /* Main Content */
         main {
             flex: 1;
@@ -183,91 +171,9 @@
             padding: 3rem 2rem 2rem;
             margin-top: auto;
         }
-
-        .footer-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .footer-section h4 {
-            font-size: 1.125rem;
-            margin-bottom: 1rem;
-            color: #4facfe;
-        }
-
-        .footer-section ul {
-            list-style: none;
-        }
-
-        .footer-section li {
-            margin-bottom: 0.5rem;
-        }
-
-        .footer-section a {
-            color: #999;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .footer-section a:hover {
-            color: #4facfe;
-        }
-
-        .footer-bottom {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(79, 172, 254, 0.2);
-            text-align: center;
-            color: #666;
-        }
-
-        /* Responsive */
-        @media (max-width: 968px) {
-            .nav {
-                display: none;
-            }
-
-            .mobile-menu-toggle {
-                display: block;
-            }
-
-            .content-container {
-                padding: 2rem;
-            }
-
-            main {
-                padding: 0 1rem;
-            }
-        }
-
-        @media (max-width: 640px) {
-            .header-container {
-                padding: 1rem;
-            }
-
-            .logo-text {
-                font-size: 1.25rem;
-            }
-
-            .logo-icon {
-                width: 35px;
-                height: 35px;
-                font-size: 20px;
-            }
-
-            .content-container {
-                padding: 1.5rem;
-            }
-        }
     </style>
 
-    <asp:ContentPlaceHolder ID="head" runat="server">
-    </asp:ContentPlaceHolder>
+    <asp:ContentPlaceHolder ID="head" runat="server"></asp:ContentPlaceHolder>
 </head>
 <body>
     <form id="form1" runat="server">
@@ -278,77 +184,46 @@
                     <div class="logo-icon">🌍</div>
                     <span class="logo-text">GeoExpert</span>
                 </a>
-                
-                <button class="mobile-menu-toggle" onclick="alert('Mobile menu coming soon!')">☰</button>
-                
+
                 <nav class="nav">
-                        <a href="<%= ResolveUrl("~/Default.aspx") %>" class="nav-link">Home</a>
-                        <a href="<%= ResolveUrl("~/Pages/Countries.aspx") %>" class="nav-link">Countries</a>
-                        <a href="<%= ResolveUrl("~/Pages/Quiz.aspx") %>" class="nav-link">Quizzes</a>
-    
-                            <% if (Session["UserID"] != null) { %>
-                         <a href="<%= ResolveUrl("~/Pages/Profile.aspx") %>" class="nav-link">Profile</a>
-                      <% if (Session["Role"] != null && Session["Role"].ToString() == "Admin") { %>
-                        <a href="<%= ResolveUrl("~/Admin/Dashboard.aspx") %>" class="nav-link">Admin</a>
-                          <% } %>
-                         <asp:LinkButton ID="btnLogout" runat="server" CssClass="btn btn-secondary" OnClick="btnLogout_Click">Logout</asp:LinkButton>
-                      <% } else { %>
-                      <a href="<%= ResolveUrl("~/Pages/Login.aspx") %>" class="btn btn-secondary">Sign In</a>
-                      <a href="<%= ResolveUrl("~/Pages/Register.aspx") %>" class="btn btn-primary">Get Started</a>
-                     <% } %>
+                    <a href="<%= ResolveUrl("~/Default.aspx") %>" class="nav-link">Home</a>
+                    <a href="<%= ResolveUrl("~/Pages/Countries.aspx") %>" class="nav-link">Countries</a>
+                    <a href="<%= ResolveUrl("~/Pages/Quiz.aspx") %>" class="nav-link">Quizzes</a>
+
+                    <% if (Session["UserID"] != null) { %>
+                        <asp:Label ID="lblWelcome" runat="server" 
+                            ForeColor="#4facfe" Font-Bold="true" 
+                            Style="margin-right:10px;"></asp:Label>
+
+                        <a href="<%= ResolveUrl("~/Pages/Profile.aspx") %>" class="nav-link">Profile</a>
+
+                        <% if (Session["Role"] != null && Session["Role"].ToString() == "Admin") { %>
+                            <a href="<%= ResolveUrl("~/Admin/Dashboard.aspx") %>" class="nav-link">Admin</a>
+                        <% } %>
+
+                        <asp:LinkButton ID="btnLogout" runat="server" CssClass="btn btn-secondary" OnClick="btnLogout_Click">Logout</asp:LinkButton>
+
+                    <% } else { %>
+                        <a href="<%= ResolveUrl("~/Pages/Login.aspx") %>" class="btn btn-secondary">Sign In</a>
+                        <a href="<%= ResolveUrl("~/Pages/Register.aspx") %>" class="btn btn-primary">Get Started</a>
+                    <% } %>
                 </nav>
             </div>
         </header>
-        
+
         <!-- Main Content -->
         <main>
-            <asp:ContentPlaceHolder ID="MainContent" runat="server">
-            </asp:ContentPlaceHolder>
+            <asp:ContentPlaceHolder ID="MainContent" runat="server"></asp:ContentPlaceHolder>
         </main>
-        
+
         <!-- Footer -->
         <footer class="footer">
-            <div class="footer-container">
-                <div class="footer-section">
-                    <h4>GeoExpert</h4>
-                    <ul>
-                        <li><a href="#about">About Us</a></li>
-                        <li><a href="#team">Our Team</a></li>
-                        <li><a href="#mission">Mission</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Learn</h4>
-                    <ul>
-                        <li><a href="~/Pages/Countries.aspx" runat="server">Countries</a></li>
-                        <li><a href="~/Pages/Quiz.aspx" runat="server">Quizzes</a></li>
-                        <li><a href="~/Default.aspx#features" runat="server">Features</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Account</h4>
-                    <ul>
-                        <li><a href="~/Pages/Login.aspx" runat="server">Sign In</a></li>
-                        <li><a href="~/Pages/Register.aspx" runat="server">Register</a></li>
-                        <li><a href="~/Pages/Profile.aspx" runat="server">My Profile</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Support</h4>
-                    <ul>
-                        <li><a href="#help">Help Center</a></li>
-                        <li><a href="#contact">Contact</a></li>
-                        <li><a href="#privacy">Privacy Policy</a></li>
-                    </ul>
-                </div>
-            </div>
             <div class="footer-bottom">
                 <p>&copy; 2025 GeoExpert. Made with ❤️ for curious minds worldwide.</p>
             </div>
         </footer>
     </form>
 
-    <asp:ContentPlaceHolder ID="scripts" runat="server">
-    </asp:ContentPlaceHolder>
+    <asp:ContentPlaceHolder ID="scripts" runat="server"></asp:ContentPlaceHolder>
 </body>
 </html>
