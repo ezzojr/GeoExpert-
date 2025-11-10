@@ -1,0 +1,1 @@
+﻿ALTER TABLE Users ADD LockoutEnd INT DEFAULT 0;
