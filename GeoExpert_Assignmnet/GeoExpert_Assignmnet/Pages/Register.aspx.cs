@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Data.SqlClient;
+using System.Security.Cryptography;
+using System.Text;
 using System.Web.UI;
 
 namespace GeoExpert_Assignment.Pages
@@ -8,41 +10,55 @@ namespace GeoExpert_Assignment.Pages
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-
         }
 
         protected void btnRegister_Click(object sender, EventArgs e)
         {
-            // TODO: Member C - Implement registration logic
-            // 1. Validate all fields
-            // 2. Check if username already exists
-            // 3. Insert new user into database
-            // 4. Show success message and redirect to login
-
             string username = txtUsername.Text.Trim();
             string email = txtEmail.Text.Trim();
             string password = txtPassword.Text.Trim();
 
-            // Check if username already exists
-            string checkQuery = "SELECT COUNT(*) FROM Users WHERE Username = @Username";
-            SqlParameter[] checkParams = {
-                new SqlParameter("@Username", username)
-            };
+            // 🔹 Password strength check
+            if (password.Length < 6)
+            {
+                lblMessage.Text = "Password must be at least 6 characters long.";
+                lblMessage.ForeColor = System.Drawing.Color.Red;
+                return;
+            }
 
-            int count = Convert.ToInt32(DBHelper.ExecuteScalar(checkQuery, checkParams));
+            // 🔹 Check if username already exists
+            string checkUserQuery = "SELECT COUNT(*) FROM Users WHERE Username = @Username";
+            SqlParameter[] userParams = { new SqlParameter("@Username", username) };
+            int userCount = Convert.ToInt32(DBHelper.ExecuteScalar(checkUserQuery, userParams));
 
-            if (count > 0)
+            if (userCount > 0)
             {
                 lblMessage.Text = "Username already exists!";
                 lblMessage.ForeColor = System.Drawing.Color.Red;
                 return;
             }
 
-            // Insert new user
-            string insertQuery = "INSERT INTO Users (Username, Password, Email, Role) VALUES (@Username, @Password, @Email, 'User')";
+            // 🔹 Check if email already exists
+            string checkEmailQuery = "SELECT COUNT(*) FROM Users WHERE Email = @Email";
+            SqlParameter[] emailParams = { new SqlParameter("@Email", email) };
+            int emailCount = Convert.ToInt32(DBHelper.ExecuteScalar(checkEmailQuery, emailParams));
+
+            if (emailCount > 0)
+            {
+                lblMessage.Text = "Email already registered!";
+                lblMessage.ForeColor = System.Drawing.Color.Red;
+                return;
+            }
+
+            // 🔹 Hash password using SHA256
+            string hashedPassword = HashPassword(password);
+
+            // 🔹 Insert new user
+            string insertQuery = @"INSERT INTO Users (Username, Password, Email, Role, CreatedDate)
+                                   VALUES (@Username, @Password, @Email, 'User', GETDATE())";
             SqlParameter[] insertParams = {
                 new SqlParameter("@Username", username),
-                new SqlParameter("@Password", password), // TODO: Hash password in production
+                new SqlParameter("@Password", hashedPassword),
                 new SqlParameter("@Email", email)
             };
 
@@ -58,6 +74,21 @@ namespace GeoExpert_Assignment.Pages
             {
                 lblMessage.Text = "Registration failed. Please try again.";
                 lblMessage.ForeColor = System.Drawing.Color.Red;
+            }
+        }
+
+        // 🔒 Helper method for password hashing
+        private string HashPassword(string password)
+        {
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+                StringBuilder builder = new StringBuilder();
+                foreach (byte b in bytes)
+                {
+                    builder.Append(b.ToString("x2"));
+                }
+                return builder.ToString();
             }
         }
     }
