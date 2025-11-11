@@ -38,15 +38,23 @@ namespace GeoExpert_Assignment.Pages
 
             if (lockDt.Rows.Count > 0)
             {
-                int failedAttempts = Convert.ToInt32(lockDt.Rows[0]["FailedLoginAttempts"]);
+                // SAFE: Handle NULL values
+                object failedAttemptsObj = lockDt.Rows[0]["FailedLoginAttempts"];
+                int failedAttempts = (failedAttemptsObj != DBNull.Value) ? Convert.ToInt32(failedAttemptsObj) : 0;
+
                 object lockoutValue = lockDt.Rows[0]["LockoutEnd"];
 
-                if (lockoutValue != DBNull.Value && Convert.ToDateTime(lockoutValue) > DateTime.Now)
+                // Check if account is locked
+                if (lockoutValue != null && lockoutValue != DBNull.Value)
                 {
-                    TimeSpan remaining = Convert.ToDateTime(lockoutValue) - DateTime.Now;
-                    lblMessage.Text = $"Account locked. Try again in {remaining.Minutes}m {remaining.Seconds}s.";
-                    lblMessage.ForeColor = System.Drawing.Color.Red;
-                    return;
+                    DateTime lockoutEnd = Convert.ToDateTime(lockoutValue);
+                    if (lockoutEnd > DateTime.Now)
+                    {
+                        TimeSpan remaining = lockoutEnd - DateTime.Now;
+                        lblMessage.Text = $"Account locked. Try again in {remaining.Minutes}m {remaining.Seconds}s.";
+                        lblMessage.ForeColor = System.Drawing.Color.Red;
+                        return;
+                    }
                 }
             }
 
