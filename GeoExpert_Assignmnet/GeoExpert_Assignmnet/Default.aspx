@@ -535,17 +535,20 @@
         <section class="stats">
             <div class="stat-card">
                 <div class="stat-number">
-                    <asp:Label ID="lblCountries" runat="server" Text="0" /></div>
+                    <asp:Label ID="lblCountries" runat="server" Text="0" />
+                </div>
                 <div class="stat-label">Countries to Explore</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number">
-                    <asp:Label ID="lblQuizzes" runat="server" Text="0" /></div>
+                    <asp:Label ID="lblQuizzes" runat="server" Text="0" />
+                </div>
                 <div class="stat-label">Fun Quizzes</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number">
-                    <asp:Label ID="lblUsers" runat="server" Text="0" /></div>
+                    <asp:Label ID="lblUsers" runat="server" Text="0" />
+                </div>
                 <div class="stat-label">Active Learners</div>
             </div>
         </section>
