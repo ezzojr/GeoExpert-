@@ -2,22 +2,25 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <h2>Explore Countries 🌍</h2>
-    
-    <!-- Searchbox -->
-    <asp:TextBox ID="txtSearch" runat="server" CssClass="form-control" Placeholder="Search by country name..." />
-<asp:Button ID="btnSearch" runat="server" Text="Search" CssClass="btn btn-primary" OnClick="btnSearchNFilter_Click" />
-    
-    <!-- Filter -->
-    <asp:DropDownList ID="regionFilter" runat="server" AutoPostBack="true" OnSelectedIndexChanged="btnSearchNFilter_Click" Height="17px" Width="180px">
-    <asp:ListItem Text="All Regions" Value="" /> 
-    <asp:ListItem Text="Africa" Value="Africa" />
-    <asp:ListItem Text="Antarctica" Value="Antarctica" />
-    <asp:ListItem Text="Asia" Value="Asia" />
-    <asp:ListItem Text="Europe" Value="Europe" />
-    <asp:ListItem Text="Oceania" Value="Oceania" />
- <asp:ListItem Text="North America" Value="North America" />
-         <asp:ListItem Text="South America" Value="South America" />
-</asp:DropDownList>
+
+    <div class="search-filter-bar">
+        <!-- Searchbox -->
+        <asp:TextBox ID="txtSearch" runat="server" CssClass="form-control" Placeholder="Search by country name..." />
+
+        <!-- Filter -->
+        <asp:DropDownList ID="regionFilter" runat="server" AutoPostBack="true" OnSelectedIndexChanged="btnSearchNFilter_Click" Height="17px" Width="180px">
+            <asp:ListItem Text="All Regions" Value="" />
+            <asp:ListItem Text="Africa" Value="Africa" />
+            <asp:ListItem Text="Antarctica" Value="Antarctica" />
+            <asp:ListItem Text="Asia" Value="Asia" />
+            <asp:ListItem Text="Europe" Value="Europe" />
+            <asp:ListItem Text="Oceania" Value="Oceania" />
+            <asp:ListItem Text="North America" Value="North America" />
+            <asp:ListItem Text="South America" Value="South America" />
+        </asp:DropDownList>
+
+        <asp:Button ID="btnSearch" runat="server" Text="Search" CssClass="btn btn-primary" OnClick="btnSearchNFilter_Click" />
+    </div>
 
     <!-- Country display -->
     <asp:Repeater ID="rptCountries" runat="server" OnItemCommand="rptCountries_ItemCommand">
@@ -29,7 +32,7 @@
                 <h3><%# Eval("Name") %></h3>
                 <p><strong>Food:</strong> <%# Eval("FoodName") %></p>
                 <p><%# Eval("FunFact") %></p>
-                <a href='CountryDetail.aspx?id=<%# Eval("CountryID") %>' class="btn btn-primary" OnClick="btnView_Click" >Learn More</a>
+                <a href='CountryDetail.aspx?id=<%# Eval("CountryID") %>' class="btn btn-primary" onclick="btnView_Click">Learn More</a>
             </div>
         </ItemTemplate>
         <FooterTemplate>
@@ -37,16 +40,16 @@
         </FooterTemplate>
     </asp:Repeater>
 
-<div class="pagination-container">
-    <asp:LinkButton ID="btnPrev" runat="server" OnClick="btnPrev_Click" Text="← Previous" CssClass="btn btn-secondary" />
-    <asp:Repeater ID="rptPagination" runat="server" OnItemCommand="rptPagination_ItemCommand">
-        <ItemTemplate>
-            <asp:LinkButton runat="server" CommandName="Page" 
-                CommandArgument='<%# Eval("PageNumber") %>' 
-                Text='<%# Eval("PageNumber") %>' 
-                CssClass='<%# (bool)Eval("IsCurrent") ? "btn btn-primary current" : "btn btn-light" %>' />
-        </ItemTemplate>
-    </asp:Repeater>
-    <asp:LinkButton ID="btnNext" runat="server" OnClick="btnNext_Click" Text="Next →" CssClass="btn btn-secondary" />
-</div>
+    <div class="pagination-container">
+        <asp:LinkButton ID="btnPrev" runat="server" OnClick="btnPrev_Click" Text="← Previous" CssClass="btn btn-secondary" />
+        <asp:Repeater ID="rptPagination" runat="server" OnItemCommand="rptPagination_ItemCommand">
+            <ItemTemplate>
+                <asp:LinkButton runat="server" CommandName="Page"
+                    CommandArgument='<%# Eval("PageNumber") %>'
+                    Text='<%# Eval("PageNumber") %>'
+                    CssClass='<%# (bool)Eval("IsCurrent") ? "btn btn-primary current" : "btn btn-light" %>' />
+            </ItemTemplate>
+        </asp:Repeater>
+        <asp:LinkButton ID="btnNext" runat="server" OnClick="btnNext_Click" Text="Next →" CssClass="btn btn-secondary" />
+    </div>
 </asp:Content>
