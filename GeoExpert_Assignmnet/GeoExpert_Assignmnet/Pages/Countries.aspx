@@ -5,10 +5,10 @@
     
     <!-- Searchbox -->
     <asp:TextBox ID="txtSearch" runat="server" CssClass="form-control" Placeholder="Search by country name..." />
-<asp:Button ID="btnSearch" runat="server" Text="Search" CssClass="btn btn-primary" OnClick="btnSearch_Click" />
+<asp:Button ID="btnSearch" runat="server" Text="Search" CssClass="btn btn-primary" OnClick="btnSearchNFilter_Click" />
     
     <!-- Filter -->
-    <asp:DropDownList ID="regionFilter" runat="server" AutoPostBack="true" OnSelectedIndexChanged="regionFilter_SelectedIndexChanged" Height="17px" Width="180px">
+    <asp:DropDownList ID="regionFilter" runat="server" AutoPostBack="true" OnSelectedIndexChanged="btnSearchNFilter_Click" Height="17px" Width="180px">
     <asp:ListItem Text="All Regions" Value="" /> 
     <asp:ListItem Text="Africa" Value="Africa" />
     <asp:ListItem Text="Antarctica" Value="Antarctica" />
@@ -36,4 +36,17 @@
             </div>
         </FooterTemplate>
     </asp:Repeater>
+
+<div class="pagination-container">
+    <asp:LinkButton ID="btnPrev" runat="server" OnClick="btnPrev_Click" Text="← Previous" CssClass="btn btn-secondary" />
+    <asp:Repeater ID="rptPagination" runat="server" OnItemCommand="rptPagination_ItemCommand">
+        <ItemTemplate>
+            <asp:LinkButton runat="server" CommandName="Page" 
+                CommandArgument='<%# Eval("PageNumber") %>' 
+                Text='<%# Eval("PageNumber") %>' 
+                CssClass='<%# (bool)Eval("IsCurrent") ? "btn btn-primary current" : "btn btn-light" %>' />
+        </ItemTemplate>
+    </asp:Repeater>
+    <asp:LinkButton ID="btnNext" runat="server" OnClick="btnNext_Click" Text="Next →" CssClass="btn btn-secondary" />
+</div>
 </asp:Content>
