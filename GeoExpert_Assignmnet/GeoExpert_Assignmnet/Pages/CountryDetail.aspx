@@ -3,7 +3,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <h2><asp:Literal ID="litCountryName" runat="server"></asp:Literal></h2>
     
-    <!-- TODO: Member C - Display detailed country info: flag, food, culture, video -->
+    <!-- Display detailed country info: flag, food, culture, video -->
     
     <div class="country-detail">
         <div class="section">

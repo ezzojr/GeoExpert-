@@ -129,6 +129,9 @@
     <Content Include="Default.aspx" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
+    <Content Include="Images\italy_flag.png" />
+    <Content Include="Images\japan_flag.png" />
+    <Content Include="Images\mexico_flag.png" />
     <Content Include="Pages\Countries.aspx" />
     <Content Include="Pages\CountryDetail.aspx" />
     <Content Include="Pages\Login.aspx" />
@@ -329,7 +332,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Code\" />
-    <Folder Include="Images\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
