@@ -112,6 +112,16 @@
         .nav-link:hover::after {
             width: 100%;
         }
+        /* Active navigation state */
+        .nav-link.active {
+            color: #4facfe !important;
+        }
+
+        .nav-link.active::after {
+            width: 100%;
+            height: 3px;
+            bottom: -5px;
+        }
 
         .btn {
             padding: 0.75rem 1.5rem;
@@ -185,28 +195,32 @@
                     <span class="logo-text">GeoExpert</span>
                 </a>
 
-                <nav class="nav">
-                    <a href="<%= ResolveUrl("~/Default.aspx") %>" class="nav-link">Home</a>
-                    <a href="<%= ResolveUrl("~/Pages/Countries.aspx") %>" class="nav-link">Countries</a>
-                    <a href="<%= ResolveUrl("~/Pages/Quiz.aspx") %>" class="nav-link">Quizzes</a>
+                                <nav class="nav">
+                    <a href="~/Default.aspx" class="nav-link" id="navHome" runat="server">Home</a>
+                    <a href="~/Pages/Countries.aspx" class="nav-link" id="navCountries" runat="server">Countries</a>
+                    <a href="~/Pages/Quiz.aspx" class="nav-link" id="navQuizzes" runat="server">Quizzes</a>
 
-                    <% if (Session["UserID"] != null) { %>
+                    <asp:PlaceHolder ID="phLoggedIn" runat="server" Visible="false">
                         <asp:Label ID="lblWelcome" runat="server" 
                             ForeColor="#4facfe" Font-Bold="true" 
                             Style="margin-right:10px;"></asp:Label>
 
-                        <a href="<%= ResolveUrl("~/Pages/Profile.aspx") %>" class="nav-link">Profile</a>
+                        <a href="~/Pages/Profile.aspx" class="nav-link" id="navProfile" runat="server">Profile</a>
 
-                        <% if (Session["Role"] != null && Session["Role"].ToString() == "Admin") { %>
-                            <a href="<%= ResolveUrl("~/Admin/Dashboard.aspx") %>" class="nav-link">Admin</a>
-                        <% } %>
+                        <asp:PlaceHolder ID="phAdmin" runat="server" Visible="false">
+                            <a href="~/Admin/Dashboard.aspx" class="nav-link" id="navAdmin" runat="server">Admin</a>
+                        </asp:PlaceHolder>
 
                         <asp:LinkButton ID="btnLogout" runat="server" CssClass="btn btn-secondary" OnClick="btnLogout_Click">Logout</asp:LinkButton>
+                    </asp:PlaceHolder>
 
-                    <% } else { %>
-                        <a href="<%= ResolveUrl("~/Pages/Login.aspx") %>" class="btn btn-secondary">Sign In</a>
-                        <a href="<%= ResolveUrl("~/Pages/Register.aspx") %>" class="btn btn-primary">Get Started</a>
-                    <% } %>
+                    <asp:PlaceHolder ID="phAnonymous" runat="server" Visible="true">
+                        <a href="~/Pages/Login.aspx" class="btn btn-secondary" runat="server">Sign In</a>
+                        <a href="~/Pages/Register.aspx" class="btn btn-primary" runat="server">Get Started</a>
+                    </asp:PlaceHolder>
+                                    <asp:PlaceHolder ID="phHomeLink" runat="server">
+                        <a href="~/Default.aspx" class="nav-link" id="A1" runat="server">Home</a>
+                    </asp:PlaceHolder>
                 </nav>
             </div>
         </header>
