@@ -3,8 +3,8 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <h2>Login</h2>
     
-    <!--- TODO: Member C - Implement login form with validation -->
-    
+    <asp:Panel ID="pnlLogin" runat="server" DefaultButton="btnLogin">
+
     <div class="form-group">
     <label>Username:</label>
     <asp:TextBox ID="txtUsername" runat="server" CssClass="form-control"></asp:TextBox>
@@ -30,6 +30,7 @@
 
 <asp:Button ID="btnLogin" runat="server" Text="Login"
     CssClass="btn btn-primary" OnClick="btnLogin_Click" />
+        </asp:Panel>
 <br />
 <asp:Label ID="lblMessage" runat="server" ForeColor="Red" />
 
