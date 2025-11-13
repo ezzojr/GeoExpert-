@@ -71,6 +71,13 @@ namespace GeoExpert_Assignment.Pages
                 litCulture.Text = row["CultureInfo"].ToString();
                 litFunFact.Text = row["FunFact"].ToString();
 
+                //Flag banner
+                string flagFile = row["FlagImage"] != DBNull.Value ? row["FlagImage"].ToString() : "";
+                if (string.IsNullOrEmpty(flagFile))
+                    flagFile = "no-flag.png"; // default placeholder flag
+
+                imgFlag.ImageUrl = ResolveUrl("~/Images/" + flagFile); imgFlag.AlternateText = row["Name"].ToString();
+
                 // Embed video if available
                 string videoUrl = row["VideoURL"].ToString();
                 if (!string.IsNullOrEmpty(videoUrl))

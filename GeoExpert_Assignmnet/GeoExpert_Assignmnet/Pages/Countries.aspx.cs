@@ -26,7 +26,7 @@ namespace GeoExpert_Assignment.Pages
         private void LoadCountries(int pageNumber = 1, int pageSize = 2, string searchQuery = "", string region = "")
         {
           
-            string query = "SELECT CountryID, Name, FoodName, FunFact FROM Countries WHERE 1 = 1";
+            string query = "SELECT CountryID, Name, FoodName, FunFact, FlagImage FROM Countries WHERE 1 = 1";
 
             List<SqlParameter> parameters = new List<SqlParameter>();
 
