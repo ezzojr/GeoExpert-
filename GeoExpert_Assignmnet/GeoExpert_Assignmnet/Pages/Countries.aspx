@@ -22,8 +22,8 @@
                 right: -50px;
                 top: -80px;
                 animation: float 6s ease-in-out infinite;
-                z-index: 0; /* ← ADD THIS */
-                pointer-events: none; /* ← ADD THIS */
+                z-index: 0; 
+                pointer-events: none; 
             }
 
         @keyframes float {
@@ -152,8 +152,8 @@
             cursor: pointer;
             transition: all 0.3s;
             box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
-            position: relative; /* ← ADD THIS */
-            z-index: 100; /* ← ADD THIS */
+            position: relative; 
+            z-index: 100; 
         }
 
             .btn-search:hover {
