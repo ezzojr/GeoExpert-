@@ -90,9 +90,14 @@ namespace GeoExpert_Assignment.Pages
                     new SqlParameter("@Password", hashedPassword)
                 };
 
-                DataTable dt = DBHelper.ExecuteReader(query, parameters);
+                // Create session
+                Session["UserID"] = Convert.ToInt32(dt.Rows[0]["UserID"]);
+                Session["Username"] = dt.Rows[0]["Username"].ToString();
+                Session["Role"] = dt.Rows[0]["Role"].ToString();
 
-                if (dt.Rows.Count > 0)
+
+                // 🔹 Remember Me
+                if (Request.Form["rememberMe"] == "on")
                 {
                     // ✅ LOGIN SUCCESS
                     DataRow row = dt.Rows[0];
@@ -252,18 +257,13 @@ namespace GeoExpert_Assignment.Pages
 
         private string HashPassword(string password)
         {
-            try
-            {
-                using (var sha256 = System.Security.Cryptography.SHA256.Create())
-                {
-                    byte[] bytes = sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-                    return BitConverter.ToString(bytes).Replace("-", "").ToLower();
-                }
-            }
-            catch
-            {
-                return password;
-            }
+            if (role == "Admin")
+                Response.Redirect("~/Admin/Dashboard.aspx");
+            else if (role == "Teacher")
+                Response.Redirect("~/Teacher/TeacherDashboard.aspx");
+            else
+                Response.Redirect("~/Default.aspx");
+
         }
     }
 }

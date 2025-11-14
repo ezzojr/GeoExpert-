@@ -94,121 +94,44 @@ namespace GeoExpert_Assignment.Pages
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"LoadUserProfile error: {ex.Message}");
-                ShowError("Failed to load profile information.");
-            }
-        }
+                litUsername.Text = dtUser.Rows[0]["Username"].ToString();
+                litEmail.Text = dtUser.Rows[0]["Email"].ToString();
+                litRole.Text = dtUser.Rows[0]["Role"].ToString();
+                litJoinDate.Text = Convert.ToDateTime(dtUser.Rows[0]["CreatedDate"]).ToString("MMMM dd, yyyy");
 
-        private void LoadUserProfileWithoutPicture()
-        {
-            try
-            {
-                string query = @"SELECT Username, Email, CreatedDate 
-                                FROM Users 
-                                WHERE UserID = @UserID";
+                string role = dtUser.Rows[0]["Role"].ToString();
 
-                SqlParameter[] parameters = {
-                    new SqlParameter("@UserID", userId)
-                };
-
-                DataTable dt = DBHelper.ExecuteReader(query, parameters);
-
-                if (dt.Rows.Count > 0)
+                // Only show badges and quiz history for regular users
+                if (role == "User")
                 {
-                    DataRow row = dt.Rows[0];
-                    string username = row["Username"].ToString();
-                    string email = row["Email"].ToString();
-                    DateTime joinedDate = Convert.ToDateTime(row["CreatedDate"]);
+                    pnlUserStats.Visible = true;
+                    pnlBadges.Visible = true;
+                    pnlProgress.Visible = true;
 
-                    litUsername.Text = username;
-                    litEmail.Text = email;
-                    litJoinedDate.Text = joinedDate.ToString("MMMM dd, yyyy");
+                    litStreak.Text = dtUser.Rows[0]["CurrentStreak"].ToString();
 
-                    imgProfilePic.Visible = false;
-                    litAvatar.Text = GetAvatarEmoji(username);
+                    // Load badges
+                    LoadBadges(userId);
 
-                    txtUsername.Text = username;
-                    txtEmail.Text = email;
+                    // Load quiz progress
+                    LoadProgress(userId);
+                }
+                else
+                {
+                    // Teachers and Admins don't see badges/progress
+                    pnlUserStats.Visible = false;
+                    pnlBadges.Visible = false;
+                    pnlProgress.Visible = false;
                 }
             }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"LoadUserProfileWithoutPicture error: {ex.Message}");
-            }
         }
 
-        private void LoadUserStats()
+        private void LoadBadges(int userId)
         {
-            try
-            {
-                // Get current streak
-                string streakQuery = "SELECT ISNULL(CurrentStreak, 0) FROM Users WHERE UserID = @UserID";
-                SqlParameter[] streakParams = { new SqlParameter("@UserID", userId) };
-                object streakResult = DBHelper.ExecuteScalar(streakQuery, streakParams);
-                litCurrentStreak.Text = streakResult?.ToString() ?? "0";
-
-                // Get quizzes taken count
-                string quizQuery = "SELECT COUNT(*) FROM UserQuizResults WHERE UserID = @UserID";
-                SqlParameter[] quizParams = { new SqlParameter("@UserID", userId) };
-                object quizResult = DBHelper.ExecuteScalar(quizQuery, quizParams);
-                litQuizzesTaken.Text = quizResult?.ToString() ?? "0";
-
-                // Get badges earned
-                string badgeQuery = "SELECT COUNT(*) FROM UserBadges WHERE UserID = @UserID";
-                SqlParameter[] badgeParams = { new SqlParameter("@UserID", userId) };
-                object badgeResult = DBHelper.ExecuteScalar(badgeQuery, badgeParams);
-                litBadges.Text = badgeResult?.ToString() ?? "0";
-
-                // Get total score
-                string scoreQuery = "SELECT ISNULL(SUM(Score), 0) FROM UserQuizResults WHERE UserID = @UserID";
-                SqlParameter[] scoreParams = { new SqlParameter("@UserID", userId) };
-                object scoreResult = DBHelper.ExecuteScalar(scoreQuery, scoreParams);
-                litTotalScore.Text = scoreResult?.ToString() ?? "0";
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"LoadUserStats error: {ex.Message}");
-                // Use defaults
-                litCurrentStreak.Text = "0";
-                litQuizzesTaken.Text = "0";
-                litBadges.Text = "0";
-                litTotalScore.Text = "0";
-            }
-        }
-
-        private void LoadUserProgress()
-        {
-            try
-            {
-                // Get countries explored
-                string countriesQuery = @"SELECT COUNT(DISTINCT CountryID) 
-                                         FROM UserProgress 
-                                         WHERE UserID = @UserID AND Completed = 1";
-                SqlParameter[] countriesParams = { new SqlParameter("@UserID", userId) };
-                object countriesResult = DBHelper.ExecuteScalar(countriesQuery, countriesParams);
-                int countriesExplored = countriesResult != null && countriesResult != DBNull.Value
-                    ? Convert.ToInt32(countriesResult) : 0;
-
-                // Get quizzes completed
-                string quizzesQuery = "SELECT COUNT(*) FROM UserQuizResults WHERE UserID = @UserID";
-                SqlParameter[] quizzesParams = { new SqlParameter("@UserID", userId) };
-                object quizzesResult = DBHelper.ExecuteScalar(quizzesQuery, quizzesParams);
-                int quizzesCompleted = quizzesResult != null && quizzesResult != DBNull.Value
-                    ? Convert.ToInt32(quizzesResult) : 0;
-
-                // Get badges earned
-                string badgesQuery = "SELECT COUNT(*) FROM UserBadges WHERE UserID = @UserID";
-                SqlParameter[] badgesParams = { new SqlParameter("@UserID", userId) };
-                object badgesResult = DBHelper.ExecuteScalar(badgesQuery, badgesParams);
-                int badgesEarned = badgesResult != null && badgesResult != DBNull.Value
-                    ? Convert.ToInt32(badgesResult) : 0;
-
-                // Get current streak
-                string streakQuery = "SELECT ISNULL(CurrentStreak, 0) FROM Users WHERE UserID = @UserID";
-                SqlParameter[] streakParams = { new SqlParameter("@UserID", userId) };
-                object streakResult = DBHelper.ExecuteScalar(streakQuery, streakParams);
-                int currentStreak = streakResult != null && streakResult != DBNull.Value
-                    ? Convert.ToInt32(streakResult) : 0;
+            string badgeQuery = "SELECT BadgeName, BadgeDescription, AwardedDate FROM Badges WHERE UserID = @UserID ORDER BY AwardedDate DESC";
+            SqlParameter[] badgeParams = {
+                new SqlParameter("@UserID", userId)
+            };
 
                 // Calculate overall progress
                 int totalGoals = 50 + 50 + 8 + 30; // 138 total

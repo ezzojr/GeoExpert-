@@ -1,5 +1,4 @@
 ﻿<%@ Page Title="Country Details" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="CountryDetail.aspx.cs" Inherits="GeoExpert_Assignment.Pages.CountryDetail" %>
-
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <style>
         /* Hero Section with Flag */
@@ -536,6 +535,11 @@
                 </asp:Repeater>
             </div>
         </div>
+        
+        <!-- Only show quiz button for regular users -->
+        <asp:Panel ID="pnlQuizButton" runat="server" Visible="false">
+            <a href='Quiz.aspx?countryid=<%=Request.QueryString["id"] %>' class="btn btn-primary">Take Quiz on this Country</a>
+        </asp:Panel>
     </div>
 
 </asp:Content>

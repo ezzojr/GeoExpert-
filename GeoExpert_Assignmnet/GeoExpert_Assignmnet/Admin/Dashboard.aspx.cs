@@ -52,6 +52,16 @@ namespace GeoExpert_Assignment.Admin
             gvRecentActivity.DataBind();
         }
 
+        protected void btnViewCountries_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("~/Admin/ViewCountries.aspx");
+        }
+
+        protected void btnViewQuizzes_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("~/Admin/ViewQuizzes.aspx");
+        }
+
         private void LoadTopCountries()
         {
             string query = @"

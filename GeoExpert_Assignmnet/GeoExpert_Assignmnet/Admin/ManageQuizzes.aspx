@@ -52,6 +52,22 @@
             background-color: #007bff;
         }
 
+        .btn-warning {
+            background-color: #ffa500;
+            border: none;
+            color: #000;
+        }
+
+        .btn-warning:hover {
+            background-color: #ff8c00;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border: none;
+            color: #fff;
+        }
+
         .btn-danger {
             background-color: #ff4d4d;
             border: none;
@@ -129,28 +145,43 @@
         </div>
 
         <asp:Button ID="btnAddQuiz" runat="server" Text="Add Quiz" CssClass="btn btn-primary mt-2" OnClick="btnAddQuiz_Click" />
+        <asp:Button ID="btnCancel" runat="server" Text="Cancel" CssClass="btn btn-secondary mt-2" OnClick="btnCancel_Click" CausesValidation="false" />
         <br />
         <asp:Label ID="lblMessage" runat="server" CssClass="mt-3 d-block" ForeColor="LightGreen"></asp:Label>
     </div>
 
     <h3>All Quizzes</h3>
-    <asp:GridView ID="gvQuizzes" runat="server" AutoGenerateColumns="False" CssClass="data-table"
-                  GridLines="None" CellPadding="8" OnRowCommand="gvQuizzes_RowCommand">
-        <Columns>
-            <asp:BoundField DataField="QuizID" HeaderText="ID" />
-            <asp:BoundField DataField="CountryName" HeaderText="Country" />
-            <asp:BoundField DataField="Question" HeaderText="Question" />
-            <asp:BoundField DataField="CorrectAnswers" HeaderText="Correct Options" />
-            <asp:TemplateField HeaderText="Actions">
-                <ItemTemplate>
-                    <asp:Button ID="btnDelete" runat="server" Text="🗑 Delete"
-                                CommandName="DeleteQuiz"
-                                CommandArgument='<%# Eval("QuizID") %>'
-                                CssClass="btn btn-danger btn-sm"
-                                OnClientClick="return confirm('Are you sure you want to delete this quiz?');"
-                                CausesValidation="false" />
-                </ItemTemplate>
-            </asp:TemplateField>
-        </Columns>
-    </asp:GridView>
+    <asp:GridView ID="gvQuizzes" runat="server" AutoGenerateColumns="False"
+    CssClass="table" OnRowCommand="gvQuizzes_RowCommand">
+    <Columns>
+        <asp:BoundField DataField="QuizID" HeaderText="Quiz ID" />
+        <asp:BoundField DataField="CountryName" HeaderText="Country" />
+        <asp:BoundField DataField="Question" HeaderText="Question" />
+        <asp:BoundField DataField="CreatedBy" HeaderText="Created By" />
+
+        <asp:TemplateField HeaderText="Actions">
+            <ItemTemplate>
+                <asp:Button ID="btnEditQuiz" runat="server" Text="Edit"
+                    CssClass="btn btn-warning"
+                    CommandName="EditQuiz"
+                    CommandArgument='<%# Eval("QuizID") %>'
+                    CausesValidation="false" />
+
+                <asp:Button ID="btnViewSolvers" runat="server" Text="View Solvers"
+                    CssClass="btn btn-secondary"
+                    CommandName="ViewSolvers"
+                    CommandArgument='<%# Eval("QuizID") %>'
+                    CausesValidation="false" />
+
+                <asp:Button ID="btnDeleteQuiz" runat="server" Text="Delete"
+                    CssClass="btn btn-danger"
+                    CommandName="DeleteQuiz"
+                    CommandArgument='<%# Eval("QuizID") %>'
+                    OnClientClick="return confirm('Are you sure you want to delete this quiz?');"
+                    CausesValidation="false" />
+            </ItemTemplate>
+        </asp:TemplateField>
+    </Columns>
+</asp:GridView>
+
 </asp:Content>

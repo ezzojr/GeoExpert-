@@ -22,7 +22,27 @@ namespace GeoExpert_Assignment.Admin
             }
         }
 
-        // load users (search optional)
+        // Hide actions for current logged-in admin
+        protected void gvUsers_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType == DataControlRowType.DataRow)
+            {
+                DataRowView drv = (DataRowView)e.Row.DataItem;
+                int rowUserId = Convert.ToInt32(drv["UserID"]);
+                int currentUserId = Convert.ToInt32(Session["UserID"]);
+
+                // Hide action buttons if this row is the current logged-in admin
+                if (rowUserId == currentUserId)
+                {
+                    Panel pnlActions = (Panel)e.Row.FindControl("pnlActions");
+                    if (pnlActions != null)
+                    {
+                        pnlActions.Visible = false;
+                    }
+                }
+            }
+        }
+
         private void LoadUsers(string search = "")
         {
             string query = @"
@@ -54,23 +74,6 @@ namespace GeoExpert_Assignment.Admin
             LoadUsers();
         }
 
-        // fallback server-side row command (keeps compatibility)
-        protected void gvUsers_RowCommand(object sender, GridViewCommandEventArgs e)
-        {
-            // existing fallback behavior (in case JS disabled)
-            if (e.CommandName == "DeleteUser")
-            {
-                int userId = Convert.ToInt32(e.CommandArgument);
-                DeleteUserById(userId);
-            }
-            else if (e.CommandName == "ToggleRole")
-            {
-                int userId = Convert.ToInt32(e.CommandArgument);
-                ToggleUserRoleById(userId);
-            }
-        }
-
-        // called when modal "Confirm" pressed for delete
         protected void btnConfirmDelete_Click(object sender, EventArgs e)
         {
             int userId;
@@ -92,8 +95,7 @@ namespace GeoExpert_Assignment.Admin
             DeleteUserById(userId);
         }
 
-        // called when modal confirm pressed for toggle
-        protected void btnConfirmToggle_Click(object sender, EventArgs e)
+        protected void btnConfirmChangeRole_Click(object sender, EventArgs e)
         {
             int userId;
             if (!int.TryParse(hfTargetUserId.Value, out userId))
@@ -103,7 +105,15 @@ namespace GeoExpert_Assignment.Admin
                 return;
             }
 
-            // Prevent toggling your own role (optional, but safer)
+            string newRole = hfNewRole.Value;
+            if (string.IsNullOrEmpty(newRole))
+            {
+                lblMessage.Text = "Invalid role selected.";
+                lblMessage.ForeColor = System.Drawing.Color.Red;
+                return;
+            }
+
+            // Prevent changing your own role
             if (Session["UserID"] != null && userId == Convert.ToInt32(Session["UserID"]))
             {
                 lblMessage.Text = "❌ You cannot change your own role.";
@@ -111,7 +121,7 @@ namespace GeoExpert_Assignment.Admin
                 return;
             }
 
-            ToggleUserRoleById(userId);
+            ChangeUserRole(userId, newRole);
         }
 
         private void DeleteUserById(int userId)
@@ -133,21 +143,15 @@ namespace GeoExpert_Assignment.Admin
             }
         }
 
-        private void ToggleUserRoleById(int userId)
+        private void ChangeUserRole(int userId, string newRole)
         {
-            string getRoleQ = "SELECT Role FROM Users WHERE UserID = @UserID";
-            SqlParameter[] param = { new SqlParameter("@UserID", userId) };
-            object roleObj = DBHelper.ExecuteScalar(getRoleQ, param);
-
-            if (roleObj == null)
+            // Validate role
+            if (newRole != "User" && newRole != "Teacher" && newRole != "Admin")
             {
-                lblMessage.Text = "User not found.";
+                lblMessage.Text = "Invalid role.";
                 lblMessage.ForeColor = System.Drawing.Color.Red;
                 return;
             }
-
-            string currentRole = roleObj.ToString();
-            string newRole = currentRole == "Admin" ? "User" : "Admin";
 
             string updateQ = "UPDATE Users SET Role = @Role WHERE UserID = @UserID";
             SqlParameter[] updParams = {

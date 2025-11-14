@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Admin Dashboard" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Dashboard.aspx.cs" Inherits="GeoExpert_Assignment.Admin.Dashboard" %>
+﻿<%@ Page Title="Teacher Dashboard" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="TeacherDashboard.aspx.cs" Inherits="GeoExpert_Assignment.Teacher.TeacherDashboard" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <style>
@@ -90,51 +90,42 @@
     </style>
 
     <div class="admin-container">
-        <h1 class="dashboard-title">Admin Dashboard 🛠️</h1>
+        <h1 class="dashboard-title">Teacher Dashboard 🍎</h1>
 
         <div class="admin-stats">
             <div class="stat-card">
-                <h3><asp:Literal ID="litTotalUsers" runat="server"></asp:Literal></h3>
-                <p>Total Users</p>
+                <h3><asp:Literal ID="litMyQuizzes" runat="server"></asp:Literal></h3>
+                <p>Total Quizzes Created</p>
             </div>
             <div class="stat-card">
-                <h3><asp:Literal ID="litTotalCountries" runat="server"></asp:Literal></h3>
-                <p>Total Countries</p>
+                <h3><asp:Literal ID="litCountriesCovered" runat="server"></asp:Literal></h3>
+                <p>Countries Covered</p>
             </div>
             <div class="stat-card">
-                <h3><asp:Literal ID="litTotalQuizzes" runat="server"></asp:Literal></h3>
-                <p>Total Quizzes</p>
+                <h3><asp:Literal ID="litAvgQuestions" runat="server"></asp:Literal></h3>
+                <p>Average Questions per Quiz</p>
             </div>
             <div class="stat-card">
-                <h3><asp:Literal ID="litTotalBadges" runat="server"></asp:Literal></h3>
-                <p>Badges Awarded</p>
+                <h3><asp:Literal ID="litRecentQuiz" runat="server"></asp:Literal></h3>
+                <p>Most Recent Quiz</p>
             </div>
         </div>
 
-        <h3 class="section-title">📊 Recent Quiz Activity</h3>
-        <asp:GridView ID="gvRecentActivity" runat="server" AutoGenerateColumns="False" CssClass="table">
+        <h3 class="section-title">📘 Recent Quizzes You Created</h3>
+        <asp:GridView ID="gvMyQuizzes" runat="server" AutoGenerateColumns="False" CssClass="table">
             <Columns>
-                <asp:BoundField DataField="Username" HeaderText="User" />
-                <asp:BoundField DataField="QuizName" HeaderText="Quiz" />
-                <asp:BoundField DataField="Score" HeaderText="Score" />
-                <asp:BoundField DataField="TotalQuestions" HeaderText="Total Questions" />
-                <asp:BoundField DataField="CompletedDate" HeaderText="Date" DataFormatString="{0:MMM dd, yyyy}" />
-            </Columns>
-        </asp:GridView>
-
-        <h3 class="section-title">🌍 Top 5 Most Viewed Countries</h3>
-        <asp:GridView ID="gvTopCountries" runat="server" AutoGenerateColumns="False" CssClass="table">
-            <Columns>
-                <asp:BoundField DataField="Name" HeaderText="Country" />
-                <asp:BoundField DataField="ViewCount" HeaderText="Views" />
+                <asp:BoundField DataField="QuizID" HeaderText="ID" />
+                <asp:BoundField DataField="CountryName" HeaderText="Country" />
+                <asp:BoundField DataField="Question" HeaderText="Question" />
+                <asp:BoundField DataField="CreatedDate" HeaderText="Date" DataFormatString="{0:MMM dd, yyyy}" />
             </Columns>
         </asp:GridView>
 
         <div class="admin-links">
-            <h3>⚙️ Quick Actions</h3>
-            
-            <a href="ViewQuizzes.aspx">View Quizzes</a>
-            <a href="ManageUsers.aspx">Manage Users</a>
+            <h3>🚀 Quick Actions</h3>
+            <a href="../Admin/ManageQuizzes.aspx">Manage My Quizzes</a>
+            <a href="../Admin/ManageCountries.aspx">Manage Countries</a>
+            <a href="../Pages/UpdateProfile.aspx">Edit Profile</a>
         </div>
     </div>
 </asp:Content>
