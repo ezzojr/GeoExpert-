@@ -1,222 +1,658 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Web.UI;
-using System.Web.UI.WebControls;
 
 namespace GeoExpert_Assignment.Pages
 {
     public partial class Profile : Page
     {
+        private int userId = 0;
+
         protected void Page_Load(object sender, EventArgs e)
         {
+            // Check if user is logged in
+            if (Session["UserID"] == null)
+            {
+                Response.Redirect("~/Pages/Login.aspx", false);
+                Context.ApplicationInstance.CompleteRequest();
+                return;
+            }
+
+            userId = Convert.ToInt32(Session["UserID"]);
+
             if (!IsPostBack)
             {
-                // Check if user is logged in
-                if (Session["UserID"] == null)
-                {
-                    Response.Redirect("Login.aspx");
-                    return;
-                }
-
-                LoadProfileData();
+                LoadUserProfile();
+                LoadUserStats();
+                LoadUserProgress();
                 LoadBadges();
-                LoadQuizHistory();
-                LoadStats();
             }
         }
 
-        private void LoadProfileData()
+        private void LoadUserProfile()
         {
-            int userId = Convert.ToInt32(Session["UserID"]);
-
-            string query = "SELECT Username, Email, CurrentStreak, CreatedDate FROM Users WHERE UserID = @UserID";
-            SqlParameter[] parameters = {
-                new SqlParameter("@UserID", userId)
-            };
-
-            DataTable dt = DBHelper.ExecuteReader(query, parameters);
-
-            if (dt.Rows.Count > 0)
+            try
             {
-                DataRow row = dt.Rows[0];
-                litUsername.Text = row["Username"].ToString();
-                litEmail.Text = row["Email"].ToString();
-                litStreak.Text = row["CurrentStreak"].ToString();
-                litJoinDate.Text = Convert.ToDateTime(row["CreatedDate"]).ToString("MMMM yyyy");
+                // Try with ProfilePicture column first
+                string query = @"SELECT Username, Email, CreatedDate, ProfilePicture 
+                                FROM Users 
+                                WHERE UserID = @UserID";
+
+                SqlParameter[] parameters = {
+                    new SqlParameter("@UserID", userId)
+                };
+
+                DataTable dt = DBHelper.ExecuteReader(query, parameters);
+
+                if (dt.Rows.Count > 0)
+                {
+                    DataRow row = dt.Rows[0];
+                    string username = row["Username"].ToString();
+                    string email = row["Email"].ToString();
+                    DateTime joinedDate = Convert.ToDateTime(row["CreatedDate"]);
+                    string profilePic = row["ProfilePicture"] != DBNull.Value ? row["ProfilePicture"].ToString() : "";
+
+                    // Display profile info
+                    litUsername.Text = username;
+                    litEmail.Text = email;
+                    litJoinedDate.Text = joinedDate.ToString("MMMM dd, yyyy");
+
+                    // Display profile picture or avatar emoji
+                    if (!string.IsNullOrEmpty(profilePic) && System.IO.File.Exists(Server.MapPath(profilePic)))
+                    {
+                        imgProfilePic.ImageUrl = profilePic;
+                        imgProfilePic.Visible = true;
+                        litAvatar.Text = "";
+                    }
+                    else
+                    {
+                        imgProfilePic.Visible = false;
+                        litAvatar.Text = GetAvatarEmoji(username);
+                    }
+
+                    // Populate edit form
+                    txtUsername.Text = username;
+                    txtEmail.Text = email;
+                }
+            }
+            catch (SqlException ex)
+            {
+                // If ProfilePicture column doesn't exist, try without it
+                if (ex.Message.Contains("ProfilePicture"))
+                {
+                    LoadUserProfileWithoutPicture();
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"LoadUserProfile error: {ex.Message}");
+                    ShowError("Failed to load profile information.");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"LoadUserProfile error: {ex.Message}");
+                ShowError("Failed to load profile information.");
             }
         }
 
-        private void LoadStats()
+        private void LoadUserProfileWithoutPicture()
         {
-            int userId = Convert.ToInt32(Session["UserID"]);
+            try
+            {
+                string query = @"SELECT Username, Email, CreatedDate 
+                                FROM Users 
+                                WHERE UserID = @UserID";
 
-            // Total quizzes taken
-            string totalQuizzesQuery = "SELECT COUNT(*) FROM UserProgress WHERE UserID = @UserID";
-            SqlParameter[] totalParams = { new SqlParameter("@UserID", userId) };
-            int totalQuizzes = Convert.ToInt32(DBHelper.ExecuteScalar(totalQuizzesQuery, totalParams));
-            litTotalQuizzes.Text = totalQuizzes.ToString();
+                SqlParameter[] parameters = {
+                    new SqlParameter("@UserID", userId)
+                };
 
-            // Average score percentage
-            string avgQuery = @"SELECT AVG(CAST(Score AS FLOAT) / TotalQuestions * 100) 
-                               FROM UserProgress WHERE UserID = @UserID AND TotalQuestions > 0";
-            SqlParameter[] avgParams = { new SqlParameter("@UserID", userId) };
-            object avgResult = DBHelper.ExecuteScalar(avgQuery, avgParams);
-            int avgScore = avgResult != DBNull.Value ? Convert.ToInt32(avgResult) : 0;
-            litAverageScore.Text = avgScore.ToString();
+                DataTable dt = DBHelper.ExecuteReader(query, parameters);
 
-            // Total badges
-            string badgesQuery = "SELECT COUNT(*) FROM Badges WHERE UserID = @UserID";
-            SqlParameter[] badgeParams = { new SqlParameter("@UserID", userId) };
-            int totalBadges = Convert.ToInt32(DBHelper.ExecuteScalar(badgesQuery, badgeParams));
-            litTotalBadges.Text = totalBadges.ToString();
+                if (dt.Rows.Count > 0)
+                {
+                    DataRow row = dt.Rows[0];
+                    string username = row["Username"].ToString();
+                    string email = row["Email"].ToString();
+                    DateTime joinedDate = Convert.ToDateTime(row["CreatedDate"]);
 
-            // Perfect scores
-            string perfectQuery = @"SELECT COUNT(*) FROM UserProgress 
-                                   WHERE UserID = @UserID AND Score = TotalQuestions AND TotalQuestions > 0";
-            SqlParameter[] perfectParams = { new SqlParameter("@UserID", userId) };
-            int perfectScores = Convert.ToInt32(DBHelper.ExecuteScalar(perfectQuery, perfectParams));
-            litPerfectScores.Text = perfectScores.ToString();
+                    litUsername.Text = username;
+                    litEmail.Text = email;
+                    litJoinedDate.Text = joinedDate.ToString("MMMM dd, yyyy");
+
+                    imgProfilePic.Visible = false;
+                    litAvatar.Text = GetAvatarEmoji(username);
+
+                    txtUsername.Text = username;
+                    txtEmail.Text = email;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"LoadUserProfileWithoutPicture error: {ex.Message}");
+            }
+        }
+
+        private void LoadUserStats()
+        {
+            try
+            {
+                // Get current streak
+                string streakQuery = "SELECT ISNULL(CurrentStreak, 0) FROM Users WHERE UserID = @UserID";
+                SqlParameter[] streakParams = { new SqlParameter("@UserID", userId) };
+                object streakResult = DBHelper.ExecuteScalar(streakQuery, streakParams);
+                litCurrentStreak.Text = streakResult?.ToString() ?? "0";
+
+                // Get quizzes taken count
+                string quizQuery = "SELECT COUNT(*) FROM UserQuizResults WHERE UserID = @UserID";
+                SqlParameter[] quizParams = { new SqlParameter("@UserID", userId) };
+                object quizResult = DBHelper.ExecuteScalar(quizQuery, quizParams);
+                litQuizzesTaken.Text = quizResult?.ToString() ?? "0";
+
+                // Get badges earned
+                string badgeQuery = "SELECT COUNT(*) FROM UserBadges WHERE UserID = @UserID";
+                SqlParameter[] badgeParams = { new SqlParameter("@UserID", userId) };
+                object badgeResult = DBHelper.ExecuteScalar(badgeQuery, badgeParams);
+                litBadges.Text = badgeResult?.ToString() ?? "0";
+
+                // Get total score
+                string scoreQuery = "SELECT ISNULL(SUM(Score), 0) FROM UserQuizResults WHERE UserID = @UserID";
+                SqlParameter[] scoreParams = { new SqlParameter("@UserID", userId) };
+                object scoreResult = DBHelper.ExecuteScalar(scoreQuery, scoreParams);
+                litTotalScore.Text = scoreResult?.ToString() ?? "0";
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"LoadUserStats error: {ex.Message}");
+                // Use defaults
+                litCurrentStreak.Text = "0";
+                litQuizzesTaken.Text = "0";
+                litBadges.Text = "0";
+                litTotalScore.Text = "0";
+            }
+        }
+
+        private void LoadUserProgress()
+        {
+            try
+            {
+                // Get countries explored
+                string countriesQuery = @"SELECT COUNT(DISTINCT CountryID) 
+                                         FROM UserProgress 
+                                         WHERE UserID = @UserID AND Completed = 1";
+                SqlParameter[] countriesParams = { new SqlParameter("@UserID", userId) };
+                object countriesResult = DBHelper.ExecuteScalar(countriesQuery, countriesParams);
+                int countriesExplored = countriesResult != null && countriesResult != DBNull.Value
+                    ? Convert.ToInt32(countriesResult) : 0;
+
+                // Get quizzes completed
+                string quizzesQuery = "SELECT COUNT(*) FROM UserQuizResults WHERE UserID = @UserID";
+                SqlParameter[] quizzesParams = { new SqlParameter("@UserID", userId) };
+                object quizzesResult = DBHelper.ExecuteScalar(quizzesQuery, quizzesParams);
+                int quizzesCompleted = quizzesResult != null && quizzesResult != DBNull.Value
+                    ? Convert.ToInt32(quizzesResult) : 0;
+
+                // Get badges earned
+                string badgesQuery = "SELECT COUNT(*) FROM UserBadges WHERE UserID = @UserID";
+                SqlParameter[] badgesParams = { new SqlParameter("@UserID", userId) };
+                object badgesResult = DBHelper.ExecuteScalar(badgesQuery, badgesParams);
+                int badgesEarned = badgesResult != null && badgesResult != DBNull.Value
+                    ? Convert.ToInt32(badgesResult) : 0;
+
+                // Get current streak
+                string streakQuery = "SELECT ISNULL(CurrentStreak, 0) FROM Users WHERE UserID = @UserID";
+                SqlParameter[] streakParams = { new SqlParameter("@UserID", userId) };
+                object streakResult = DBHelper.ExecuteScalar(streakQuery, streakParams);
+                int currentStreak = streakResult != null && streakResult != DBNull.Value
+                    ? Convert.ToInt32(streakResult) : 0;
+
+                // Calculate overall progress
+                int totalGoals = 50 + 50 + 8 + 30; // 138 total
+                int completedGoals = countriesExplored + quizzesCompleted + badgesEarned + currentStreak;
+                int overallPercent = (int)Math.Round((double)completedGoals / totalGoals * 100);
+
+                // Update literals
+                litOverallProgress.Text = overallPercent.ToString();
+                litOverallGoals.Text = $"{completedGoals} of {totalGoals}";
+                litCountriesCount.Text = countriesExplored.ToString();
+                litQuizzesProgress.Text = quizzesCompleted.ToString();
+                litBadgesProgress.Text = badgesEarned.ToString();
+                litStreakProgress.Text = currentStreak.ToString();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"LoadUserProgress error: {ex.Message}");
+                // Set defaults
+                litOverallProgress.Text = "0";
+                litOverallGoals.Text = "0 of 138";
+                litCountriesCount.Text = "0";
+                litQuizzesProgress.Text = "0";
+                litBadgesProgress.Text = "0";
+                litStreakProgress.Text = "0";
+            }
         }
 
         private void LoadBadges()
         {
-            int userId = Convert.ToInt32(Session["UserID"]);
-
-            string query = @"SELECT BadgeName, BadgeDescription, AwardedDate 
-                            FROM Badges WHERE UserID = @UserID 
-                            ORDER BY AwardedDate DESC";
-            SqlParameter[] parameters = {
-                new SqlParameter("@UserID", userId)
-            };
-
-            DataTable dt = DBHelper.ExecuteReader(query, parameters);
-
-            if (dt.Rows.Count > 0)
+            try
             {
-                rptBadges.DataSource = dt;
+                var allBadges = new[]
+                {
+                    new { BadgeIcon = "🌟", BadgeName = "First Steps", Description = "Complete your first quiz" },
+                    new { BadgeIcon = "🔥", BadgeName = "On Fire", Description = "Maintain a 7-day streak" },
+                    new { BadgeIcon = "🎯", BadgeName = "Quiz Master", Description = "Take 10 quizzes" },
+                    new { BadgeIcon = "🌍", BadgeName = "Explorer", Description = "Visit 5 different countries" },
+                    new { BadgeIcon = "⭐", BadgeName = "Perfect Score", Description = "Get 100% on a quiz" },
+                    new { BadgeIcon = "🏆", BadgeName = "Champion", Description = "Take 25 quizzes" },
+                    new { BadgeIcon = "💎", BadgeName = "Dedicated", Description = "Maintain a 30-day streak" },
+                    new { BadgeIcon = "🚀", BadgeName = "Overachiever", Description = "Earn 1000 points" },
+                };
+
+                string query = "SELECT BadgeName, EarnedDate FROM UserBadges WHERE UserID = @UserID";
+                SqlParameter[] parameters = { new SqlParameter("@UserID", userId) };
+                DataTable earnedBadges = DBHelper.ExecuteReader(query, parameters);
+
+                var badgesList = new System.Collections.Generic.List<object>();
+
+                foreach (var badge in allBadges)
+                {
+                    bool isEarned = false;
+                    DateTime earnedDate = DateTime.MinValue;
+
+                    foreach (DataRow row in earnedBadges.Rows)
+                    {
+                        if (row["BadgeName"].ToString() == badge.BadgeName)
+                        {
+                            isEarned = true;
+                            earnedDate = Convert.ToDateTime(row["EarnedDate"]);
+                            break;
+                        }
+                    }
+
+                    badgesList.Add(new
+                    {
+                        badge.BadgeIcon,
+                        badge.BadgeName,
+                        IsEarned = isEarned,
+                        EarnedDate = earnedDate
+                    });
+                }
+
+                rptBadges.DataSource = badgesList;
                 rptBadges.DataBind();
+                pnlBadges.Visible = true;
                 pnlNoBadges.Visible = false;
             }
-            else
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"LoadBadges error: {ex.Message}");
+                pnlBadges.Visible = false;
                 pnlNoBadges.Visible = true;
-                rptBadges.Visible = false;
             }
         }
 
-        private void LoadQuizHistory()
+        protected void btnToggleEdit_Click(object sender, EventArgs e)
         {
-            int userId = Convert.ToInt32(Session["UserID"]);
+            pnlEditForm.CssClass = pnlEditForm.CssClass.Contains("active")
+                ? "edit-section"
+                : "edit-section active";
 
-            string query = @"SELECT up.CompletedDate, q.Question, up.Score, up.TotalQuestions
-                            FROM UserProgress up
-                            INNER JOIN Quizzes q ON up.QuizID = q.QuizID
-                            WHERE up.UserID = @UserID
-                            ORDER BY up.CompletedDate DESC";
+            txtCurrentPassword.Text = "";
+            txtNewPassword.Text = "";
+            txtConfirmPassword.Text = "";
+
+            pnlSuccess.Visible = false;
+            pnlError.Visible = false;
+        }
+
+        protected void btnSaveChanges_Click(object sender, EventArgs e)
+        {
+            if (!Page.IsValid)
+                return;
+
+            try
+            {
+                string newUsername = txtUsername.Text.Trim();
+                string newEmail = txtEmail.Text.Trim();
+                string currentPassword = txtCurrentPassword.Text;
+                string newPassword = txtNewPassword.Text;
+
+                if (!IsUsernameAvailable(newUsername, userId))
+                {
+                    ShowError("Username is already taken. Please choose a different one.");
+                    return;
+                }
+
+                if (!IsEmailAvailable(newEmail, userId))
+                {
+                    ShowError("Email is already registered. Please use a different email.");
+                    return;
+                }
+
+                if (!string.IsNullOrEmpty(newPassword))
+                {
+                    if (string.IsNullOrEmpty(currentPassword))
+                    {
+                        ShowError("Please enter your current password to change it.");
+                        return;
+                    }
+
+                    if (!VerifyCurrentPassword(currentPassword))
+                    {
+                        ShowError("Current password is incorrect.");
+                        return;
+                    }
+
+                    if (newPassword.Length < 6)
+                    {
+                        ShowError("New password must be at least 6 characters long.");
+                        return;
+                    }
+
+                    string hashedPassword = HashPassword(newPassword);
+                    UpdateUserProfileWithPassword(newUsername, newEmail, hashedPassword);
+                }
+                else
+                {
+                    UpdateUserProfile(newUsername, newEmail);
+                }
+
+                Session["Username"] = newUsername;
+                LoadUserProfile();
+
+                pnlEditForm.CssClass = "edit-section";
+                ShowSuccess("Your profile has been updated successfully!");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"btnSaveChanges error: {ex.Message}");
+                ShowError("An error occurred while updating your profile. Please try again.");
+            }
+        }
+
+        protected void btnCancelEdit_Click(object sender, EventArgs e)
+        {
+            LoadUserProfile();
+            txtCurrentPassword.Text = "";
+            txtNewPassword.Text = "";
+            txtConfirmPassword.Text = "";
+            pnlEditForm.CssClass = "edit-section";
+            pnlSuccess.Visible = false;
+            pnlError.Visible = false;
+        }
+
+        protected void btnUploadPicture_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (fileProfilePic.HasFile)
+                {
+                    string fileExt = System.IO.Path.GetExtension(fileProfilePic.FileName).ToLower();
+                    string[] allowedExt = { ".jpg", ".jpeg", ".png", ".gif" };
+
+                    if (!allowedExt.Contains(fileExt))
+                    {
+                        ShowError("Please upload an image file (JPG, PNG, or GIF)");
+                        return;
+                    }
+
+                    if (fileProfilePic.PostedFile.ContentLength > 5 * 1024 * 1024)
+                    {
+                        ShowError("Image size must be less than 5MB");
+                        return;
+                    }
+
+                    string folderPath = Server.MapPath("~/Images/Profiles/");
+                    if (!System.IO.Directory.Exists(folderPath))
+                    {
+                        System.IO.Directory.CreateDirectory(folderPath);
+                    }
+
+                    string fileName = $"user_{userId}_{DateTime.Now.Ticks}{fileExt}";
+                    string filePath = System.IO.Path.Combine(folderPath, fileName);
+                    string dbPath = $"~/Images/Profiles/{fileName}";
+
+                    // Delete old profile picture
+                    try
+                    {
+                        string oldPicQuery = "SELECT ProfilePicture FROM Users WHERE UserID = @UserID";
+                        SqlParameter[] oldParams = { new SqlParameter("@UserID", userId) };
+                        object oldPicResult = DBHelper.ExecuteScalar(oldPicQuery, oldParams);
+
+                        if (oldPicResult != null && oldPicResult != DBNull.Value)
+                        {
+                            string oldPic = oldPicResult.ToString();
+                            if (!string.IsNullOrEmpty(oldPic))
+                            {
+                                string oldPath = Server.MapPath(oldPic);
+                                if (System.IO.File.Exists(oldPath))
+                                {
+                                    System.IO.File.Delete(oldPath);
+                                }
+                            }
+                        }
+                    }
+                    catch { /* Ignore errors deleting old picture */ }
+
+                    fileProfilePic.SaveAs(filePath);
+
+                    string updateQuery = "UPDATE Users SET ProfilePicture = @ProfilePicture WHERE UserID = @UserID";
+                    SqlParameter[] updateParams = {
+                        new SqlParameter("@ProfilePicture", dbPath),
+                        new SqlParameter("@UserID", userId)
+                    };
+                    DBHelper.ExecuteNonQuery(updateQuery, updateParams);
+
+                    LoadUserProfile();
+                    ShowSuccess("Profile picture updated successfully!");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"btnUploadPicture error: {ex.Message}");
+                ShowError("An error occurred while uploading your profile picture. Please try again.");
+            }
+        }
+
+        protected void btnConfirmDelete_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string password = txtDeleteConfirmPassword.Text;
+
+                if (string.IsNullOrEmpty(password))
+                {
+                    ShowError("Please enter your password to confirm account deletion.");
+                    return;
+                }
+
+                if (!VerifyCurrentPassword(password))
+                {
+                    ShowError("Incorrect password. Account deletion cancelled.");
+                    txtDeleteConfirmPassword.Text = "";
+                    return;
+                }
+
+                DeleteUserAccount();
+
+                Session.Clear();
+                Session.Abandon();
+
+                Response.Redirect("~/Default.aspx?deleted=true", false);
+                Context.ApplicationInstance.CompleteRequest();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"btnConfirmDelete error: {ex.Message}");
+                ShowError("An error occurred while deleting your account. Please try again.");
+            }
+        }
+
+        #region Helper Methods
+
+        private bool IsUsernameAvailable(string username, int currentUserId)
+        {
+            try
+            {
+                string query = "SELECT COUNT(*) FROM Users WHERE Username = @Username AND UserID != @UserID";
+                SqlParameter[] parameters = {
+                    new SqlParameter("@Username", username),
+                    new SqlParameter("@UserID", currentUserId)
+                };
+
+                object result = DBHelper.ExecuteScalar(query, parameters);
+                int count = result != null ? Convert.ToInt32(result) : 0;
+                return count == 0;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private bool IsEmailAvailable(string email, int currentUserId)
+        {
+            try
+            {
+                string query = "SELECT COUNT(*) FROM Users WHERE Email = @Email AND UserID != @UserID";
+                SqlParameter[] parameters = {
+                    new SqlParameter("@Email", email),
+                    new SqlParameter("@UserID", currentUserId)
+                };
+
+                object result = DBHelper.ExecuteScalar(query, parameters);
+                int count = result != null ? Convert.ToInt32(result) : 0;
+                return count == 0;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private bool VerifyCurrentPassword(string password)
+        {
+            try
+            {
+                string hashedPassword = HashPassword(password);
+                string query = "SELECT COUNT(*) FROM Users WHERE UserID = @UserID AND Password = @Password";
+
+                SqlParameter[] parameters = {
+                    new SqlParameter("@UserID", userId),
+                    new SqlParameter("@Password", hashedPassword)
+                };
+
+                object result = DBHelper.ExecuteScalar(query, parameters);
+                int count = result != null ? Convert.ToInt32(result) : 0;
+                return count > 0;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private void UpdateUserProfile(string username, string email)
+        {
+            string query = @"UPDATE Users 
+                            SET Username = @Username, 
+                                Email = @Email
+                            WHERE UserID = @UserID";
+
             SqlParameter[] parameters = {
+                new SqlParameter("@Username", username),
+                new SqlParameter("@Email", email),
                 new SqlParameter("@UserID", userId)
             };
 
-            DataTable dt = DBHelper.ExecuteReader(query, parameters);
-            gvProgress.DataSource = dt;
-            gvProgress.DataBind();
+            DBHelper.ExecuteNonQuery(query, parameters);
         }
 
-        protected void btnLogout_Click(object sender, EventArgs e)
+        private void UpdateUserProfileWithPassword(string username, string email, string hashedPassword)
         {
-            Session.Clear();
-            Session.Abandon();
-            Response.Redirect("~/Default.aspx");
+            string query = @"UPDATE Users 
+                            SET Username = @Username, 
+                                Email = @Email, 
+                                Password = @Password
+                            WHERE UserID = @UserID";
+
+            SqlParameter[] parameters = {
+                new SqlParameter("@Username", username),
+                new SqlParameter("@Email", email),
+                new SqlParameter("@Password", hashedPassword),
+                new SqlParameter("@UserID", userId)
+            };
+
+            DBHelper.ExecuteNonQuery(query, parameters);
         }
 
-        // Helper method to get badge CSS class
-        protected string GetBadgeClass(string badgeName)
+        private void DeleteUserAccount()
         {
-            if (badgeName.Contains("Perfect") || badgeName.Contains("Master"))
-                return "gold";
-            else if (badgeName.Contains("Streak") || badgeName.Contains("Expert"))
-                return "silver";
-            else
-                return "bronze";
-        }
-
-        // Helper method to get badge icon
-        protected string GetBadgeIcon(string badgeName)
-        {
-            if (badgeName.Contains("Perfect"))
-                return "💯";
-            else if (badgeName.Contains("Streak"))
-                return "🔥";
-            else if (badgeName.Contains("Master"))
-                return "🎓";
-            else if (badgeName.Contains("Explorer"))
-                return "🌍";
-            else
-                return "🏆";
-        }
-
-        // Helper method to get score CSS class
-        protected string GetScoreClass(object score, object total)
-        {
-            if (score == null || total == null) return "score-low";
-
-            int scoreValue = Convert.ToInt32(score);
-            int totalValue = Convert.ToInt32(total);
-
-            if (totalValue == 0) return "score-low";
-
-            double percentage = (double)scoreValue / totalValue * 100;
-
-            if (percentage == 100)
-                return "score-perfect";
-            else if (percentage >= 80)
-                return "score-good";
-            else if (percentage >= 60)
-                return "score-average";
-            else
-                return "score-low";
-        }
-
-        // Helper method to calculate percentage
-        protected int GetPercentage(object score, object total)
-        {
-            if (score == null || total == null) return 0;
-
-            int scoreValue = Convert.ToInt32(score);
-            int totalValue = Convert.ToInt32(total);
-
-            if (totalValue == 0) return 0;
-
-            return (int)((double)scoreValue / totalValue * 100);
-        }
-
-        // Helper method to get performance emoji
-        protected string GetPerformanceEmoji(object score, object total)
-        {
-            int percentage = GetPercentage(score, total);
-
-            if (percentage == 100)
-                return "🌟 Perfect!";
-            else if (percentage >= 80)
-                return "🎉 Great!";
-            else if (percentage >= 60)
-                return "👍 Good";
-            else if (percentage >= 40)
-                return "📚 Keep Going";
-            else
-                return "💪 Try Again";
-        }
-
-        // GridView row data bound event
-        protected void gvProgress_RowDataBound(object sender, GridViewRowEventArgs e)
-        {
-            if (e.Row.RowType == DataControlRowType.DataRow)
+            try
             {
-                // Add hover effect or additional styling if needed
-                e.Row.Attributes["onmouseover"] = "this.style.backgroundColor='rgba(79, 172, 254, 0.1)'";
-                e.Row.Attributes["onmouseout"] = "this.style.backgroundColor='rgba(26, 26, 46, 0.6)'";
+                string deleteBadges = "DELETE FROM UserBadges WHERE UserID = @UserID";
+                DBHelper.ExecuteNonQuery(deleteBadges, new[] { new SqlParameter("@UserID", userId) });
+            }
+            catch { /* Table may not exist */ }
+
+            try
+            {
+                string deleteQuizResults = "DELETE FROM UserQuizResults WHERE UserID = @UserID";
+                DBHelper.ExecuteNonQuery(deleteQuizResults, new[] { new SqlParameter("@UserID", userId) });
+            }
+            catch { /* Table may not exist */ }
+
+            try
+            {
+                string deleteProgress = "DELETE FROM UserProgress WHERE UserID = @UserID";
+                DBHelper.ExecuteNonQuery(deleteProgress, new[] { new SqlParameter("@UserID", userId) });
+            }
+            catch { /* Table may not exist */ }
+
+            string deleteUser = "DELETE FROM Users WHERE UserID = @UserID";
+            DBHelper.ExecuteNonQuery(deleteUser, new[] { new SqlParameter("@UserID", userId) });
+        }
+
+        private string HashPassword(string password)
+        {
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+                return BitConverter.ToString(bytes).Replace("-", "").ToLower();
             }
         }
+
+        private string GetAvatarEmoji(string username)
+        {
+            string[] emojis = { "👤", "😊", "🎯", "🚀", "⭐", "🌟", "💫", "🎨", "🎭", "🎪" };
+            int hash = Math.Abs(username.GetHashCode());
+            return emojis[hash % emojis.Length];
+        }
+
+        private void ShowSuccess(string message)
+        {
+            pnlSuccess.Visible = true;
+            litSuccess.Text = message;
+            pnlError.Visible = false;
+
+            ScriptManager.RegisterStartupScript(this, GetType(), "scrollToTop",
+                "window.scrollTo(0, 0);", true);
+        }
+
+        private void ShowError(string message)
+        {
+            pnlError.Visible = true;
+            litError.Text = message;
+            pnlSuccess.Visible = false;
+
+            ScriptManager.RegisterStartupScript(this, GetType(), "scrollToTop",
+                "window.scrollTo(0, 0);", true);
+        }
+
+        #endregion
     }
 }
