@@ -25,11 +25,11 @@ namespace GeoExpert_Assignment.Pages
 
         private void LoadProfile()
         {
-            // TODO: Member C - Load user profile data
             int userId = Convert.ToInt32(Session["UserID"]);
+            string userRole = Session["Role"]?.ToString();
 
             // Get user info
-            string userQuery = "SELECT Username, Email, CurrentStreak, CreatedDate FROM Users WHERE UserID = @UserID";
+            string userQuery = "SELECT Username, Email, Role, CurrentStreak, CreatedDate FROM Users WHERE UserID = @UserID";
             SqlParameter[] userParams = {
                 new SqlParameter("@UserID", userId)
             };
@@ -39,11 +39,38 @@ namespace GeoExpert_Assignment.Pages
             {
                 litUsername.Text = dtUser.Rows[0]["Username"].ToString();
                 litEmail.Text = dtUser.Rows[0]["Email"].ToString();
-                litStreak.Text = dtUser.Rows[0]["CurrentStreak"].ToString();
+                litRole.Text = dtUser.Rows[0]["Role"].ToString();
                 litJoinDate.Text = Convert.ToDateTime(dtUser.Rows[0]["CreatedDate"]).ToString("MMMM dd, yyyy");
-            }
 
-            // Load badges
+                string role = dtUser.Rows[0]["Role"].ToString();
+
+                // Only show badges and quiz history for regular users
+                if (role == "User")
+                {
+                    pnlUserStats.Visible = true;
+                    pnlBadges.Visible = true;
+                    pnlProgress.Visible = true;
+
+                    litStreak.Text = dtUser.Rows[0]["CurrentStreak"].ToString();
+
+                    // Load badges
+                    LoadBadges(userId);
+
+                    // Load quiz progress
+                    LoadProgress(userId);
+                }
+                else
+                {
+                    // Teachers and Admins don't see badges/progress
+                    pnlUserStats.Visible = false;
+                    pnlBadges.Visible = false;
+                    pnlProgress.Visible = false;
+                }
+            }
+        }
+
+        private void LoadBadges(int userId)
+        {
             string badgeQuery = "SELECT BadgeName, BadgeDescription, AwardedDate FROM Badges WHERE UserID = @UserID ORDER BY AwardedDate DESC";
             SqlParameter[] badgeParams = {
                 new SqlParameter("@UserID", userId)
@@ -59,14 +86,17 @@ namespace GeoExpert_Assignment.Pages
             {
                 lblNoBadges.Visible = true;
             }
+        }
 
-            // Load quiz progress
+        private void LoadProgress(int userId)
+        {
             string progressQuery = @"
                 SELECT UP.CompletedDate, Q.Question, UP.Score, UP.TotalQuestions 
                 FROM UserProgress UP
                 INNER JOIN Quizzes Q ON UP.QuizID = Q.QuizID
                 WHERE UP.UserID = @UserID
                 ORDER BY UP.CompletedDate DESC";
+
             SqlParameter[] progressParams = {
                 new SqlParameter("@UserID", userId)
             };
@@ -78,7 +108,6 @@ namespace GeoExpert_Assignment.Pages
 
         protected void btnLogout_Click(object sender, EventArgs e)
         {
-            // TODO: Member C - Clear session and redirect to home
             Session.Clear();
             Session.Abandon();
             Response.Redirect("~/Default.aspx");

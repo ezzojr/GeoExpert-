@@ -7,74 +7,56 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace GeoExpert_Assignment.Pages
+namespace GeoExpert_Assignment.Teacher
 {
 
 
-    public partial class CountryDetail
+    public partial class TeacherDashboard
     {
 
         /// <summary>
-        /// litCountryName control.
+        /// litMyQuizzes control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litCountryName;
+        protected global::System.Web.UI.WebControls.Literal litMyQuizzes;
 
         /// <summary>
-        /// litFoodName control.
+        /// litCountriesCovered control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litFoodName;
+        protected global::System.Web.UI.WebControls.Literal litCountriesCovered;
 
         /// <summary>
-        /// litFoodDesc control.
+        /// litAvgQuestions control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litFoodDesc;
+        protected global::System.Web.UI.WebControls.Literal litAvgQuestions;
 
         /// <summary>
-        /// litCulture control.
+        /// litRecentQuiz control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litCulture;
+        protected global::System.Web.UI.WebControls.Literal litRecentQuiz;
 
         /// <summary>
-        /// litFunFact control.
+        /// gvMyQuizzes control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litFunFact;
-
-        /// <summary>
-        /// litVideo control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litVideo;
-
-        /// <summary>
-        /// pnlQuizButton control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlQuizButton;
+        protected global::System.Web.UI.WebControls.GridView gvMyQuizzes;
     }
 }

@@ -66,9 +66,10 @@ namespace GeoExpert_Assignment.Pages
                 DBHelper.ExecuteNonQuery(resetQuery, new SqlParameter[] { new SqlParameter("@Username", username) });
 
                 // Create session
-                Session["UserID"] = dt.Rows[0]["UserID"].ToString();
+                Session["UserID"] = Convert.ToInt32(dt.Rows[0]["UserID"]);
                 Session["Username"] = dt.Rows[0]["Username"].ToString();
                 Session["Role"] = dt.Rows[0]["Role"].ToString();
+
 
                 // 🔹 Remember Me
                 if (Request.Form["rememberMe"] == "on")
@@ -136,8 +137,11 @@ namespace GeoExpert_Assignment.Pages
         {
             if (role == "Admin")
                 Response.Redirect("~/Admin/Dashboard.aspx");
+            else if (role == "Teacher")
+                Response.Redirect("~/Teacher/TeacherDashboard.aspx");
             else
-                Response.Redirect("~/Pages/Profile.aspx");
+                Response.Redirect("~/Default.aspx");
+
         }
     }
 }

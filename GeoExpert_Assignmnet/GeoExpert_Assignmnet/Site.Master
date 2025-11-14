@@ -200,6 +200,9 @@
                         <% if (Session["Role"] != null && Session["Role"].ToString() == "Admin") { %>
                             <a href="<%= ResolveUrl("~/Admin/Dashboard.aspx") %>" class="nav-link">Admin</a>
                         <% } %>
+                    <% if (Session["Role"] != null && Session["Role"].ToString() == "Teacher") { %>
+                            <a href="<%= ResolveUrl("~/Teacher/TeacherDashboard.aspx") %>" class="nav-link">Teacher Panel</a>
+                        <% } %>
 
                         <asp:LinkButton ID="btnLogout" runat="server" CssClass="btn btn-secondary" OnClick="btnLogout_Click">Logout</asp:LinkButton>
 

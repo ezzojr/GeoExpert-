@@ -1,9 +1,6 @@
 ﻿<%@ Page Title="Country Details" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="CountryDetail.aspx.cs" Inherits="GeoExpert_Assignment.Pages.CountryDetail" %>
-
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <h2><asp:Literal ID="litCountryName" runat="server"></asp:Literal></h2>
-    
-    <!-- TODO: Member C - Display detailed country info: flag, food, culture, video -->
     
     <div class="country-detail">
         <div class="section">
@@ -27,6 +24,9 @@
             <asp:Literal ID="litVideo" runat="server"></asp:Literal>
         </div>
         
-        <a href='Quiz.aspx?countryid=<%=Request.QueryString["id"] %>' class="btn btn-primary">Take Quiz on this Country</a>
+        <!-- Only show quiz button for regular users -->
+        <asp:Panel ID="pnlQuizButton" runat="server" Visible="false">
+            <a href='Quiz.aspx?countryid=<%=Request.QueryString["id"] %>' class="btn btn-primary">Take Quiz on this Country</a>
+        </asp:Panel>
     </div>
 </asp:Content>

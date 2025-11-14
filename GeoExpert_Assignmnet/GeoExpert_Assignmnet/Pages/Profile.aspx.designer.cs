@@ -33,6 +33,24 @@ namespace GeoExpert_Assignment.Pages
         protected global::System.Web.UI.WebControls.Literal litEmail;
 
         /// <summary>
+        /// litRole control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litRole;
+
+        /// <summary>
+        /// pnlUserStats control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlUserStats;
+
+        /// <summary>
         /// litStreak control.
         /// </summary>
         /// <remarks>
@@ -51,6 +69,15 @@ namespace GeoExpert_Assignment.Pages
         protected global::System.Web.UI.WebControls.Literal litJoinDate;
 
         /// <summary>
+        /// pnlBadges control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlBadges;
+
+        /// <summary>
         /// rptBadges control.
         /// </summary>
         /// <remarks>
@@ -67,6 +94,15 @@ namespace GeoExpert_Assignment.Pages
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblNoBadges;
+
+        /// <summary>
+        /// pnlProgress control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlProgress;
 
         /// <summary>
         /// gvProgress control.
