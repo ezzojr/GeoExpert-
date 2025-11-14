@@ -3,7 +3,7 @@
     Inherits="GeoExpert_Assignment.Admin.ManageCountries" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
-
+  
     <h2>Manage Countries 🌍</h2>
 
     <!-- Add / Update Section -->
@@ -16,6 +16,10 @@
             <asp:RequiredFieldValidator ID="rfvName" runat="server"
                 ControlToValidate="txtName" ErrorMessage="*Required" ForeColor="Red"></asp:RequiredFieldValidator>
         </div>
+        <div class="form-group">
+    <label>Country Region:</label>
+    <asp:TextBox ID="txtRegion" runat="server"></asp:TextBox>
+</div>
 
         <div class="form-group">
             <label>Flag Image:</label>
@@ -72,13 +76,8 @@
         <Columns>
             <asp:BoundField DataField="CountryID" HeaderText="ID" />
             <asp:BoundField DataField="Name" HeaderText="Country" />
-
-            <asp:TemplateField HeaderText="Flag">
-                <ItemTemplate>
-                    <img src='<%# ResolveUrl(Eval("FlagImage").ToString()) %>' alt="Flag" width="50" height="30" />
-                </ItemTemplate>
-            </asp:TemplateField>
-
+            <asp:BoundField DataField="Region" HeaderText="Region" />
+            <asp:ImageField DataImageUrlField="FlagImage" HeaderText="Flag" ControlStyle-Width="60" />
             <asp:BoundField DataField="FoodName" HeaderText="Food" />
             <asp:BoundField DataField="FunFact" HeaderText="Fun Fact" />
             <asp:BoundField DataField="ViewCount" HeaderText="Views" />

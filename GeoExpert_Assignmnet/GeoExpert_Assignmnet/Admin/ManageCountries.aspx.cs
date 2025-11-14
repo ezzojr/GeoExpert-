@@ -28,7 +28,7 @@ namespace GeoExpert_Assignment.Admin
         {
             try
             {
-                string query = "SELECT CountryID, Name, FlagImage, FoodName, FunFact, ViewCount FROM Countries ORDER BY Name";
+                string query = "SELECT CountryID, Name, Region, FlagImage, FoodName, FunFact, ViewCount FROM Countries ORDER BY Name";
                 DataTable dt = DBHelper.ExecuteReader(query);
                 gvCountries.DataSource = dt;
                 gvCountries.DataBind();
@@ -95,7 +95,6 @@ namespace GeoExpert_Assignment.Admin
         }
 
         // Add new country
-        // Add new country
         protected void btnAdd_Click(object sender, EventArgs e)
         {
             try
@@ -111,8 +110,8 @@ namespace GeoExpert_Assignment.Admin
                 }
 
                 string query = @"INSERT INTO Countries 
-                        (Name, FlagImage, FoodName, FoodDescription, CultureInfo, VideoURL, FunFact, ViewCount) 
-                        VALUES (@Name, @Flag, @FoodName, @FoodDesc, @Culture, @Video, @Fact, 0)";
+                        (Name, FlagImage, FoodName, FoodDescription, CultureInfo, VideoURL, FunFact, Region, ViewCount) 
+                        VALUES (@Name, @Flag, @FoodName, @FoodDesc, @Culture, @Video, @Fact, @Region, 0)";
 
                 SqlParameter[] parameters = {
             new SqlParameter("@Name", string.IsNullOrEmpty(txtName.Text) ? (object)DBNull.Value : txtName.Text),
@@ -121,7 +120,8 @@ namespace GeoExpert_Assignment.Admin
             new SqlParameter("@FoodDesc", string.IsNullOrEmpty(txtFoodDesc.Text) ? (object)DBNull.Value : txtFoodDesc.Text),
             new SqlParameter("@Culture", string.IsNullOrEmpty(txtCulture.Text) ? (object)DBNull.Value : txtCulture.Text),
             new SqlParameter("@Video", string.IsNullOrEmpty(txtVideoURL.Text) ? (object)DBNull.Value : txtVideoURL.Text),
-            new SqlParameter("@Fact", string.IsNullOrEmpty(txtFunFact.Text) ? (object)DBNull.Value : txtFunFact.Text)
+            new SqlParameter("@Fact", string.IsNullOrEmpty(txtFunFact.Text) ? (object)DBNull.Value : txtFunFact.Text),
+            new SqlParameter("@Region", txtRegion.Text)
         };
 
                 int result = DBHelper.ExecuteNonQuery(query, parameters);
@@ -164,12 +164,15 @@ namespace GeoExpert_Assignment.Admin
                         DataRow row = dt.Rows[0];
                         ViewState["EditCountryID"] = countryId;
 
-                        txtName.Text = row["Name"].ToString();
-                        txtFoodName.Text = row["FoodName"].ToString();
-                        txtFoodDesc.Text = row["FoodDescription"].ToString();
-                        txtCulture.Text = row["CultureInfo"].ToString();
-                        txtVideoURL.Text = row["VideoURL"].ToString();
-                        txtFunFact.Text = row["FunFact"].ToString();
+                    txtName.Text = row["Name"].ToString();
+                    txtRegion.Text = row["Region"].ToString();
+                    imgCurrentFlag.ImageUrl = row["FlagImage"].ToString();
+                    imgCurrentFlag.Visible = true;
+                    txtFoodName.Text = row["FoodName"].ToString();
+                    txtFoodDesc.Text = row["FoodDescription"].ToString();
+                    txtCulture.Text = row["CultureInfo"].ToString();
+                    txtVideoURL.Text = row["VideoURL"].ToString();
+                    txtFunFact.Text = row["FunFact"].ToString();
 
                         // Store existing flag path
                         string existingFlag = row["FlagImage"].ToString();
@@ -247,7 +250,8 @@ namespace GeoExpert_Assignment.Admin
                                 FoodDescription = @FoodDesc, 
                                 CultureInfo = @Culture, 
                                 VideoURL = @Video, 
-                                FunFact = @Fact 
+                                FunFact = @Fact,
+                                Region = @Region
                                 WHERE CountryID = @CountryID";
 
                 SqlParameter[] parameters = {
@@ -258,7 +262,8 @@ namespace GeoExpert_Assignment.Admin
                     new SqlParameter("@FoodDesc", string.IsNullOrEmpty(txtFoodDesc.Text) ? (object)DBNull.Value : txtFoodDesc.Text),
                     new SqlParameter("@Culture", string.IsNullOrEmpty(txtCulture.Text) ? (object)DBNull.Value : txtCulture.Text),
                     new SqlParameter("@Video", string.IsNullOrEmpty(txtVideoURL.Text) ? (object)DBNull.Value : txtVideoURL.Text),
-                    new SqlParameter("@Fact", string.IsNullOrEmpty(txtFunFact.Text) ? (object)DBNull.Value : txtFunFact.Text)
+                    new SqlParameter("@Fact", string.IsNullOrEmpty(txtFunFact.Text) ? (object)DBNull.Value : txtFunFact.Text),
+                    new SqlParameter("@Region", string.IsNullOrEmpty(txtRegion.Text) ? (object)DBNull.Value :txtRegion.Text)
                 };
 
                 int result = DBHelper.ExecuteNonQuery(query, parameters);
@@ -318,6 +323,7 @@ namespace GeoExpert_Assignment.Admin
         private void ClearFields()
         {
             txtName.Text = "";
+            txtRegion.Text = "";
             txtFoodName.Text = "";
             txtFoodDesc.Text = "";
             txtCulture.Text = "";
@@ -326,5 +332,17 @@ namespace GeoExpert_Assignment.Admin
             hfExistingFlagPath.Value = "";
             imgPreview.Visible = false;
         }
+        //private string GetCurrentFlagPath(int id)
+        //{
+        //    string query = "SELECT FlagImage FROM Countries WHERE CountryID = @ID";
+        //    SqlParameter[] p = { new SqlParameter("@ID", id) };
+
+        //    DataTable dt = DBHelper.ExecuteReader(query, p);
+        //    if (dt.Rows.Count > 0)
+        //        return dt.Rows[0]["FlagImage"].ToString();
+
+        //    return null;
+        //}
+
     }
 }
