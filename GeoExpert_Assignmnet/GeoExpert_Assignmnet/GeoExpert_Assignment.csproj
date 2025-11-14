@@ -108,6 +108,9 @@
     <Content Include="App_Data\GeoExpertDB_log.ldf">
       <DependentUpon>GeoExpertDB.mdf</DependentUpon>
     </Content>
+    <Content Include="Assets\Flags\italy.png" />
+    <Content Include="Assets\Flags\japan.png" />
+    <Content Include="Assets\Flags\mexico.png" />
     <Content Include="Contact.aspx" />
     <Content Include="Content\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-grid.min.css" />

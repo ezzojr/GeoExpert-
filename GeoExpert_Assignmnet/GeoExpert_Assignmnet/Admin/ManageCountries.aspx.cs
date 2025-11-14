@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -24,7 +25,7 @@ namespace GeoExpert_Assignment.Admin
         // Load all countries
         private void LoadCountries()
         {
-            string query = "SELECT CountryID, Name, FlagImage, FoodName, FunFact, ViewCount FROM Countries ORDER BY Name";
+            string query = "SELECT CountryID, Name, Region, FlagImage, FoodName, FunFact, ViewCount FROM Countries ORDER BY Name";
             DataTable dt = DBHelper.ExecuteReader(query);
             gvCountries.DataSource = dt;
             gvCountries.DataBind();
@@ -33,18 +34,30 @@ namespace GeoExpert_Assignment.Admin
         // Add new country
         protected void btnAdd_Click(object sender, EventArgs e)
         {
+            string flagPath = null;
+
+            if (fuFlagImage.HasFile)
+            {
+                string fileName = Guid.NewGuid() + Path.GetExtension(fuFlagImage.FileName);
+                flagPath = "/Assets/Flags/" + fileName;
+
+                string physicalPath = Server.MapPath(flagPath);
+                fuFlagImage.SaveAs(physicalPath);
+            }
+
             string query = @"INSERT INTO Countries 
-                            (Name, FlagImage, FoodName, FoodDescription, CultureInfo, VideoURL, FunFact, ViewCount) 
-                            VALUES (@Name, @Flag, @FoodName, @FoodDesc, @Culture, @Video, @Fact, 0)";
+                            (Name, FlagImage, FoodName, FoodDescription, CultureInfo, VideoURL, FunFact, Region, ViewCount) 
+                            VALUES (@Name, @Flag, @FoodName, @FoodDesc, @Culture, @Video, @Fact, @Region, 0)";
 
             SqlParameter[] parameters = {
                 new SqlParameter("@Name", txtName.Text),
-                new SqlParameter("@Flag", txtFlagImage.Text),
+                new SqlParameter("@Flag", (object)flagPath ?? DBNull.Value),
                 new SqlParameter("@FoodName", txtFoodName.Text),
                 new SqlParameter("@FoodDesc", txtFoodDesc.Text),
                 new SqlParameter("@Culture", txtCulture.Text),
                 new SqlParameter("@Video", txtVideoURL.Text),
-                new SqlParameter("@Fact", txtFunFact.Text)
+                new SqlParameter("@Fact", txtFunFact.Text),
+                new SqlParameter("@Region", txtRegion.Text)
             };
 
             int result = DBHelper.ExecuteNonQuery(query, parameters);
@@ -80,7 +93,9 @@ namespace GeoExpert_Assignment.Admin
                     ViewState["EditCountryID"] = countryId;
 
                     txtName.Text = row["Name"].ToString();
-                    txtFlagImage.Text = row["FlagImage"].ToString();
+                    txtRegion.Text = row["Region"].ToString();
+                    imgCurrentFlag.ImageUrl = row["FlagImage"].ToString();
+                    imgCurrentFlag.Visible = true;
                     txtFoodName.Text = row["FoodName"].ToString();
                     txtFoodDesc.Text = row["FoodDescription"].ToString();
                     txtCulture.Text = row["CultureInfo"].ToString();
@@ -114,8 +129,35 @@ namespace GeoExpert_Assignment.Admin
         {
             int countryId = Convert.ToInt32(ViewState["EditCountryID"]);
 
+            string flagPath = null;
+            string oldFlagPath = GetCurrentFlagPath(countryId);
+
+            if (fuFlagImage.HasFile)
+            {
+                // Delete old file
+                if (!string.IsNullOrEmpty(oldFlagPath))
+                {
+                    string oldPhysical = Server.MapPath(oldFlagPath);
+                    if (File.Exists(oldPhysical))
+                        File.Delete(oldPhysical);
+                }
+
+                // Save new file
+                string fileName = Guid.NewGuid() + Path.GetExtension(fuFlagImage.FileName);
+                flagPath = "/Assets/Flags/" + fileName;
+
+                string physicalPath = Server.MapPath(flagPath);
+                fuFlagImage.SaveAs(physicalPath);
+            }
+            else
+            {
+                // Keep old image
+                flagPath = oldFlagPath;
+            }
+
             string query = @"UPDATE Countries SET 
                             Name = @Name, 
+                            Region = @Region, 
                             FlagImage = @Flag, 
                             FoodName = @FoodName, 
                             FoodDescription = @FoodDesc, 
@@ -127,7 +169,8 @@ namespace GeoExpert_Assignment.Admin
             SqlParameter[] parameters = {
                 new SqlParameter("@CountryID", countryId),
                 new SqlParameter("@Name", txtName.Text),
-                new SqlParameter("@Flag", txtFlagImage.Text),
+                new SqlParameter("@Region", txtRegion.Text),
+                new SqlParameter("@Flag", (object)flagPath ?? DBNull.Value),
                 new SqlParameter("@FoodName", txtFoodName.Text),
                 new SqlParameter("@FoodDesc", txtFoodDesc.Text),
                 new SqlParameter("@Culture", txtCulture.Text),
@@ -149,6 +192,8 @@ namespace GeoExpert_Assignment.Admin
                 btnCancel.Visible = false;
                 lblFormTitle.Text = "Add New Country";
             }
+
+            
         }
 
         // Cancel editing
@@ -165,12 +210,24 @@ namespace GeoExpert_Assignment.Admin
         private void ClearFields()
         {
             txtName.Text = "";
-            txtFlagImage.Text = "";
+            txtRegion.Text = "";
             txtFoodName.Text = "";
             txtFoodDesc.Text = "";
             txtCulture.Text = "";
             txtVideoURL.Text = "";
             txtFunFact.Text = "";
         }
+        private string GetCurrentFlagPath(int id)
+        {
+            string query = "SELECT FlagImage FROM Countries WHERE CountryID = @ID";
+            SqlParameter[] p = { new SqlParameter("@ID", id) };
+
+            DataTable dt = DBHelper.ExecuteReader(query, p);
+            if (dt.Rows.Count > 0)
+                return dt.Rows[0]["FlagImage"].ToString();
+
+            return null;
+        }
+
     }
 }

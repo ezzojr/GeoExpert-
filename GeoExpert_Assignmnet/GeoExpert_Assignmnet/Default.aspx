@@ -568,7 +568,7 @@
                     <ItemTemplate>
                         <div class="country-card">
                             <div class="country-flag">
-                                <img src='<%# ResolveUrl("~/Images/" + Eval("FlagImage")) %>'
+                                <img src='<%# ResolveUrl(Eval("FlagImage").ToString()) %>'
                                     alt='<%# Eval("Name") %>'
                                     style="width: 100px; height: 60px;" />
                             </div>
