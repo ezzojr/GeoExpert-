@@ -636,7 +636,8 @@
                     </div>
                 </div>
                 <div class="progress-bar-container">
-                    <div class="progress-bar-fill" style="width: 0%;" id="overallProgressBar"></div>
+                    <div id="overallProgressBar" runat="server" class="progress-bar-fill"></div>
+
                 </div>
                 <div class="progress-sublabel">
                     <asp:Literal ID="litOverallGoals" runat="server" Text="0 of 138"></asp:Literal> goals completed
@@ -644,22 +645,23 @@
             </div>
 
             <!-- Countries Explored -->
-            <div class="progress-item">
-                <div class="progress-header">
-                    <div class="progress-label">
-                        🌍 Countries Explored
-                    </div>
-                    <div class="progress-percentage">
-                        <asp:Literal ID="litCountriesCount" runat="server" Text="0"></asp:Literal>/50
-                    </div>
+                   <div class="progress-item">
+            <div class="progress-header">
+                <div class="progress-label">
+                    🌍 Countries Explored
                 </div>
-                <div class="progress-bar-container">
-                    <div class="progress-bar-fill countries" style="width: 0%;" id="countriesProgressBar"></div>
+                <div class="progress-percentage">
+                    <asp:Literal ID="litCountriesCount" runat="server" Text="0"></asp:Literal>/50
                 </div>
             </div>
+            <div class="progress-bar-container">
+                <div id="countriesProgressBar" runat="server" class="progress-bar-fill countries"></div>
+            </div>
+        </div>
+
 
             <!-- Quizzes Completed -->
-            <div class="progress-item">
+                       <div class="progress-item">
                 <div class="progress-header">
                     <div class="progress-label">
                         🎯 Quizzes Completed
@@ -669,12 +671,13 @@
                     </div>
                 </div>
                 <div class="progress-bar-container">
-                    <div class="progress-bar-fill quizzes" style="width: 0%;" id="quizzesProgressBar"></div>
+                    <div id="quizzesProgressBar" runat="server" class="progress-bar-fill quizzes"></div>
                 </div>
             </div>
 
+
             <!-- Badges Earned -->
-            <div class="progress-item">
+                       <div class="progress-item">
                 <div class="progress-header">
                     <div class="progress-label">
                         🏆 Badges Earned
@@ -684,43 +687,41 @@
                     </div>
                 </div>
                 <div class="progress-bar-container">
-                    <div class="progress-bar-fill badges" style="width: 0%;" id="badgesProgressBar"></div>
+                    <div id="badgesProgressBar" runat="server" class="progress-bar-fill badges"></div>
                 </div>
             </div>
 
+
             <!-- Current Streak -->
-            <div class="progress-item">
-                <div class="progress-header">
-                    <div class="progress-label">
-                        🔥 Current Streak
-                    </div>
-                    <div class="progress-percentage">
-                        <asp:Literal ID="litStreakProgress" runat="server" Text="0"></asp:Literal>/30 days
-                    </div>
+                    <div class="progress-item">
+            <div class="progress-header">
+                <div class="progress-label">
+                    🔥 Current Streak
                 </div>
-                <div class="progress-bar-container">
-                    <div class="progress-bar-fill streak" style="width: 0%;" id="streakProgressBar"></div>
+                <div class="progress-percentage">
+                    <asp:Literal ID="litStreakProgress" runat="server" Text="0"></asp:Literal>/30 days
                 </div>
-                <div class="progress-milestones">
-                    <div class="milestone">
-                        <span>7</span>
-                        <span>🔥</span>
-                    </div>
-                    <div class="milestone">
-                        <span>14</span>
-                        <span>⚡</span>
-                    </div>
-                    <div class="milestone">
-                        <span>21</span>
-                        <span>💫</span>
-                    </div>
-                    <div class="milestone">
-                        <span>30</span>
-                        <span>🌟</span>
-                    </div>
+            </div>
+            <div class="progress-bar-container">
+                <div id="streakProgressBar" runat="server" class="progress-bar-fill streak"></div>
+            </div>
+
+            <div class="progress-milestones">
+                <div class="milestone">
+                    <span>7</span><span>🔥</span>
+                </div>
+                <div class="milestone">
+                    <span>14</span><span>⚡</span>
+                </div>
+                <div class="milestone">
+                    <span>21</span><span>💫</span>
+                </div>
+                <div class="milestone">
+                    <span>30</span><span>🌟</span>
                 </div>
             </div>
         </div>
+
 
         <!-- Stats Grid -->
         <div class="stats-grid">

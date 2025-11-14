@@ -123,6 +123,15 @@ namespace GeoExpert_Assignment.Pages
         protected global::System.Web.UI.WebControls.Literal litOverallProgress;
 
         /// <summary>
+        /// overallProgressBar control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl overallProgressBar;
+
+        /// <summary>
         /// litOverallGoals control.
         /// </summary>
         /// <remarks>
@@ -141,6 +150,15 @@ namespace GeoExpert_Assignment.Pages
         protected global::System.Web.UI.WebControls.Literal litCountriesCount;
 
         /// <summary>
+        /// countriesProgressBar control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl countriesProgressBar;
+
+        /// <summary>
         /// litQuizzesProgress control.
         /// </summary>
         /// <remarks>
@@ -148,6 +166,15 @@ namespace GeoExpert_Assignment.Pages
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litQuizzesProgress;
+
+        /// <summary>
+        /// quizzesProgressBar control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl quizzesProgressBar;
 
         /// <summary>
         /// litBadgesProgress control.
@@ -159,6 +186,15 @@ namespace GeoExpert_Assignment.Pages
         protected global::System.Web.UI.WebControls.Literal litBadgesProgress;
 
         /// <summary>
+        /// badgesProgressBar control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl badgesProgressBar;
+
+        /// <summary>
         /// litStreakProgress control.
         /// </summary>
         /// <remarks>
@@ -166,6 +202,15 @@ namespace GeoExpert_Assignment.Pages
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litStreakProgress;
+
+        /// <summary>
+        /// streakProgressBar control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl streakProgressBar;
 
         /// <summary>
         /// litQuizzesTaken control.
