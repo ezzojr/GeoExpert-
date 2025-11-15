@@ -50,6 +50,7 @@
             align-items: center;
             gap: 0.75rem;
             text-decoration: none;
+            cursor: pointer;
         }
 
         .logo-icon {
@@ -92,6 +93,7 @@
             transition: all 0.3s;
             position: relative;
             padding: 0.5rem 0;
+            cursor: pointer;
         }
 
         .nav-link::after {
@@ -190,32 +192,60 @@
         <!-- Header -->
         <header class="header">
             <div class="header-container">
-                <a href="~/Default.aspx" class="logo" runat="server">
-                    <div class="logo-icon">🌍</div>
-                    <span class="logo-text">GeoExpert</span>
-                </a>
+                <!-- Logo - Shows popup when logged in -->
+                <asp:PlaceHolder ID="phLogoLoggedIn" runat="server" Visible="false">
+                    <a href="#" onclick="showHomeModal(); return false;" class="logo">
+                        <div class="logo-icon">🌍</div>
+                        <span class="logo-text">GeoExpert</span>
+                    </a>
+                </asp:PlaceHolder>
+                
+                <!-- Logo - Normal link when not logged in -->
+                <asp:PlaceHolder ID="phLogoAnonymous" runat="server" Visible="true">
+                    <a href="~/Default.aspx" class="logo" runat="server">
+                        <div class="logo-icon">🌍</div>
+                        <span class="logo-text">GeoExpert</span>
+                    </a>
+                </asp:PlaceHolder>
 
-               <nav class="nav">
-                    <a href="~/Default.aspx" class="nav-link" id="navHome" runat="server">Home</a>
-                    <a href="~/Pages/Countries.aspx" class="nav-link" id="navCountries" runat="server">Countries</a>
-
+                <nav class="nav">
+                    <!-- Navigation for Logged IN Users -->
                     <asp:PlaceHolder ID="phLoggedIn" runat="server" Visible="false">
+                        <!-- Home: Show popup -->
+                        <a href="#" onclick="showHomeModal(); return false;" class="nav-link">Home</a>
+                        
+                        <!-- Countries: Normal link -->
+                        <a href="~/Pages/Countries.aspx" class="nav-link" id="navCountries" runat="server">Countries</a>
+                        
+                        <!-- Quizzes: Show popup -->
+                        <a href="#" onclick="showQuizModal(); return false;" class="nav-link">Quizzes</a>
+
+                        <!-- Welcome message -->
                         <asp:Label ID="lblWelcome" runat="server" 
                             ForeColor="#4facfe" Font-Bold="true" 
                             Style="margin-right:10px;"></asp:Label>
 
+                        <!-- Profile: Normal link -->
                         <a href="~/Pages/Profile.aspx" class="nav-link" id="navProfile" runat="server">Profile</a>
 
+                        <!-- Admin (if applicable) -->
+                        <asp:PlaceHolder ID="phAdmin" runat="server" Visible="false">
+                            <a href="~/Admin/Dashboard.aspx" class="nav-link" id="navAdmin" runat="server">Admin</a>
+                        </asp:PlaceHolder>
                         <asp:HyperLink ID="lnkAdminPanel" runat="server" NavigateUrl="~/Admin/Dashboard.aspx" 
                                        CssClass="nav-link" Visible="false">Admin</asp:HyperLink>
         
                         <asp:HyperLink ID="lnkTeacherPanel" runat="server" NavigateUrl="~/Teacher/TeacherDashboard.aspx" 
                                        CssClass="nav-link" Visible="false">Teacher Panel</asp:HyperLink>
 
+                        <!-- Logout button -->
                         <asp:LinkButton ID="btnLogout" runat="server" CssClass="btn btn-secondary" OnClick="btnLogout_Click">Logout</asp:LinkButton>
                     </asp:PlaceHolder>
 
+                    <!-- Navigation for NOT Logged In Users -->
                     <asp:PlaceHolder ID="phAnonymous" runat="server" Visible="true">
+                        <a href="~/Default.aspx" class="nav-link" id="navHome" runat="server">Home</a>
+                        <a href="~/Pages/Countries.aspx" class="nav-link" id="navCountriesAnon" runat="server">Countries</a>
                         <a href="~/Pages/Login.aspx" class="btn btn-secondary" runat="server">Sign In</a>
                         <a href="~/Pages/Register.aspx" class="btn btn-primary" runat="server">Get Started</a>
                     </asp:PlaceHolder>
@@ -237,5 +267,73 @@
     </form>
 
     <asp:ContentPlaceHolder ID="scripts" runat="server"></asp:ContentPlaceHolder>
+
+    <script>
+        // ========================================
+        // Popup for Quizzes - "Select Country First"
+        // ========================================
+        function showQuizModal() {
+            const modal = document.createElement('div');
+            modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:10000;animation:fadeIn 0.3s;';
+
+            modal.innerHTML = `
+                <div style="background:linear-gradient(135deg,rgba(26,26,46,0.95),rgba(10,10,26,0.95));border:2px solid rgba(79,172,254,0.3);border-radius:24px;padding:2.5rem;max-width:500px;width:90%;text-align:center;animation:slideUp 0.3s;">
+                    <div style="font-size:4rem;margin-bottom:1rem;">🗺️</div>
+                    <h2 style="color:#4facfe;font-size:1.8rem;margin-bottom:1rem;font-weight:900;">Select a Country First!</h2>
+                    <p style="color:#ccc;margin-bottom:2rem;line-height:1.6;">To take a quiz, you need to choose a country to explore first. Head over to the Countries page and pick your destination!</p>
+                    <button onclick="window.location.href='<%= ResolveUrl("~/Pages/Countries.aspx") %>'" style="background:linear-gradient(135deg,#4facfe,#00f2fe);color:#000;padding:1rem 2rem;border-radius:12px;font-weight:bold;border:none;cursor:pointer;font-size:1rem;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">🌍 Go to Countries</button>
+                    <button onclick="this.closest('div[style*=fixed]').remove()" style="background:rgba(79,172,254,0.1);color:#4facfe;border:2px solid rgba(79,172,254,0.3);padding:1rem 2rem;border-radius:12px;font-weight:bold;cursor:pointer;font-size:1rem;margin-left:1rem;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">Cancel</button>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
+        }
+
+        // ========================================
+        // Popup for Home/Logo - "Already Logged In"
+        // ========================================
+        function showHomeModal() {
+            const modal = document.createElement('div');
+            modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:10000;animation:fadeIn 0.3s;';
+            
+            modal.innerHTML = `
+                <div style="background:linear-gradient(135deg,rgba(26,26,46,0.95),rgba(10,10,26,0.95));border:2px solid rgba(79,172,254,0.3);border-radius:24px;padding:2.5rem;max-width:500px;width:90%;text-align:center;animation:slideUp 0.3s;">
+                    <div style="font-size:4rem;margin-bottom:1rem;">👋</div>
+                    <h2 style="color:#4facfe;font-size:1.8rem;margin-bottom:1rem;font-weight:900;">Already Logged In!</h2>
+                    <p style="color:#ccc;margin-bottom:2rem;line-height:1.6;">You're already signed in! Explore countries, take quizzes, or check out your profile to see your progress.</p>
+                    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+                        <button onclick="window.location.href='<%= ResolveUrl("~/Pages/Countries.aspx") %>'" style="background:linear-gradient(135deg,#4facfe,#00f2fe);color:#000;padding:1rem 1.5rem;border-radius:12px;font-weight:bold;border:none;cursor:pointer;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">🌍 Countries</button>
+                        <button onclick="window.location.href='<%= ResolveUrl("~/Pages/Profile.aspx") %>'" style="background:linear-gradient(135deg,#4facfe,#00f2fe);color:#000;padding:1rem 1.5rem;border-radius:12px;font-weight:bold;border:none;cursor:pointer;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">👤 Profile</button>
+                        <button onclick="this.closest('div[style*=fixed]').remove()" style="background:rgba(79,172,254,0.1);color:#4facfe;border:2px solid rgba(79,172,254,0.3);padding:1rem 1.5rem;border-radius:12px;font-weight:bold;cursor:pointer;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">Stay Here</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+            modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+        }
+
+        // Add animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { 
+                    opacity: 0; 
+                    transform: translateY(50px);
+                }
+                to { 
+                    opacity: 1; 
+                    transform: translateY(0);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+
 </body>
 </html>

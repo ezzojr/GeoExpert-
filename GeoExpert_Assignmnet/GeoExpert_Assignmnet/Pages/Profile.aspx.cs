@@ -163,20 +163,51 @@ namespace GeoExpert_Assignment.Pages
                 // Calculate overall progress
                 int totalGoals = 50 + 50 + 8 + 30; // 138 total
                 int completedGoals = countriesExplored + quizzesCompleted + badgesEarned + currentStreak;
-                int overallPercent = (int)Math.Round((double)completedGoals / totalGoals * 100);
 
-                // Update literals
+                if (completedGoals < 0) completedGoals = 0;
+                if (completedGoals > totalGoals) completedGoals = totalGoals;
+
+                int overallPercent = totalGoals > 0 ? (int)Math.Round((double)completedGoals / totalGoals * 100) : 0;
+
+                // Calculate individual percentages
+                int countriesPercent = (int)Math.Round((double)countriesExplored / 50 * 100);
+                int quizzesPercent = (int)Math.Round((double)quizzesCompleted / 50 * 100);
+                int badgesPercent = (int)Math.Round((double)badgesEarned / 8 * 100);
+                int streakPercent = (int)Math.Round((double)currentStreak / 30 * 100);
+
+                // CRITICAL: Set progress bar widths to actual percentages (not always 100%)
+                overallProgressBar.Style["width"] = overallPercent + "%";
+                countriesProgressBar.Style["width"] = countriesPercent + "%";
+                quizzesProgressBar.Style["width"] = quizzesPercent + "%";
+                badgesProgressBar.Style["width"] = badgesPercent + "%";
+                streakProgressBar.Style["width"] = streakPercent + "%";
+
+                // Update text labels
                 litOverallProgress.Text = overallPercent.ToString();
                 litOverallGoals.Text = $"{completedGoals} of {totalGoals}";
                 litCountriesCount.Text = countriesExplored.ToString();
                 litQuizzesProgress.Text = quizzesCompleted.ToString();
                 litBadgesProgress.Text = badgesEarned.ToString();
                 litStreakProgress.Text = currentStreak.ToString();
+
+                // Debug output
+                System.Diagnostics.Debug.WriteLine($"=== PROGRESS DEBUG ===");
+                System.Diagnostics.Debug.WriteLine($"Countries: {countriesExplored}/50 = {countriesPercent}%");
+                System.Diagnostics.Debug.WriteLine($"Quizzes: {quizzesCompleted}/50 = {quizzesPercent}%");
+                System.Diagnostics.Debug.WriteLine($"Badges: {badgesEarned}/8 = {badgesPercent}%");
+                System.Diagnostics.Debug.WriteLine($"Streak: {currentStreak}/30 = {streakPercent}%");
+                System.Diagnostics.Debug.WriteLine($"Overall: {completedGoals}/138 = {overallPercent}%");
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"LoadUserProgress error: {ex.Message}");
-                // Set defaults
+                // Set defaults to 0%
+                if (overallProgressBar != null) overallProgressBar.Style["width"] = "0%";
+                if (countriesProgressBar != null) countriesProgressBar.Style["width"] = "0%";
+                if (quizzesProgressBar != null) quizzesProgressBar.Style["width"] = "0%";
+                if (badgesProgressBar != null) badgesProgressBar.Style["width"] = "0%";
+                if (streakProgressBar != null) streakProgressBar.Style["width"] = "0%";
+
                 litOverallProgress.Text = "0";
                 litOverallGoals.Text = "0 of 138";
                 litCountriesCount.Text = "0";

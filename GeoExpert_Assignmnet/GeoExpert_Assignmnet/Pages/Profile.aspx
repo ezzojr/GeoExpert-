@@ -440,69 +440,102 @@
                     <div class="progress-bar-container">
                         <div class="progress-bar-fill" style="width: 0%;" id="overallProgressBar"></div>
                     </div>
-                    <div style="color: #999; margin-top: 0.5rem; font-size: 0.9rem;">
-                        <asp:Literal ID="litOverallGoals" runat="server" Text="0 of 138"></asp:Literal> goals completed
-                    </div>
                 </div>
+                <div class="progress-bar-container">
+                    <div id="overallProgressBar" runat="server" class="progress-bar-fill"></div>
 
-                <div class="progress-item">
-                    <div class="progress-header">
-                        <div class="progress-label">🌍 Countries Explored</div>
-                        <div class="progress-percentage">
-                            <asp:Literal ID="litCountriesCount" runat="server" Text="0"></asp:Literal>/50
-                        </div>
+                </div>
+                <div class="progress-sublabel">
+                    <asp:Literal ID="litOverallGoals" runat="server" Text="0 of 138"></asp:Literal> goals completed
+                </div>
+            </div>
+
+            <!-- Countries Explored -->
+                   <div class="progress-item">
+            <div class="progress-header">
+                <div class="progress-label">
+                    🌍 Countries Explored
+                </div>
+                <div class="progress-percentage">
+                    <asp:Literal ID="litCountriesCount" runat="server" Text="0"></asp:Literal>/50
+                </div>
+            </div>
+            <div class="progress-bar-container">
+                <div id="countriesProgressBar" runat="server" class="progress-bar-fill countries"></div>
+            </div>
+        </div>
+
+
+            <!-- Quizzes Completed -->
+                       <div class="progress-item">
+                <div class="progress-header">
+                    <div class="progress-label">
+                        🎯 Quizzes Completed
                     </div>
                     <div class="progress-bar-container">
                         <div class="progress-bar-fill" style="width: 0%;" id="countriesProgressBar"></div>
                     </div>
                 </div>
+                <div class="progress-bar-container">
+                    <div id="quizzesProgressBar" runat="server" class="progress-bar-fill quizzes"></div>
+                </div>
+            </div>
 
-                <div class="progress-item">
-                    <div class="progress-header">
-                        <div class="progress-label">🎯 Quizzes Completed</div>
-                        <div class="progress-percentage">
-                            <asp:Literal ID="litQuizzesProgress" runat="server" Text="0"></asp:Literal>/50
-                        </div>
+
+            <!-- Badges Earned -->
+                       <div class="progress-item">
+                <div class="progress-header">
+                    <div class="progress-label">
+                        🏆 Badges Earned
                     </div>
                     <div class="progress-bar-container">
                         <div class="progress-bar-fill" style="width: 0%;" id="quizzesProgressBar"></div>
                     </div>
                 </div>
-
-                <div class="progress-item">
-                    <div class="progress-header">
-                        <div class="progress-label">🏆 Badges Earned</div>
-                        <div class="progress-percentage">
-                            <asp:Literal ID="litBadgesProgress" runat="server" Text="0"></asp:Literal>/8
-                        </div>
-                    </div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: 0%;" id="badgesProgressBar"></div>
-                    </div>
+                <div class="progress-bar-container">
+                    <div id="badgesProgressBar" runat="server" class="progress-bar-fill badges"></div>
                 </div>
+            </div>
 
-                <div class="progress-item">
-                    <div class="progress-header">
-                        <div class="progress-label">🔥 Current Streak</div>
-                        <div class="progress-percentage">
-                            <asp:Literal ID="litStreakProgress" runat="server" Text="0"></asp:Literal>/30 days
-                        </div>
-                    </div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: 0%;" id="streakProgressBar"></div>
-                    </div>
+
+            <!-- Current Streak -->
+                    <div class="progress-item">
+            <div class="progress-header">
+                <div class="progress-label">
+                    🔥 Current Streak
+                </div>
+                <div class="progress-percentage">
+                    <asp:Literal ID="litStreakProgress" runat="server" Text="0"></asp:Literal>/30 days
+                </div>
+            </div>
+            <div class="progress-bar-container">
+                <div id="streakProgressBar" runat="server" class="progress-bar-fill streak"></div>
+            </div>
+
+            <div class="progress-milestones">
+                <div class="milestone">
+                    <span>7</span><span>🔥</span>
+                </div>
+                <div class="milestone">
+                    <span>14</span><span>⚡</span>
+                </div>
+                <div class="milestone">
+                    <span>21</span><span>💫</span>
+                </div>
+                <div class="milestone">
+                    <span>30</span><span>🌟</span>
                 </div>
             </div>
         </asp:Panel>
 
-        <!-- Stats Grid - Only for regular users -->
-        <asp:Panel ID="pnlStatsGrid" runat="server">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">🎯</div>
-                    <div class="stat-value"><asp:Literal ID="litQuizzesTaken" runat="server" Text="0"></asp:Literal></div>
-                    <div class="stat-label">Quizzes Taken</div>
-                </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-value"><asp:Literal ID="litQuizzesTaken" runat="server" Text="0"></asp:Literal></div>
+                <div class="stat-label">Quizzes Taken</div>
+            </div>
 
                 <div class="stat-card">
                     <div class="stat-icon">🔥</div>
