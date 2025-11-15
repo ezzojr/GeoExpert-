@@ -58,7 +58,7 @@ namespace GeoExpert_Assignment.Pages
         {
             try
             {
-                string query = @"SELECT Username, Email, Role, CurrentStreak, CreatedDate 
+                string query = @"SELECT Username, Email, Role, CurrentStreak, CreatedDate, ProfilePicture 
                                 FROM Users 
                                 WHERE UserID = @UserID";
 
@@ -75,12 +75,26 @@ namespace GeoExpert_Assignment.Pages
                     string email = row["Email"].ToString();
                     string role = row["Role"].ToString();
                     DateTime joinedDate = Convert.ToDateTime(row["CreatedDate"]);
+                    string profilePicture = row["ProfilePicture"] != DBNull.Value ? row["ProfilePicture"].ToString() : null;
 
                     // Display profile info
                     litUsername.Text = username;
                     litEmail.Text = email;
                     litJoinedDate.Text = joinedDate.ToString("MMMM dd, yyyy");
-                    litAvatar.Text = GetAvatarEmoji(username);
+
+                    // Show profile picture or emoji avatar
+                    if (!string.IsNullOrEmpty(profilePicture) && System.IO.File.Exists(Server.MapPath(profilePicture)))
+                    {
+                        imgProfilePicture.ImageUrl = profilePicture;
+                        imgProfilePicture.Visible = true;
+                        litAvatar.Visible = false;
+                    }
+                    else
+                    {
+                        litAvatar.Text = GetAvatarEmoji(username);
+                        imgProfilePicture.Visible = false;
+                        litAvatar.Visible = true;
+                    }
 
                     // Populate edit form
                     txtUsername.Text = username;
@@ -94,12 +108,86 @@ namespace GeoExpert_Assignment.Pages
             }
         }
 
+        protected void btnUploadPicture_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (fuProfilePicture.HasFile)
+                {
+                    // Validate file type
+                    string fileExtension = System.IO.Path.GetExtension(fuProfilePicture.FileName).ToLower();
+                    string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif" };
+
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        ShowError("Please upload a valid image file (JPG, JPEG, PNG, or GIF).");
+                        return;
+                    }
+
+                    // Validate file size (max 5MB)
+                    if (fuProfilePicture.PostedFile.ContentLength > 5242880)
+                    {
+                        ShowError("File size must be less than 5MB.");
+                        return;
+                    }
+
+                    // Create uploads directory if it doesn't exist
+                    string uploadsPath = Server.MapPath("~/Uploads/ProfilePictures/");
+                    if (!System.IO.Directory.Exists(uploadsPath))
+                    {
+                        System.IO.Directory.CreateDirectory(uploadsPath);
+                    }
+
+                    // Generate unique filename
+                    string fileName = $"user_{userId}_{Guid.NewGuid()}{fileExtension}";
+                    string filePath = System.IO.Path.Combine(uploadsPath, fileName);
+                    string relativePath = $"~/Uploads/ProfilePictures/{fileName}";
+
+                    // Delete old profile picture if exists
+                    string oldPictureQuery = "SELECT ProfilePicture FROM Users WHERE UserID = @UserID";
+                    SqlParameter[] oldPictureParams = { new SqlParameter("@UserID", userId) };
+                    object oldPictureResult = DBHelper.ExecuteScalar(oldPictureQuery, oldPictureParams);
+
+                    if (oldPictureResult != null && oldPictureResult != DBNull.Value)
+                    {
+                        string oldPicturePath = Server.MapPath(oldPictureResult.ToString());
+                        if (System.IO.File.Exists(oldPicturePath))
+                        {
+                            System.IO.File.Delete(oldPicturePath);
+                        }
+                    }
+
+                    // Save new file
+                    fuProfilePicture.SaveAs(filePath);
+
+                    // Update database
+                    string updateQuery = "UPDATE Users SET ProfilePicture = @ProfilePicture WHERE UserID = @UserID";
+                    SqlParameter[] updateParams = {
+                        new SqlParameter("@ProfilePicture", relativePath),
+                        new SqlParameter("@UserID", userId)
+                    };
+
+                    DBHelper.ExecuteNonQuery(updateQuery, updateParams);
+
+                    // Reload profile
+                    LoadUserProfile();
+
+                    ShowSuccess("Profile picture updated successfully!");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"btnUploadPicture error: {ex.Message}");
+                ShowError("An error occurred while uploading your profile picture. Please try again.");
+            }
+        }
+
         private void LoadUserStats()
         {
             try
             {
-                // Get total quizzes taken
-                string quizzesQuery = "SELECT COUNT(*) FROM UserProgress WHERE UserID = @UserID";
+                // FIXED: Get total quizzes from UserQuizResults
+                string quizzesQuery = "SELECT COUNT(*) FROM UserQuizResults WHERE UserID = @UserID";
                 SqlParameter[] quizzesParams = { new SqlParameter("@UserID", userId) };
                 object quizResult = DBHelper.ExecuteScalar(quizzesQuery, quizzesParams);
                 int quizzesTaken = quizResult != null ? Convert.ToInt32(quizResult) : 0;
@@ -112,15 +200,15 @@ namespace GeoExpert_Assignment.Pages
                 int currentStreak = streakResult != null ? Convert.ToInt32(streakResult) : 0;
                 litCurrentStreak.Text = currentStreak.ToString();
 
-                // Get badges count
-                string badgesQuery = "SELECT COUNT(*) FROM Badges WHERE UserID = @UserID";
+                // FIXED: Get badges count from UserBadges
+                string badgesQuery = "SELECT COUNT(*) FROM UserBadges WHERE UserID = @UserID";
                 SqlParameter[] badgesParams = { new SqlParameter("@UserID", userId) };
                 object badgesResult = DBHelper.ExecuteScalar(badgesQuery, badgesParams);
                 int badgesCount = badgesResult != null ? Convert.ToInt32(badgesResult) : 0;
                 litBadges.Text = badgesCount.ToString();
 
-                // Get total score
-                string scoreQuery = "SELECT ISNULL(SUM(Score), 0) FROM UserProgress WHERE UserID = @UserID";
+                // FIXED: Get total score from UserQuizResults
+                string scoreQuery = "SELECT ISNULL(SUM(Score), 0) FROM UserQuizResults WHERE UserID = @UserID";
                 SqlParameter[] scoreParams = { new SqlParameter("@UserID", userId) };
                 object scoreResult = DBHelper.ExecuteScalar(scoreQuery, scoreParams);
                 int totalScore = scoreResult != null ? Convert.ToInt32(scoreResult) : 0;
@@ -136,20 +224,20 @@ namespace GeoExpert_Assignment.Pages
         {
             try
             {
-                // Countries explored
-                string countriesQuery = "SELECT COUNT(DISTINCT CountryID) FROM UserProgress UP INNER JOIN Quizzes Q ON UP.QuizID = Q.QuizID WHERE UP.UserID = @UserID";
+                // FIXED: Countries explored from UserProgress (with Completed = 1)
+                string countriesQuery = "SELECT COUNT(DISTINCT CountryID) FROM UserProgress WHERE UserID = @UserID AND Completed = 1";
                 SqlParameter[] countriesParams = { new SqlParameter("@UserID", userId) };
                 object countriesResult = DBHelper.ExecuteScalar(countriesQuery, countriesParams);
                 int countriesExplored = countriesResult != null ? Convert.ToInt32(countriesResult) : 0;
 
-                // Quizzes completed
-                string quizzesQuery = "SELECT COUNT(*) FROM UserProgress WHERE UserID = @UserID";
+                // FIXED: Quizzes completed from UserQuizResults
+                string quizzesQuery = "SELECT COUNT(*) FROM UserQuizResults WHERE UserID = @UserID";
                 SqlParameter[] quizzesParams = { new SqlParameter("@UserID", userId) };
                 object quizzesResult = DBHelper.ExecuteScalar(quizzesQuery, quizzesParams);
                 int quizzesCompleted = quizzesResult != null ? Convert.ToInt32(quizzesResult) : 0;
 
-                // Badges earned
-                string badgesQuery = "SELECT COUNT(*) FROM Badges WHERE UserID = @UserID";
+                // FIXED: Badges earned from UserBadges
+                string badgesQuery = "SELECT COUNT(*) FROM UserBadges WHERE UserID = @UserID";
                 SqlParameter[] badgesParams = { new SqlParameter("@UserID", userId) };
                 object badgesResult = DBHelper.ExecuteScalar(badgesQuery, badgesParams);
                 int badgesEarned = badgesResult != null ? Convert.ToInt32(badgesResult) : 0;
@@ -233,7 +321,8 @@ namespace GeoExpert_Assignment.Pages
                     new { BadgeIcon = "🚀", BadgeName = "Overachiever", Description = "Earn 1000 points" },
                 };
 
-                string query = "SELECT BadgeName, AwardedDate AS EarnedDate FROM Badges WHERE UserID = @UserID";
+                // FIXED: Query from UserBadges with EarnedDate column
+                string query = "SELECT BadgeName, EarnedDate FROM UserBadges WHERE UserID = @UserID";
                 SqlParameter[] parameters = { new SqlParameter("@UserID", userId) };
                 DataTable earnedBadges = DBHelper.ExecuteReader(query, parameters);
 
@@ -508,10 +597,18 @@ namespace GeoExpert_Assignment.Pages
 
         private void DeleteUserAccount()
         {
+            // FIXED: Delete from correct tables
             try
             {
-                string deleteBadges = "DELETE FROM Badges WHERE UserID = @UserID";
+                string deleteBadges = "DELETE FROM UserBadges WHERE UserID = @UserID";
                 DBHelper.ExecuteNonQuery(deleteBadges, new[] { new SqlParameter("@UserID", userId) });
+            }
+            catch { /* Table may not exist */ }
+
+            try
+            {
+                string deleteQuizResults = "DELETE FROM UserQuizResults WHERE UserID = @UserID";
+                DBHelper.ExecuteNonQuery(deleteQuizResults, new[] { new SqlParameter("@UserID", userId) });
             }
             catch { /* Table may not exist */ }
 

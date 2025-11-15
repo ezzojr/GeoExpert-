@@ -60,6 +60,15 @@ namespace GeoExpert_Assignment.Pages
         protected global::System.Web.UI.WebControls.LinkButton btnToggleEdit;
 
         /// <summary>
+        /// imgProfilePicture control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Image imgProfilePicture;
+
+        /// <summary>
         /// litAvatar control.
         /// </summary>
         /// <remarks>
@@ -67,6 +76,15 @@ namespace GeoExpert_Assignment.Pages
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litAvatar;
+
+        /// <summary>
+        /// fuProfilePicture control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.FileUpload fuProfilePicture;
 
         /// <summary>
         /// litUsername control.
@@ -94,6 +112,15 @@ namespace GeoExpert_Assignment.Pages
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litJoinedDate;
+
+        /// <summary>
+        /// btnUploadPicture control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnUploadPicture;
 
         /// <summary>
         /// pnlProgressSection control.
@@ -196,13 +223,20 @@ namespace GeoExpert_Assignment.Pages
 
         /// <summary>
         /// streakProgressBar control.
-        /// pnlStatsGrid control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl streakProgressBar;
+
+        /// <summary>
+        /// pnlStatsGrid control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
         protected global::System.Web.UI.WebControls.Panel pnlStatsGrid;
 
         /// <summary>

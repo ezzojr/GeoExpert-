@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web;
 using System.Web.UI;
+using System.Web.UI.HtmlControls;
 
 namespace GeoExpert_Assignment
 {
@@ -11,11 +12,11 @@ namespace GeoExpert_Assignment
             // Handle login visibility
             bool isLoggedIn = Session["UserID"] != null;
 
-            // UPDATED: Set visibility for logged in vs anonymous
+            // Set visibility for logged in vs anonymous
             phLoggedIn.Visible = isLoggedIn;
             phAnonymous.Visible = !isLoggedIn;
 
-            // ADDED: Control logo visibility based on login state
+            // Control logo visibility based on login state
             phLogoLoggedIn.Visible = isLoggedIn;    // Show popup logo when logged in
             phLogoAnonymous.Visible = !isLoggedIn;  // Show normal logo when not logged in
 
@@ -63,24 +64,20 @@ namespace GeoExpert_Assignment
                     RemoveActiveClass(navHome);
                     RemoveActiveClass(navCountriesAnon);
                 }
-            if (Session["UserID"] != null)
-            {
-                phLoggedIn.Visible = true;
-                phAnonymous.Visible = false;
-                lblWelcome.Text = "👋 " + Session["Username"]?.ToString();
 
-                // Show/hide role-specific links
-                string role = Session["Role"]?.ToString();
-                if (role == "Admin")
+                // Set active based on current page
+                if (currentPage.EndsWith("default.aspx") ||
+                    currentPage == "/" ||
+                    currentPage.EndsWith("/geoexpert_assignment/") ||
+                    currentPage.EndsWith("/geoexpert_assignment"))
                 {
                     if (Session["UserID"] == null)
                     {
                         AddActiveClass(navHome);
                     }
-                    lnkAdminPanel.Visible = true;
-                    lnkTeacherPanel.Visible = false;
                 }
-                else if (role == "Teacher")
+                else if (currentPage.Contains("countries.aspx") ||
+                         currentPage.Contains("countrydetail.aspx"))
                 {
                     if (Session["UserID"] != null)
                     {
@@ -112,21 +109,19 @@ namespace GeoExpert_Assignment
             {
                 string currentClass = link.Attributes["class"] ?? "";
                 if (!currentClass.Contains("active"))
-                    lnkAdminPanel.Visible = false;
-                    lnkTeacherPanel.Visible = true;
-                }
-                else
                 {
-                    lnkAdminPanel.Visible = false;
-                    lnkTeacherPanel.Visible = false;
+                    link.Attributes["class"] = (currentClass + " active").Trim();
                 }
             }
-            else
+        }
+
+        private void RemoveActiveClass(HtmlAnchor link)
+        {
+            if (link != null && link.Attributes["class"] != null)
             {
-                phLoggedIn.Visible = false;
-                phAnonymous.Visible = true;
-                lnkAdminPanel.Visible = false;
-                lnkTeacherPanel.Visible = false;
+                link.Attributes["class"] = link.Attributes["class"]
+                    .Replace("active", "")
+                    .Trim();
             }
         }
 
@@ -135,7 +130,6 @@ namespace GeoExpert_Assignment
             Session.Clear();
             Session.Abandon();
 
-            // Expire cookies
             ExpireCookie("Username");
             ExpireCookie("Password");
             ExpireCookie("RememberMe");

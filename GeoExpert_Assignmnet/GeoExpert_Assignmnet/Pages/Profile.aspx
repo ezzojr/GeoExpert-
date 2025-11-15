@@ -43,6 +43,13 @@
             right: 2rem;
         }
 
+        /* Profile Avatar with Upload */
+        .profile-avatar-container {
+            position: relative;
+            width: 150px;
+            margin: 0 auto 1rem;
+        }
+
         .profile-avatar {
             width: 150px;
             height: 150px;
@@ -52,14 +59,49 @@
             align-items: center;
             justify-content: center;
             font-size: 4rem;
-            margin: 0 auto 1rem;
             box-shadow: 0 10px 40px rgba(79, 172, 254, 0.4);
             animation: float 6s ease-in-out infinite;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         @keyframes float {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-10px); }
+        }
+
+        .avatar-upload-btn {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: #000;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            border: 3px solid #0a0a1a;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.5);
+            transition: all 0.3s;
+        }
+
+        .avatar-upload-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.7);
+        }
+
+        .file-input-hidden {
+            display: none;
         }
 
         .profile-username {
@@ -134,6 +176,12 @@
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             border-radius: 10px;
             transition: width 1s ease-out;
+        }
+
+        .progress-sublabel {
+            color: #999;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
         }
 
         /* Stats Grid */
@@ -408,8 +456,17 @@
                 </asp:LinkButton>
             </div>
 
-            <div class="profile-avatar">
-                <asp:Literal ID="litAvatar" runat="server" Text="👤"></asp:Literal>
+            <!-- Profile Avatar with Upload Button -->
+            <div class="profile-avatar-container">
+                <div class="profile-avatar">
+                    <asp:Image ID="imgProfilePicture" runat="server" Visible="false" AlternateText="Profile Picture" />
+                    <asp:Literal ID="litAvatar" runat="server" Text="👤"></asp:Literal>
+                </div>
+                <label for="<%= fuProfilePicture.ClientID %>" class="avatar-upload-btn" title="Upload Profile Picture">
+                    📸
+                </label>
+                <asp:FileUpload ID="fuProfilePicture" runat="server" CssClass="file-input-hidden" 
+                    onchange="uploadProfilePicture()" accept="image/*" />
             </div>
 
             <h1 class="profile-username">
@@ -425,11 +482,16 @@
             </p>
         </div>
 
+        <!-- Hidden button for profile picture upload -->
+        <asp:Button ID="btnUploadPicture" runat="server" OnClick="btnUploadPicture_Click" 
+            Style="display:none;" CausesValidation="false" />
+
         <!-- Progress Section - Only for regular users -->
         <asp:Panel ID="pnlProgressSection" runat="server">
             <div class="progress-section">
                 <h2>📊 Your Learning Progress</h2>
 
+                <!-- Overall Progress -->
                 <div class="progress-item">
                     <div class="progress-header">
                         <div class="progress-label">Overall Progress</div>
@@ -438,104 +500,75 @@
                         </div>
                     </div>
                     <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: 0%;" id="overallProgressBar"></div>
+                        <div id="overallProgressBar" runat="server" class="progress-bar-fill"></div>
+                    </div>
+                    <div class="progress-sublabel">
+                        <asp:Literal ID="litOverallGoals" runat="server" Text="0 of 138"></asp:Literal> goals completed
                     </div>
                 </div>
-                <div class="progress-bar-container">
-                    <div id="overallProgressBar" runat="server" class="progress-bar-fill"></div>
 
-                </div>
-                <div class="progress-sublabel">
-                    <asp:Literal ID="litOverallGoals" runat="server" Text="0 of 138"></asp:Literal> goals completed
-                </div>
-            </div>
-
-            <!-- Countries Explored -->
-                   <div class="progress-item">
-            <div class="progress-header">
-                <div class="progress-label">
-                    🌍 Countries Explored
-                </div>
-                <div class="progress-percentage">
-                    <asp:Literal ID="litCountriesCount" runat="server" Text="0"></asp:Literal>/50
-                </div>
-            </div>
-            <div class="progress-bar-container">
-                <div id="countriesProgressBar" runat="server" class="progress-bar-fill countries"></div>
-            </div>
-        </div>
-
-
-            <!-- Quizzes Completed -->
-                       <div class="progress-item">
-                <div class="progress-header">
-                    <div class="progress-label">
-                        🎯 Quizzes Completed
+                <!-- Countries Explored -->
+                <div class="progress-item">
+                    <div class="progress-header">
+                        <div class="progress-label">🌍 Countries Explored</div>
+                        <div class="progress-percentage">
+                            <asp:Literal ID="litCountriesCount" runat="server" Text="0"></asp:Literal>/50
+                        </div>
                     </div>
                     <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: 0%;" id="countriesProgressBar"></div>
+                        <div id="countriesProgressBar" runat="server" class="progress-bar-fill"></div>
                     </div>
                 </div>
-                <div class="progress-bar-container">
-                    <div id="quizzesProgressBar" runat="server" class="progress-bar-fill quizzes"></div>
-                </div>
-            </div>
 
-
-            <!-- Badges Earned -->
-                       <div class="progress-item">
-                <div class="progress-header">
-                    <div class="progress-label">
-                        🏆 Badges Earned
+                <!-- Quizzes Completed -->
+                <div class="progress-item">
+                    <div class="progress-header">
+                        <div class="progress-label">🎯 Quizzes Completed</div>
+                        <div class="progress-percentage">
+                            <asp:Literal ID="litQuizzesProgress" runat="server" Text="0"></asp:Literal>/50
+                        </div>
                     </div>
                     <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: 0%;" id="quizzesProgressBar"></div>
+                        <div id="quizzesProgressBar" runat="server" class="progress-bar-fill"></div>
                     </div>
                 </div>
-                <div class="progress-bar-container">
-                    <div id="badgesProgressBar" runat="server" class="progress-bar-fill badges"></div>
-                </div>
-            </div>
 
+                <!-- Badges Earned -->
+                <div class="progress-item">
+                    <div class="progress-header">
+                        <div class="progress-label">🏆 Badges Earned</div>
+                        <div class="progress-percentage">
+                            <asp:Literal ID="litBadgesProgress" runat="server" Text="0"></asp:Literal>/8
+                        </div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div id="badgesProgressBar" runat="server" class="progress-bar-fill"></div>
+                    </div>
+                </div>
 
-            <!-- Current Streak -->
-                    <div class="progress-item">
-            <div class="progress-header">
-                <div class="progress-label">
-                    🔥 Current Streak
-                </div>
-                <div class="progress-percentage">
-                    <asp:Literal ID="litStreakProgress" runat="server" Text="0"></asp:Literal>/30 days
-                </div>
-            </div>
-            <div class="progress-bar-container">
-                <div id="streakProgressBar" runat="server" class="progress-bar-fill streak"></div>
-            </div>
-
-            <div class="progress-milestones">
-                <div class="milestone">
-                    <span>7</span><span>🔥</span>
-                </div>
-                <div class="milestone">
-                    <span>14</span><span>⚡</span>
-                </div>
-                <div class="milestone">
-                    <span>21</span><span>💫</span>
-                </div>
-                <div class="milestone">
-                    <span>30</span><span>🌟</span>
+                <!-- Current Streak -->
+                <div class="progress-item">
+                    <div class="progress-header">
+                        <div class="progress-label">🔥 Current Streak</div>
+                        <div class="progress-percentage">
+                            <asp:Literal ID="litStreakProgress" runat="server" Text="0"></asp:Literal>/30 days
+                        </div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div id="streakProgressBar" runat="server" class="progress-bar-fill"></div>
+                    </div>
                 </div>
             </div>
         </asp:Panel>
 
-
-        <!-- Stats Grid -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">🎯</div>
-                <div class="stat-value"><asp:Literal ID="litQuizzesTaken" runat="server" Text="0"></asp:Literal></div>
-                <div class="stat-label">Quizzes Taken</div>
-            </div>
+        <!-- Stats Grid - Only for regular users -->
+        <asp:Panel ID="pnlStatsGrid" runat="server">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-value"><asp:Literal ID="litQuizzesTaken" runat="server" Text="0"></asp:Literal></div>
+                    <div class="stat-label">Quizzes Taken</div>
+                </div>
 
                 <div class="stat-card">
                     <div class="stat-icon">🔥</div>
@@ -693,26 +726,40 @@
             document.getElementById('<%= txtDeleteConfirmPassword.ClientID %>').value = '';
         }
 
+        function uploadProfilePicture() {
+            // Trigger the hidden button to upload picture
+            document.getElementById('<%= btnUploadPicture.ClientID %>').click();
+        }
+
         window.addEventListener('load', function () {
-            const overallPercent = parseInt('<%= litOverallProgress.Text %>') || 0;
-            const overallBar = document.getElementById('overallProgressBar');
-            if (overallBar) overallBar.style.width = overallPercent + '%';
+            try {
+                // Overall progress
+                const overallPercent = parseInt('<%= litOverallProgress.Text %>') || 0;
+                const overallBar = document.getElementById('<%= overallProgressBar.ClientID %>');
+                if (overallBar) overallBar.style.width = overallPercent + '%';
 
-            const countriesCount = parseInt('<%= litCountriesCount.Text %>') || 0;
-            const countriesBar = document.getElementById('countriesProgressBar');
-            if (countriesBar) countriesBar.style.width = (countriesCount / 50 * 100) + '%';
+                // Countries
+                const countriesCount = parseInt('<%= litCountriesCount.Text %>') || 0;
+                const countriesBar = document.getElementById('<%= countriesProgressBar.ClientID %>');
+                if (countriesBar) countriesBar.style.width = (countriesCount / 50 * 100) + '%';
 
-            const quizzesCount = parseInt('<%= litQuizzesProgress.Text %>') || 0;
-            const quizzesBar = document.getElementById('quizzesProgressBar');
-            if (quizzesBar) quizzesBar.style.width = (quizzesCount / 50 * 100) + '%';
+                // Quizzes
+                const quizzesCount = parseInt('<%= litQuizzesProgress.Text %>') || 0;
+                const quizzesBar = document.getElementById('<%= quizzesProgressBar.ClientID %>');
+                if (quizzesBar) quizzesBar.style.width = (quizzesCount / 50 * 100) + '%';
 
-            const badgesCount = parseInt('<%= litBadgesProgress.Text %>') || 0;
-            const badgesBar = document.getElementById('badgesProgressBar');
-            if (badgesBar) badgesBar.style.width = (badgesCount / 8 * 100) + '%';
+                // Badges
+                const badgesCount = parseInt('<%= litBadgesProgress.Text %>') || 0;
+                const badgesBar = document.getElementById('<%= badgesProgressBar.ClientID %>');
+                if (badgesBar) badgesBar.style.width = (badgesCount / 8 * 100) + '%';
 
-            const streakDays = parseInt('<%= litStreakProgress.Text %>') || 0;
-            const streakBar = document.getElementById('streakProgressBar');
-            if (streakBar) streakBar.style.width = (streakDays / 30 * 100) + '%';
+                // Streak
+                const streakDays = parseInt('<%= litStreakProgress.Text %>') || 0;
+                const streakBar = document.getElementById('<%= streakProgressBar.ClientID %>');
+                if (streakBar) streakBar.style.width = (streakDays / 30 * 100) + '%';
+            } catch (ex) {
+                console.error('Progress bar error:', ex);
+            }
         });
     </script>
 </asp:Content>

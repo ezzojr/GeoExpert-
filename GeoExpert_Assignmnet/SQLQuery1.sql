@@ -1,3 +1,2 @@
-﻿UPDATE Users
-SET Role = 'Admin'
-WHERE UserID = 7;
+﻿ALTER TABLE Quizzes
+ADD CreatedBy INT;
