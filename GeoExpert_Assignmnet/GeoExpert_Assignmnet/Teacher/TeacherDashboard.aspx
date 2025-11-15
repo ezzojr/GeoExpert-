@@ -125,7 +125,8 @@
             <h3>🚀 Quick Actions</h3>
             <a href="../Admin/ManageQuizzes.aspx">Manage My Quizzes</a>
             <a href="../Admin/ManageCountries.aspx">Manage Countries</a>
-            <a href="../Pages/UpdateProfile.aspx">Edit Profile</a>
+         
         </div>
     </div>
+
 </asp:Content>

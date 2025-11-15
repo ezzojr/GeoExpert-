@@ -1,6 +1,7 @@
 ﻿<%@ Page Title="Manage Quizzes" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ManageQuizzes.aspx.cs" Inherits="GeoExpert_Assignment.Admin.ManageQuizzes" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
+
     <style>
         .quiz-container {
             background-color: #1c1c1e;
@@ -42,36 +43,12 @@
             font-weight: 600;
         }
 
-        .btn-primary {
-            background-color: #4ea3ff;
-            border: none;
-            color: #fff;
-        }
+        .btn-primary { background-color: #4ea3ff; border: none; }
+        .btn-primary:hover { background-color: #007bff; }
 
-        .btn-primary:hover {
-            background-color: #007bff;
-        }
-
-        .btn-warning {
-            background-color: #ffa500;
-            border: none;
-            color: #000;
-        }
-
-        .btn-warning:hover {
-            background-color: #ff8c00;
-        }
-
-        .btn-secondary {
-            background-color: #6c757d;
-            border: none;
-            color: #fff;
-        }
-
-        .btn-danger {
-            background-color: #ff4d4d;
-            border: none;
-        }
+        .btn-warning { background-color: #ffa500; border: none; color: #000; }
+        .btn-secondary { background-color: #6c757d; border: none; color: #fff; }
+        .btn-danger { background-color: #ff4d4d; border: none; }
 
         .data-table {
             width: 100%;
@@ -82,7 +59,6 @@
         .data-table th {
             background-color: #2e2e31;
             padding: 10px;
-            text-align: left;
             border-bottom: 2px solid #444;
         }
 
@@ -103,22 +79,23 @@
 
     <h2 class="mb-4">Manage Quizzes 📝</h2>
 
+    <!-- Add/Edit Quiz Section -->
     <div class="quiz-container">
         <h3>Add New Quiz Question</h3>
 
         <div class="form-group">
-            <label>Select Country:</label><br />
+            <label>Select Country:</label>
             <asp:DropDownList ID="ddlCountry" runat="server" CssClass="form-control" />
         </div>
 
         <div class="form-group">
-            <label>Question:</label><br />
+            <label>Question:</label>
             <asp:TextBox ID="txtQuestion" runat="server" TextMode="MultiLine" Rows="2" CssClass="form-control" />
             <asp:RequiredFieldValidator ID="rfvQuestion" runat="server"
                 ControlToValidate="txtQuestion" ErrorMessage="*Required" ForeColor="Red" />
         </div>
 
-        <h4>Options (Add 4 options — multiple correct answers supported ✅)</h4>
+        <h4>Options (4 options — multiple correct allowed)</h4>
 
         <div class="form-group">
             <label>Option 1:</label>
@@ -146,42 +123,56 @@
 
         <asp:Button ID="btnAddQuiz" runat="server" Text="Add Quiz" CssClass="btn btn-primary mt-2" OnClick="btnAddQuiz_Click" />
         <asp:Button ID="btnCancel" runat="server" Text="Cancel" CssClass="btn btn-secondary mt-2" OnClick="btnCancel_Click" CausesValidation="false" />
+
         <br />
         <asp:Label ID="lblMessage" runat="server" CssClass="mt-3 d-block" ForeColor="LightGreen"></asp:Label>
     </div>
 
     <h3>All Quizzes</h3>
     <asp:GridView ID="gvQuizzes" runat="server" AutoGenerateColumns="False"
-    CssClass="table" OnRowCommand="gvQuizzes_RowCommand">
-    <Columns>
-        <asp:BoundField DataField="QuizID" HeaderText="Quiz ID" />
-        <asp:BoundField DataField="CountryName" HeaderText="Country" />
-        <asp:BoundField DataField="Question" HeaderText="Question" />
-        <asp:BoundField DataField="CreatedBy" HeaderText="Created By" />
+        CssClass="table" OnRowCommand="gvQuizzes_RowCommand">
 
-        <asp:TemplateField HeaderText="Actions">
-            <ItemTemplate>
-                <asp:Button ID="btnEditQuiz" runat="server" Text="Edit"
-                    CssClass="btn btn-warning"
-                    CommandName="EditQuiz"
-                    CommandArgument='<%# Eval("QuizID") %>'
-                    CausesValidation="false" />
+        <Columns>
+            <asp:BoundField DataField="QuizID" HeaderText="Quiz ID" />
+            <asp:BoundField DataField="CountryName" HeaderText="Country" />
+            <asp:BoundField DataField="Question" HeaderText="Question" />
+            <asp:BoundField DataField="CreatedBy" HeaderText="Created By" />
 
-                <asp:Button ID="btnViewSolvers" runat="server" Text="View Solvers"
-                    CssClass="btn btn-secondary"
-                    CommandName="ViewSolvers"
-                    CommandArgument='<%# Eval("QuizID") %>'
-                    CausesValidation="false" />
+            <asp:TemplateField HeaderText="Actions">
+                <ItemTemplate>
 
-                <asp:Button ID="btnDeleteQuiz" runat="server" Text="Delete"
-                    CssClass="btn btn-danger"
-                    CommandName="DeleteQuiz"
-                    CommandArgument='<%# Eval("QuizID") %>'
-                    OnClientClick="return confirm('Are you sure you want to delete this quiz?');"
-                    CausesValidation="false" />
-            </ItemTemplate>
-        </asp:TemplateField>
-    </Columns>
-</asp:GridView>
+                    <asp:Button ID="btnEditQuiz" runat="server" Text="Edit"
+                        CssClass="btn btn-warning"
+                        CommandName="EditQuiz"
+                        CommandArgument='<%# Eval("QuizID") %>' />
+
+                    <asp:Button ID="btnViewSolvers" runat="server" Text="View Solvers"
+                        CssClass="btn btn-secondary"
+                        CommandName="ViewSolvers"
+                        CommandArgument='<%# Eval("QuizID") %>' />
+
+                    <asp:Button ID="btnDeleteQuiz" runat="server" Text="Delete"
+                        CssClass="btn btn-danger"
+                        CommandName="DeleteQuiz"
+                        CommandArgument='<%# Eval("QuizID") %>'
+                        OnClientClick="return confirm('Are you sure you want to delete this quiz?');" />
+
+                </ItemTemplate>
+            </asp:TemplateField>
+        </Columns>
+
+    </asp:GridView>
+
+    <!-- Back Button -->
+    <div style="margin-top: 2rem; text-align: center;">
+        <asp:HyperLink ID="lnkBackToDashboard" runat="server"
+            NavigateUrl="~/Admin/Dashboard.aspx"
+            CssClass="btn btn-secondary"
+            style="display: inline-block; padding: 1rem 2rem; background: rgba(79,172,254,0.1);
+                   color: #4facfe; border: 2px solid rgba(79,172,254,0.3);
+                   border-radius: 12px; text-decoration: none; font-weight: bold;">
+            ← Back to Dashboard
+        </asp:HyperLink>
+    </div>
 
 </asp:Content>

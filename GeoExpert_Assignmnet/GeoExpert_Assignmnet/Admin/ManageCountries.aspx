@@ -22,7 +22,8 @@
             <asp:FileUpload ID="fuFlagImage" runat="server" CssClass="form-control" accept="image/*" />
             <small style="color: #888;">Upload flag image (JPG, PNG, GIF) - Max 5MB</small>
             <br />
-            <asp:Image ID="imgPreview" runat="server" Width="100" Height="60" Visible="false" style="margin-top: 10px; border: 1px solid #ddd;" />
+            <asp:Image ID="imgPreview" runat="server" Width="100" Height="60" Visible="false"
+                       style="margin-top: 10px; border: 1px solid #ddd;" />
             <asp:HiddenField ID="hfExistingFlagPath" runat="server" />
         </div>
 
@@ -57,6 +58,7 @@
             CssClass="btn btn-primary" Visible="false" OnClick="btnUpdate_Click" />
         <asp:Button ID="btnCancel" runat="server" Text="Cancel"
             CssClass="btn" Visible="false" OnClick="btnCancel_Click" CausesValidation="false" />
+
         <br />
         <asp:Label ID="lblMessage" runat="server" ForeColor="Green"></asp:Label>
     </div>
@@ -70,45 +72,51 @@
         <Columns>
             <asp:BoundField DataField="CountryID" HeaderText="ID" />
             <asp:BoundField DataField="Name" HeaderText="Country" />
+
             <asp:TemplateField HeaderText="Flag">
                 <ItemTemplate>
                     <img src='<%# ResolveUrl(Eval("FlagImage").ToString()) %>' alt="Flag" width="50" height="30" />
                 </ItemTemplate>
             </asp:TemplateField>
+
             <asp:BoundField DataField="FoodName" HeaderText="Food" />
             <asp:BoundField DataField="FunFact" HeaderText="Fun Fact" />
             <asp:BoundField DataField="ViewCount" HeaderText="Views" />
+
             <asp:TemplateField HeaderText="Actions">
                 <ItemTemplate>
                     <asp:Button ID="btnEdit" runat="server" Text="Edit"
                         CommandName="EditCountry" CommandArgument='<%# Eval("CountryID") %>'
                         CssClass="btn btn-primary" CausesValidation="false" />
+
                     <asp:Button ID="btnDelete" runat="server" Text="Delete"
                         CommandName="DeleteCountry" CommandArgument='<%# Eval("CountryID") %>'
                         CssClass="btn btn-danger"
-                        OnClientClick="return confirm(&quot;Are you sure you want to delete this country?&quot;);"
+                        OnClientClick="return confirm('Are you sure you want to delete this country?');"
                         CausesValidation="false" />
                 </ItemTemplate>
             </asp:TemplateField>
         </Columns>
     </asp:GridView>
 
-    <style>
-        #<%= lblMessage.ClientID %> { transition: opacity 1s; }
-        .form-control {
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            width: 100%;
-            max-width: 400px;
-        }
-    </style>
-
+    <!-- Fade out message -->
     <script>
         setTimeout(() => {
             const msg = document.getElementById('<%= lblMessage.ClientID %>');
             if (msg) msg.style.opacity = 0;
         }, 3000);
     </script>
+
+    <!-- Back Button -->
+    <div style="margin-top: 2rem; text-align: center;">
+        <asp:HyperLink ID="lnkBackToDashboard" runat="server"
+            NavigateUrl="~/Admin/Dashboard.aspx"
+            CssClass="btn btn-secondary"
+            style="display: inline-block; padding: 1rem 2rem; background: rgba(79,172,254,0.1);
+                   color: #4facfe; border: 2px solid rgba(79,172,254,0.3);
+                   border-radius: 12px; text-decoration: none; font-weight: bold;">
+            ← Back to Dashboard
+        </asp:HyperLink>
+    </div>
 
 </asp:Content>
