@@ -136,10 +136,7 @@ namespace GeoExpert_Assignment.Pages
                 System.Diagnostics.Debug.WriteLine($"Dropdown SelectedIndex: {ddlRegion.SelectedIndex}");
                 System.Diagnostics.Debug.WriteLine($"Dropdown Items Count: {ddlRegion.Items.Count}");
 
-                // SHOW ALERT TO USER
-                ClientScript.RegisterStartupScript(this.GetType(), "searchAlert",
-                    $"alert('Search: [{searchTerm}]\\nRegion: [{region}]\\nSelected Index: {ddlRegion.SelectedIndex}');", true);
-
+        
                 LoadCountries(1, pageSizeDefault, searchTerm, region);
             }
             catch (Exception ex)
