@@ -11,9 +11,14 @@ namespace GeoExpert_Assignment
         {
             // Handle login visibility
             bool isLoggedIn = Session["UserID"] != null;
+
+            // UPDATED: Set visibility for logged in vs anonymous
             phLoggedIn.Visible = isLoggedIn;
             phAnonymous.Visible = !isLoggedIn;
-            phHomeLink.Visible = !isLoggedIn;
+
+            // ADDED: Control logo visibility based on login state
+            phLogoLoggedIn.Visible = isLoggedIn;    // Show popup logo when logged in
+            phLogoAnonymous.Visible = !isLoggedIn;  // Show normal logo when not logged in
 
             if (isLoggedIn)
             {
@@ -42,18 +47,22 @@ namespace GeoExpert_Assignment
                 string currentPage = Request.Url.AbsolutePath.ToLower();
 
                 // Clear all active states first
-                RemoveActiveClass(navHome);
-                RemoveActiveClass(navCountries);
-                RemoveActiveClass(navQuizzes);
-
                 if (Session["UserID"] != null)
                 {
+                    // For logged in users
+                    RemoveActiveClass(navCountries);
                     RemoveActiveClass(navProfile);
 
                     if (Session["Role"] != null && Session["Role"].ToString() == "Admin")
                     {
                         RemoveActiveClass(navAdmin);
                     }
+                }
+                else
+                {
+                    // For anonymous users
+                    RemoveActiveClass(navHome);
+                    RemoveActiveClass(navCountriesAnon);
                 }
 
                 // Set active based on current page
@@ -62,16 +71,22 @@ namespace GeoExpert_Assignment
                     currentPage.EndsWith("/geoexpert_assignment/") ||
                     currentPage.EndsWith("/geoexpert_assignment"))
                 {
-                    AddActiveClass(navHome);
+                    if (Session["UserID"] == null)
+                    {
+                        AddActiveClass(navHome);
+                    }
                 }
                 else if (currentPage.Contains("countries.aspx") ||
                          currentPage.Contains("countrydetail.aspx"))
                 {
-                    AddActiveClass(navCountries);
-                }
-                else if (currentPage.Contains("quiz"))
-                {
-                    AddActiveClass(navQuizzes);
+                    if (Session["UserID"] != null)
+                    {
+                        AddActiveClass(navCountries);
+                    }
+                    else
+                    {
+                        AddActiveClass(navCountriesAnon);
+                    }
                 }
                 else if (currentPage.Contains("profile.aspx"))
                 {

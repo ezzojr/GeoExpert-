@@ -33,31 +33,22 @@ namespace GeoExpert_Assignment
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
 
         /// <summary>
-        /// navHome control.
+        /// phLogoLoggedIn control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor navHome;
+        protected global::System.Web.UI.WebControls.PlaceHolder phLogoLoggedIn;
 
         /// <summary>
-        /// navCountries control.
+        /// phLogoAnonymous control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor navCountries;
-
-        /// <summary>
-        /// navQuizzes control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor navQuizzes;
+        protected global::System.Web.UI.WebControls.PlaceHolder phLogoAnonymous;
 
         /// <summary>
         /// phLoggedIn control.
@@ -67,6 +58,15 @@ namespace GeoExpert_Assignment
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.PlaceHolder phLoggedIn;
+
+        /// <summary>
+        /// navCountries control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor navCountries;
 
         /// <summary>
         /// lblWelcome control.
@@ -123,22 +123,22 @@ namespace GeoExpert_Assignment
         protected global::System.Web.UI.WebControls.PlaceHolder phAnonymous;
 
         /// <summary>
-        /// phHomeLink control.
+        /// navHome control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phHomeLink;
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor navHome;
 
         /// <summary>
-        /// A1 control.
+        /// navCountriesAnon control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor A1;
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor navCountriesAnon;
 
         /// <summary>
         /// MainContent control.
