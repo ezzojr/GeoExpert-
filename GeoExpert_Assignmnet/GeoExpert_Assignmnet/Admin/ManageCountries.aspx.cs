@@ -165,7 +165,6 @@ namespace GeoExpert_Assignment.Admin
                         ViewState["EditCountryID"] = countryId;
 
                     txtName.Text = row["Name"].ToString();
-                    txtRegion.Text = row["Region"].ToString();
                     imgCurrentFlag.ImageUrl = row["FlagImage"].ToString();
                     imgCurrentFlag.Visible = true;
                     txtFoodName.Text = row["FoodName"].ToString();
@@ -173,6 +172,7 @@ namespace GeoExpert_Assignment.Admin
                     txtCulture.Text = row["CultureInfo"].ToString();
                     txtVideoURL.Text = row["VideoURL"].ToString();
                     txtFunFact.Text = row["FunFact"].ToString();
+                    txtRegion.Text = row["Region"].ToString();
 
                         // Store existing flag path
                         string existingFlag = row["FlagImage"].ToString();
@@ -323,6 +323,7 @@ namespace GeoExpert_Assignment.Admin
         private void ClearFields()
         {
             txtName.Text = "";
+            imgCurrentFlag.Visible = false;
             txtRegion.Text = "";
             txtFoodName.Text = "";
             txtFoodDesc.Text = "";
@@ -331,6 +332,7 @@ namespace GeoExpert_Assignment.Admin
             txtFunFact.Text = "";
             hfExistingFlagPath.Value = "";
             imgPreview.Visible = false;
+            txtRegion.Text = "";
         }
         //private string GetCurrentFlagPath(int id)
         //{
