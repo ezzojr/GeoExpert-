@@ -232,6 +232,11 @@
                         <asp:PlaceHolder ID="phAdmin" runat="server" Visible="false">
                             <a href="~/Admin/Dashboard.aspx" class="nav-link" id="navAdmin" runat="server">Admin</a>
                         </asp:PlaceHolder>
+                        <asp:HyperLink ID="lnkAdminPanel" runat="server" NavigateUrl="~/Admin/Dashboard.aspx" 
+                                       CssClass="nav-link" Visible="false">Admin</asp:HyperLink>
+        
+                        <asp:HyperLink ID="lnkTeacherPanel" runat="server" NavigateUrl="~/Teacher/TeacherDashboard.aspx" 
+                                       CssClass="nav-link" Visible="false">Teacher Panel</asp:HyperLink>
 
                         <!-- Logout button -->
                         <asp:LinkButton ID="btnLogout" runat="server" CssClass="btn btn-secondary" OnClick="btnLogout_Click">Logout</asp:LinkButton>

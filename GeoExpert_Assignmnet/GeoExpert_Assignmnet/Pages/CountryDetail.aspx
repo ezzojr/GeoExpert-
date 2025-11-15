@@ -1,5 +1,4 @@
 ﻿<%@ Page Title="Country Details" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="CountryDetail.aspx.cs" Inherits="GeoExpert_Assignment.Pages.CountryDetail" %>
-
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <style>
         /* Hero Section with Flag */
@@ -489,16 +488,6 @@
                     <p style="text-align: center; color: #666; padding: 2rem;">📹 No video available for this country yet.</p>
                 </asp:Panel>
             </div>
-
-            <!-- Action Buttons -->
-            <div class="action-buttons">
-                <asp:HyperLink ID="btnTakeQuiz" runat="server" CssClass="btn btn-primary">
-                    🎯 Take Quiz on this Country
-                </asp:HyperLink>
-                <a href="Countries.aspx" class="btn btn-secondary">
-                    ← Back to Countries
-                </a>
-            </div>
         </div>
 
         <!-- Sidebar -->
@@ -537,5 +526,17 @@
             </div>
         </div>
     </div>
+
+    <!-- Quiz Button - Only visible for regular users -->
+    <asp:Panel ID="pnlQuizButton" runat="server" Visible="false">
+        <div class="action-buttons">
+            <asp:HyperLink ID="btnTakeQuiz" runat="server" CssClass="btn btn-primary">
+                🎯 Take Quiz on this Country
+            </asp:HyperLink>
+            <a href="Countries.aspx" class="btn btn-secondary">
+                ← Back to Countries
+            </a>
+        </div>
+    </asp:Panel>
 
 </asp:Content>

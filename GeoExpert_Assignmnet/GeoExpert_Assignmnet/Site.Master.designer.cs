@@ -87,22 +87,22 @@ namespace GeoExpert_Assignment
         protected global::System.Web.UI.HtmlControls.HtmlAnchor navProfile;
 
         /// <summary>
-        /// phAdmin control.
+        /// lnkAdminPanel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phAdmin;
+        protected global::System.Web.UI.WebControls.HyperLink lnkAdminPanel;
 
         /// <summary>
-        /// navAdmin control.
+        /// lnkTeacherPanel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor navAdmin;
+        protected global::System.Web.UI.WebControls.HyperLink lnkTeacherPanel;
 
         /// <summary>
         /// btnLogout control.

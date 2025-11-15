@@ -18,8 +18,12 @@
         </div>
 
         <div class="form-group">
-            <label>Flag Image URL:</label>
-            <asp:TextBox ID="txtFlagImage" runat="server"></asp:TextBox>
+            <label>Flag Image:</label>
+            <asp:FileUpload ID="fuFlagImage" runat="server" CssClass="form-control" accept="image/*" />
+            <small style="color: #888;">Upload flag image (JPG, PNG, GIF) - Max 5MB</small>
+            <br />
+            <asp:Image ID="imgPreview" runat="server" Width="100" Height="60" Visible="false" style="margin-top: 10px; border: 1px solid #ddd;" />
+            <asp:HiddenField ID="hfExistingFlagPath" runat="server" />
         </div>
 
         <div class="form-group">
@@ -52,7 +56,7 @@
         <asp:Button ID="btnUpdate" runat="server" Text="Update Country"
             CssClass="btn btn-primary" Visible="false" OnClick="btnUpdate_Click" />
         <asp:Button ID="btnCancel" runat="server" Text="Cancel"
-            CssClass="btn" Visible="false" OnClick="btnCancel_Click" />
+            CssClass="btn" Visible="false" OnClick="btnCancel_Click" CausesValidation="false" />
         <br />
         <asp:Label ID="lblMessage" runat="server" ForeColor="Green"></asp:Label>
     </div>
@@ -68,7 +72,7 @@
             <asp:BoundField DataField="Name" HeaderText="Country" />
             <asp:TemplateField HeaderText="Flag">
                 <ItemTemplate>
-                    <img src='<%# Eval("FlagImage") %>' alt="Flag" width="50" height="30" />
+                    <img src='<%# ResolveUrl(Eval("FlagImage").ToString()) %>' alt="Flag" width="50" height="30" />
                 </ItemTemplate>
             </asp:TemplateField>
             <asp:BoundField DataField="FoodName" HeaderText="Food" />
@@ -91,6 +95,13 @@
 
     <style>
         #<%= lblMessage.ClientID %> { transition: opacity 1s; }
+        .form-control {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+            max-width: 400px;
+        }
     </style>
 
     <script>

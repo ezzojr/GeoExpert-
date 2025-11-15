@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Web;
 using System.Web.UI;
-using System.Web.UI.HtmlControls;
 
 namespace GeoExpert_Assignment
 {
@@ -64,20 +63,24 @@ namespace GeoExpert_Assignment
                     RemoveActiveClass(navHome);
                     RemoveActiveClass(navCountriesAnon);
                 }
+            if (Session["UserID"] != null)
+            {
+                phLoggedIn.Visible = true;
+                phAnonymous.Visible = false;
+                lblWelcome.Text = "👋 " + Session["Username"]?.ToString();
 
-                // Set active based on current page
-                if (currentPage.EndsWith("default.aspx") ||
-                    currentPage == "/" ||
-                    currentPage.EndsWith("/geoexpert_assignment/") ||
-                    currentPage.EndsWith("/geoexpert_assignment"))
+                // Show/hide role-specific links
+                string role = Session["Role"]?.ToString();
+                if (role == "Admin")
                 {
                     if (Session["UserID"] == null)
                     {
                         AddActiveClass(navHome);
                     }
+                    lnkAdminPanel.Visible = true;
+                    lnkTeacherPanel.Visible = false;
                 }
-                else if (currentPage.Contains("countries.aspx") ||
-                         currentPage.Contains("countrydetail.aspx"))
+                else if (role == "Teacher")
                 {
                     if (Session["UserID"] != null)
                     {
@@ -109,19 +112,21 @@ namespace GeoExpert_Assignment
             {
                 string currentClass = link.Attributes["class"] ?? "";
                 if (!currentClass.Contains("active"))
+                    lnkAdminPanel.Visible = false;
+                    lnkTeacherPanel.Visible = true;
+                }
+                else
                 {
-                    link.Attributes["class"] = (currentClass + " active").Trim();
+                    lnkAdminPanel.Visible = false;
+                    lnkTeacherPanel.Visible = false;
                 }
             }
-        }
-
-        private void RemoveActiveClass(HtmlAnchor link)
-        {
-            if (link != null && link.Attributes["class"] != null)
+            else
             {
-                link.Attributes["class"] = link.Attributes["class"]
-                    .Replace("active", "")
-                    .Trim();
+                phLoggedIn.Visible = false;
+                phAnonymous.Visible = true;
+                lnkAdminPanel.Visible = false;
+                lnkTeacherPanel.Visible = false;
             }
         }
 
@@ -130,6 +135,7 @@ namespace GeoExpert_Assignment
             Session.Clear();
             Session.Abandon();
 
+            // Expire cookies
             ExpireCookie("Username");
             ExpireCookie("Password");
             ExpireCookie("RememberMe");

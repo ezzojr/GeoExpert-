@@ -12,6 +12,17 @@ namespace GeoExpert_Assignment.Pages
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            // Block Admin and Teacher from taking quizzes
+            if (Session["Role"] != null)
+            {
+                string role = Session["Role"].ToString();
+                if (role == "Admin" || role == "Teacher")
+                {
+                    Response.Redirect("~/Pages/Countries.aspx");
+                    return;
+                }
+            }
+
             if (!IsPostBack)
             {
                 // Check if user is logged in
