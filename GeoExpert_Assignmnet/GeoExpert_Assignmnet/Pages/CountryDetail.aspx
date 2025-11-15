@@ -488,16 +488,6 @@
                     <p style="text-align: center; color: #666; padding: 2rem;">📹 No video available for this country yet.</p>
                 </asp:Panel>
             </div>
-
-            <!-- Action Buttons -->
-            <div class="action-buttons">
-                <asp:HyperLink ID="btnTakeQuiz" runat="server" CssClass="btn btn-primary">
-                    🎯 Take Quiz on this Country
-                </asp:HyperLink>
-                <a href="Countries.aspx" class="btn btn-secondary">
-                    ← Back to Countries
-                </a>
-            </div>
         </div>
 
         <!-- Sidebar -->
@@ -535,11 +525,18 @@
                 </asp:Repeater>
             </div>
         </div>
-        
-        <!-- Only show quiz button for regular users -->
-        <asp:Panel ID="pnlQuizButton" runat="server" Visible="false">
-            <a href='Quiz.aspx?countryid=<%=Request.QueryString["id"] %>' class="btn btn-primary">Take Quiz on this Country</a>
-        </asp:Panel>
     </div>
+
+    <!-- Quiz Button - Only visible for regular users -->
+    <asp:Panel ID="pnlQuizButton" runat="server" Visible="false">
+        <div class="action-buttons">
+            <asp:HyperLink ID="btnTakeQuiz" runat="server" CssClass="btn btn-primary">
+                🎯 Take Quiz on this Country
+            </asp:HyperLink>
+            <a href="Countries.aspx" class="btn btn-secondary">
+                ← Back to Countries
+            </a>
+        </div>
+    </asp:Panel>
 
 </asp:Content>

@@ -9,8 +9,6 @@ namespace GeoExpert_Assignment.Pages
 {
     public partial class CountryDetail : Page
     {
-        private int countryId = 0;
-
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -29,30 +27,21 @@ namespace GeoExpert_Assignment.Pages
                         DBHelper.ExecuteNonQuery(updateQuery, param);
 
                         LoadCountryDetails();
+                        LoadQuizCount();
+                        LoadRelatedCountries();
+
+                        // Quiz Button
+                        btnTakeQuiz.NavigateUrl = $"Quiz.aspx?countryid={countryId}";
                     }
                     else
                     {
                         Response.Redirect("~/Pages/Countries.aspx");
                     }
-
-                    // Quiz Count
-                    LoadQuizCount();
-
-                    // Quiz Button
-                    btnTakeQuiz.NavigateUrl = $"Quiz.aspx?countryid={countryId}";
-
-                    // Set page title
-                    Page.Title = $"{countryName} - GeoExpert";
                 }
                 else
                 {
                     Response.Redirect("~/Pages/Countries.aspx");
                 }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"LoadCountryDetails error: {ex.Message}");
-                Response.Redirect("Countries.aspx");
             }
         }
 
@@ -80,43 +69,103 @@ namespace GeoExpert_Assignment.Pages
             }
         }
 
-        private void UpdateViewCount()
-        {
-            try
-            {
-                string query = "UPDATE Countries SET ViewCount = ISNULL(ViewCount, 0) + 1 WHERE CountryID = @CountryID";
-                SqlParameter[] parameters = {
-                    new SqlParameter("@CountryID", countryId)
-                };
-
-                DBHelper.ExecuteNonQuery(query, parameters);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"UpdateViewCount error: {ex.Message}");
-                // Don't crash page if view count update fails
-            }
-        }
-
-        private void LoadRelatedCountries()
+        private void LoadCountryDetails()
         {
             if (Request.QueryString["id"] != null)
             {
-                // Get 3 other countries from the same region
-                string query = @"SELECT TOP 3 CountryID, Name, FoodName 
-                                FROM Countries 
-                                WHERE Region = (SELECT Region FROM Countries WHERE CountryID = @CountryID) 
-                                AND CountryID != @CountryID 
-                                ORDER BY NEWID()"; // Random order
+                int countryId = Convert.ToInt32(Request.QueryString["id"]);
 
                 string query = "SELECT * FROM Countries WHERE CountryID = @CountryID";
                 SqlParameter[] selectParams = { new SqlParameter("@CountryID", countryId) };
                 DataTable dt = DBHelper.ExecuteReader(query, selectParams);
 
-                if (dt.Rows.Count > 0)
+                if (dt.Rows.Count == 0)
                 {
-                    rptRelated.DataSource = dt;
-                    rptRelated.DataBind();
+                    Response.Redirect("~/Pages/Countries.aspx");
+                    return;
+                }
+
+                DataRow row = dt.Rows[0];
+
+                string countryName = row["Name"].ToString();
+                string region = row["Region"] != DBNull.Value ? row["Region"].ToString() : "Unknown";
+
+                litCountryName.Text = countryName;
+                litBreadcrumb.Text = countryName;
+                litFlag.Text = GetFlagEmoji(countryName);
+                litRegion.Text = region;
+                litViews.Text = row["ViewCount"].ToString();
+                litViewCount.Text = row["ViewCount"].ToString();
+                litRelatedRegion.Text = region;
+
+                litFoodName.Text = row["FoodName"].ToString();
+                litFoodDesc.Text = row["FoodDescription"].ToString();
+                litCulture.Text = row["CultureInfo"].ToString();
+                litFunFact.Text = row["FunFact"].ToString();
+
+                // Video
+                string videoUrl = row["VideoURL"].ToString();
+                if (!string.IsNullOrEmpty(videoUrl))
+                {
+                    string embedUrl = ConvertToEmbedURL(videoUrl);
+                    litVideo.Text = $"<iframe src='{embedUrl}' allowfullscreen></iframe>";
+                    pnlVideo.Visible = true;
+                    pnlNoVideo.Visible = false;
+                }
+                else
+                {
+                    pnlVideo.Visible = false;
+                    pnlNoVideo.Visible = true;
+                }
+
+                // Set page title
+                Page.Title = $"{countryName} - GeoExpert";
+            }
+        }
+
+        private void LoadQuizCount()
+        {
+            try
+            {
+                if (Request.QueryString["id"] != null)
+                {
+                    int countryId = Convert.ToInt32(Request.QueryString["id"]);
+                    string query = "SELECT COUNT(*) FROM Quizzes WHERE CountryID = @CountryID";
+                    SqlParameter[] parameters = { new SqlParameter("@CountryID", countryId) };
+                    int count = Convert.ToInt32(DBHelper.ExecuteScalar(query, parameters));
+                    litQuizCount.Text = count.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"LoadQuizCount error: {ex.Message}");
+                litQuizCount.Text = "0";
+            }
+        }
+
+        private void LoadRelatedCountries()
+        {
+            try
+            {
+                if (Request.QueryString["id"] != null)
+                {
+                    int countryId = Convert.ToInt32(Request.QueryString["id"]);
+
+                    // Get 3 other countries from the same region
+                    string query = @"SELECT TOP 3 CountryID, Name, FoodName 
+                                    FROM Countries 
+                                    WHERE Region = (SELECT Region FROM Countries WHERE CountryID = @CountryID) 
+                                    AND CountryID != @CountryID 
+                                    ORDER BY NEWID()";
+
+                    SqlParameter[] parameters = { new SqlParameter("@CountryID", countryId) };
+                    DataTable dt = DBHelper.ExecuteReader(query, parameters);
+
+                    if (dt.Rows.Count > 0)
+                    {
+                        rptRelated.DataSource = dt;
+                        rptRelated.DataBind();
+                    }
                 }
             }
             catch (Exception ex)
@@ -132,14 +181,8 @@ namespace GeoExpert_Assignment.Pages
                 if (string.IsNullOrEmpty(url))
                     return "";
 
-                litCountryName.Text = row["Name"].ToString();
-                litFoodName.Text = row["FoodName"].ToString();
-                litFoodDesc.Text = row["FoodDescription"].ToString();
-                litCulture.Text = row["CultureInfo"].ToString();
-                litFunFact.Text = row["FunFact"].ToString();
-
-                string videoUrl = row["VideoURL"].ToString();
-                if (!string.IsNullOrEmpty(videoUrl))
+                // Convert youtube.com/watch?v=VIDEO_ID to youtube.com/embed/VIDEO_ID
+                if (url.Contains("youtube.com/watch?v="))
                 {
                     string videoId = url.Split(new[] { "v=" }, StringSplitOptions.None)[1];
                     if (videoId.Contains("&"))
@@ -156,6 +199,7 @@ namespace GeoExpert_Assignment.Pages
                     return $"https://www.youtube.com/embed/{videoId}";
                 }
 
+                // Already an embed URL or other format
                 return url;
             }
             catch

@@ -51,15 +51,6 @@ namespace GeoExpert_Assignment
         protected global::System.Web.UI.HtmlControls.HtmlAnchor navCountries;
 
         /// <summary>
-        /// navQuizzes control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor navQuizzes;
-
-        /// <summary>
         /// phLoggedIn control.
         /// </summary>
         /// <remarks>
@@ -87,22 +78,22 @@ namespace GeoExpert_Assignment
         protected global::System.Web.UI.HtmlControls.HtmlAnchor navProfile;
 
         /// <summary>
-        /// phAdmin control.
+        /// lnkAdminPanel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phAdmin;
+        protected global::System.Web.UI.WebControls.HyperLink lnkAdminPanel;
 
         /// <summary>
-        /// navAdmin control.
+        /// lnkTeacherPanel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor navAdmin;
+        protected global::System.Web.UI.WebControls.HyperLink lnkTeacherPanel;
 
         /// <summary>
         /// btnLogout control.
@@ -121,24 +112,6 @@ namespace GeoExpert_Assignment
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.PlaceHolder phAnonymous;
-
-        /// <summary>
-        /// phHomeLink control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phHomeLink;
-
-        /// <summary>
-        /// A1 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor A1;
 
         /// <summary>
         /// MainContent control.

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Security.Cryptography;
+using System.Text;
 using System.Web.UI;
 
 namespace GeoExpert_Assignment.Pages
@@ -17,6 +19,8 @@ namespace GeoExpert_Assignment.Pages
                     string role = Session["Role"]?.ToString();
                     if (role == "Admin")
                         Response.Redirect("~/Admin/Dashboard.aspx", false);
+                    else if (role == "Teacher")
+                        Response.Redirect("~/Teacher/TeacherDashboard.aspx", false);
                     else
                         Response.Redirect("~/Default.aspx", false);
                     Context.ApplicationInstance.CompleteRequest();
@@ -53,7 +57,7 @@ namespace GeoExpert_Assignment.Pages
                     return;
                 }
 
-                // Get lockout info (SAFE - handle NULL)
+                // Get lockout info
                 object failedAttemptsObj = lockDt.Rows[0]["FailedLoginAttempts"];
                 int failedAttempts = (failedAttemptsObj != null && failedAttemptsObj != DBNull.Value)
                                     ? Convert.ToInt32(failedAttemptsObj)
@@ -76,30 +80,25 @@ namespace GeoExpert_Assignment.Pages
                     }
                     else
                     {
-                        // Lock period expired - reset (NEW PARAMETERS!)
+                        // Lock period expired - reset
                         string resetLockQuery = "UPDATE Users SET FailedLoginAttempts = 0, LockoutEnd = NULL WHERE Username = @Username";
                         SqlParameter[] resetParams = { new SqlParameter("@Username", username) };
                         DBHelper.ExecuteNonQuery(resetLockQuery, resetParams);
                     }
                 }
 
-                // Verify credentials (NEW PARAMETERS!)
+                // Verify credentials
                 string query = "SELECT UserID, Username, Role FROM Users WHERE Username = @Username AND Password = @Password";
                 SqlParameter[] parameters = {
                     new SqlParameter("@Username", username),
                     new SqlParameter("@Password", hashedPassword)
                 };
 
-                // Create session
-                Session["UserID"] = Convert.ToInt32(dt.Rows[0]["UserID"]);
-                Session["Username"] = dt.Rows[0]["Username"].ToString();
-                Session["Role"] = dt.Rows[0]["Role"].ToString();
+                DataTable dt = DBHelper.ExecuteReader(query, parameters);
 
-
-                // 🔹 Remember Me
-                if (Request.Form["rememberMe"] == "on")
+                if (dt.Rows.Count > 0)
                 {
-                    // ✅ LOGIN SUCCESS
+                    // LOGIN SUCCESS
                     DataRow row = dt.Rows[0];
                     int userId = Convert.ToInt32(row["UserID"]);
                     string role = row["Role"].ToString();
@@ -109,7 +108,7 @@ namespace GeoExpert_Assignment.Pages
                     Session["Username"] = row["Username"].ToString();
                     Session["Role"] = role;
 
-                    // Reset failed attempts (NEW PARAMETERS!)
+                    // Reset failed attempts
                     string resetQuery = "UPDATE Users SET FailedLoginAttempts = 0, LockoutEnd = NULL WHERE Username = @Username";
                     SqlParameter[] resetParams2 = { new SqlParameter("@Username", username) };
                     DBHelper.ExecuteNonQuery(resetQuery, resetParams2);
@@ -117,9 +116,11 @@ namespace GeoExpert_Assignment.Pages
                     // Update last login and streak
                     UpdateLoginStreak(userId);
 
-                    // Redirect based on role (prevent ThreadAbortException)
+                    // Redirect based on role
                     if (role == "Admin")
                         Response.Redirect("~/Admin/Dashboard.aspx", false);
+                    else if (role == "Teacher")
+                        Response.Redirect("~/Teacher/TeacherDashboard.aspx", false);
                     else
                         Response.Redirect("~/Default.aspx", false);
 
@@ -127,7 +128,7 @@ namespace GeoExpert_Assignment.Pages
                 }
                 else
                 {
-                    // ❌ LOGIN FAILED
+                    // LOGIN FAILED
                     HandleFailedLogin(username);
                 }
             }
@@ -143,7 +144,7 @@ namespace GeoExpert_Assignment.Pages
         {
             try
             {
-                // Get current failed attempts (NEW PARAMETERS!)
+                // Get current failed attempts
                 string getQuery = "SELECT FailedLoginAttempts FROM Users WHERE Username = @Username";
                 SqlParameter[] getParams = { new SqlParameter("@Username", username) };
 
@@ -159,7 +160,6 @@ namespace GeoExpert_Assignment.Pages
                 {
                     DateTime lockoutEnd = DateTime.Now.AddMinutes(15);
 
-                    // NEW PARAMETERS for lock query
                     string lockQuery = @"UPDATE Users 
                                         SET FailedLoginAttempts = @Attempts, 
                                             LockoutEnd = @LockoutEnd 
@@ -176,7 +176,6 @@ namespace GeoExpert_Assignment.Pages
                 }
                 else
                 {
-                    // NEW PARAMETERS for update query
                     string updateQuery = "UPDATE Users SET FailedLoginAttempts = @Attempts WHERE Username = @Username";
                     SqlParameter[] updateParams = {
                         new SqlParameter("@Attempts", newAttempts),
@@ -201,7 +200,6 @@ namespace GeoExpert_Assignment.Pages
         {
             try
             {
-                // NEW PARAMETERS for get query
                 string getLastLoginQuery = "SELECT LastLoginDate, CurrentStreak FROM Users WHERE UserID = @UserID";
                 SqlParameter[] getParams = { new SqlParameter("@UserID", userId) };
 
@@ -240,7 +238,6 @@ namespace GeoExpert_Assignment.Pages
                     }
                 }
 
-                // NEW PARAMETERS for update query
                 string updateQuery = "UPDATE Users SET LastLoginDate = GETDATE(), CurrentStreak = @Streak WHERE UserID = @UserID";
                 SqlParameter[] updateParams = {
                     new SqlParameter("@Streak", newStreak),
@@ -250,20 +247,17 @@ namespace GeoExpert_Assignment.Pages
             }
             catch (Exception ex)
             {
-                // Don't let streak calculation crash login
                 System.Diagnostics.Debug.WriteLine($"UpdateLoginStreak error: {ex.Message}");
             }
         }
 
         private string HashPassword(string password)
         {
-            if (role == "Admin")
-                Response.Redirect("~/Admin/Dashboard.aspx");
-            else if (role == "Teacher")
-                Response.Redirect("~/Teacher/TeacherDashboard.aspx");
-            else
-                Response.Redirect("~/Default.aspx");
-
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+                return BitConverter.ToString(bytes).Replace("-", "").ToLower();
+            }
         }
     }
 }

@@ -195,10 +195,9 @@
                     <span class="logo-text">GeoExpert</span>
                 </a>
 
-                                <nav class="nav">
+               <nav class="nav">
                     <a href="~/Default.aspx" class="nav-link" id="navHome" runat="server">Home</a>
                     <a href="~/Pages/Countries.aspx" class="nav-link" id="navCountries" runat="server">Countries</a>
-                    <a href="~/Pages/Quiz.aspx" class="nav-link" id="navQuizzes" runat="server">Quizzes</a>
 
                     <asp:PlaceHolder ID="phLoggedIn" runat="server" Visible="false">
                         <asp:Label ID="lblWelcome" runat="server" 
@@ -207,12 +206,11 @@
 
                         <a href="~/Pages/Profile.aspx" class="nav-link" id="navProfile" runat="server">Profile</a>
 
-                        <% if (Session["Role"] != null && Session["Role"].ToString() == "Admin") { %>
-                            <a href="<%= ResolveUrl("~/Admin/Dashboard.aspx") %>" class="nav-link">Admin</a>
-                        <% } %>
-                    <% if (Session["Role"] != null && Session["Role"].ToString() == "Teacher") { %>
-                            <a href="<%= ResolveUrl("~/Teacher/TeacherDashboard.aspx") %>" class="nav-link">Teacher Panel</a>
-                        <% } %>
+                        <asp:HyperLink ID="lnkAdminPanel" runat="server" NavigateUrl="~/Admin/Dashboard.aspx" 
+                                       CssClass="nav-link" Visible="false">Admin</asp:HyperLink>
+        
+                        <asp:HyperLink ID="lnkTeacherPanel" runat="server" NavigateUrl="~/Teacher/TeacherDashboard.aspx" 
+                                       CssClass="nav-link" Visible="false">Teacher Panel</asp:HyperLink>
 
                         <asp:LinkButton ID="btnLogout" runat="server" CssClass="btn btn-secondary" OnClick="btnLogout_Click">Logout</asp:LinkButton>
                     </asp:PlaceHolder>
@@ -220,9 +218,6 @@
                     <asp:PlaceHolder ID="phAnonymous" runat="server" Visible="true">
                         <a href="~/Pages/Login.aspx" class="btn btn-secondary" runat="server">Sign In</a>
                         <a href="~/Pages/Register.aspx" class="btn btn-primary" runat="server">Get Started</a>
-                    </asp:PlaceHolder>
-                                    <asp:PlaceHolder ID="phHomeLink" runat="server">
-                        <a href="~/Default.aspx" class="nav-link" id="A1" runat="server">Home</a>
                     </asp:PlaceHolder>
                 </nav>
             </div>

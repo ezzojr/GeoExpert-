@@ -60,15 +60,6 @@ namespace GeoExpert_Assignment.Pages
         protected global::System.Web.UI.WebControls.LinkButton btnToggleEdit;
 
         /// <summary>
-        /// imgProfilePic control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Image imgProfilePic;
-
-        /// <summary>
         /// litAvatar control.
         /// </summary>
         /// <remarks>
@@ -76,15 +67,6 @@ namespace GeoExpert_Assignment.Pages
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litAvatar;
-
-        /// <summary>
-        /// fileProfilePic control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.FileUpload fileProfilePic;
 
         /// <summary>
         /// litUsername control.
@@ -112,6 +94,15 @@ namespace GeoExpert_Assignment.Pages
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litJoinedDate;
+
+        /// <summary>
+        /// pnlProgressSection control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlProgressSection;
 
         /// <summary>
         /// litOverallProgress control.
@@ -168,6 +159,15 @@ namespace GeoExpert_Assignment.Pages
         protected global::System.Web.UI.WebControls.Literal litStreakProgress;
 
         /// <summary>
+        /// pnlStatsGrid control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlStatsGrid;
+
+        /// <summary>
         /// litQuizzesTaken control.
         /// </summary>
         /// <remarks>
@@ -204,13 +204,13 @@ namespace GeoExpert_Assignment.Pages
         protected global::System.Web.UI.WebControls.Literal litTotalScore;
 
         /// <summary>
-        /// pnlBadges control.
+        /// pnlAchievementsSection control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlBadges;
+        protected global::System.Web.UI.WebControls.Panel pnlAchievementsSection;
 
         /// <summary>
         /// pnlBadges control.
@@ -303,15 +303,6 @@ namespace GeoExpert_Assignment.Pages
         protected global::System.Web.UI.WebControls.TextBox txtNewPassword;
 
         /// <summary>
-        /// revPassword control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RegularExpressionValidator revPassword;
-
-        /// <summary>
         /// txtConfirmPassword control.
         /// </summary>
         /// <remarks>
@@ -346,15 +337,6 @@ namespace GeoExpert_Assignment.Pages
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnCancelEdit;
-
-        /// <summary>
-        /// btnUploadPicture control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnUploadPicture;
 
         /// <summary>
         /// btnShowDeleteModal control.

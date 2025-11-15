@@ -123,15 +123,6 @@ namespace GeoExpert_Assignment.Pages
         protected global::System.Web.UI.WebControls.Panel pnlNoVideo;
 
         /// <summary>
-        /// btnTakeQuiz control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.HyperLink btnTakeQuiz;
-
-        /// <summary>
         /// litQuizCount control.
         /// </summary>
         /// <remarks>
@@ -166,5 +157,23 @@ namespace GeoExpert_Assignment.Pages
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Repeater rptRelated;
+
+        /// <summary>
+        /// pnlQuizButton control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlQuizButton;
+
+        /// <summary>
+        /// btnTakeQuiz control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HyperLink btnTakeQuiz;
     }
 }
