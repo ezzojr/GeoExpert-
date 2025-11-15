@@ -78,6 +78,15 @@ namespace GeoExpert_Assignment.Admin
         protected global::System.Web.UI.WebControls.HiddenField hfTargetUsername;
 
         /// <summary>
+        /// hfNewRole control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hfNewRole;
+
+        /// <summary>
         /// btnConfirmDelete control.
         /// </summary>
         /// <remarks>
@@ -87,12 +96,12 @@ namespace GeoExpert_Assignment.Admin
         protected global::System.Web.UI.WebControls.Button btnConfirmDelete;
 
         /// <summary>
-        /// btnConfirmToggle control.
+        /// btnConfirmChangeRole control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnConfirmToggle;
+        protected global::System.Web.UI.WebControls.Button btnConfirmChangeRole;
     }
 }
