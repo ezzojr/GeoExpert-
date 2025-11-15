@@ -1,1 +1,7 @@
-﻿ALTER TABLE Users ADD LockoutEnd INT DEFAULT 0;
+﻿UPDATE Users 
+SET Password = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9'
+WHERE Username = 'admin';
+
+UPDATE Users 
+SET Password = 'ecd71870d1963316a97e3ac3408c9835ad8cf0f3c1bc703527c30265534f75ae'
+WHERE Username = 'testuser';

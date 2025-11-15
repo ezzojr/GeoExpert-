@@ -9,9 +9,20 @@ namespace GeoExpert_Assignment.Pages
 {
     public partial class Quiz : Page
     {
-        
+
         protected void Page_Load(object sender, EventArgs e)
         {
+            // Block Admin and Teacher from taking quizzes
+            if (Session["Role"] != null)
+            {
+                string role = Session["Role"].ToString();
+                if (role == "Admin" || role == "Teacher")
+                {
+                    Response.Redirect("~/Pages/Countries.aspx");
+                    return;
+                }
+            }
+
             if (!IsPostBack)
             {
                 // Check if user is logged in
@@ -53,8 +64,8 @@ namespace GeoExpert_Assignment.Pages
                     // Check cooldown for first quiz (24-hour rule)
                     int firstQuizId = Convert.ToInt32(dt.Rows[0]["QuizID"]);
 
-                    // Check if user can take this quiz
-                    string cooldownQuery = @"SELECT MAX(CompletedDate) FROM UserProgress 
+                    // FIXED: Check cooldown using UserQuizResults table
+                    string cooldownQuery = @"SELECT MAX(CompletedDate) FROM UserQuizResults 
                                     WHERE UserID = @UserID AND QuizID = @QuizID";
                     SqlParameter[] cooldownParams = {
                 new SqlParameter("@UserID", userId),
@@ -138,10 +149,11 @@ namespace GeoExpert_Assignment.Pages
 
         protected void btnSubmit_Click(object sender, EventArgs e)
         {
-            //  Calculate score and save to database
+            // Calculate score and save to database
             int score = 0;
             int totalQuestions = 0;
             int firstQuizId = 0;
+            int countryId = Request.QueryString["countryid"] != null ? Convert.ToInt32(Request.QueryString["countryid"]) : 0;
 
             // Store for results page
             List<QuizReviewItem> reviewItems = new List<QuizReviewItem>();
@@ -190,25 +202,124 @@ namespace GeoExpert_Assignment.Pages
                 }
             }
 
-            // Save progress to database if user is logged in
+            // Save to database if user is logged in
             if (Session["UserID"] != null && firstQuizId > 0)
             {
                 int userId = Convert.ToInt32(Session["UserID"]);
 
-                string insertQuery = "INSERT INTO UserProgress (UserID, QuizID, Score, TotalQuestions, CompletedDate) VALUES (@UserID, @QuizID, @Score, @Total, GETDATE())";
-                SqlParameter[] insertParams = {
-                    new SqlParameter("@UserID", userId),
-                    new SqlParameter("@QuizID", firstQuizId),
-                    new SqlParameter("@Score", score),
-                    new SqlParameter("@Total", totalQuestions)
-                };
+                // ========================================
+                // FIXED: Save to UserQuizResults table (for profile tracking)
+                // ========================================
+                try
+                {
+                    string insertQuizResultQuery = @"INSERT INTO UserQuizResults 
+                                                    (UserID, QuizID, Score, TotalQuestions, CompletedDate) 
+                                                    VALUES (@UserID, @QuizID, @Score, @Total, GETDATE())";
+                    SqlParameter[] quizResultParams = {
+                        new SqlParameter("@UserID", userId),
+                        new SqlParameter("@QuizID", firstQuizId),
+                        new SqlParameter("@Score", score),
+                        new SqlParameter("@Total", totalQuestions)
+                    };
 
-                DBHelper.ExecuteNonQuery(insertQuery, insertParams);
+                    DBHelper.ExecuteNonQuery(insertQuizResultQuery, quizResultParams);
 
-                // Award badge if perfect score
+                    System.Diagnostics.Debug.WriteLine($"✓ Quiz result saved to UserQuizResults: User {userId}, Score {score}/{totalQuestions}");
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error saving to UserQuizResults: {ex.Message}");
+                }
+
+                // ========================================
+                // FIXED: Also save to UserProgress (for country tracking)
+                // ========================================
+                try
+                {
+                    if (countryId > 0)
+                    {
+                        // Check if country progress exists
+                        string checkProgressQuery = "SELECT COUNT(*) FROM UserProgress WHERE UserID = @UserID AND CountryID = @CountryID";
+                        SqlParameter[] checkProgressParams = {
+                            new SqlParameter("@UserID", userId),
+                            new SqlParameter("@CountryID", countryId)
+                        };
+
+                        int progressExists = Convert.ToInt32(DBHelper.ExecuteScalar(checkProgressQuery, checkProgressParams));
+
+                        if (progressExists == 0)
+                        {
+                            // Insert new progress record
+                            string insertProgressQuery = @"INSERT INTO UserProgress 
+                                                          (UserID, CountryID, Completed, LastAccessDate) 
+                                                          VALUES (@UserID, @CountryID, 1, GETDATE())";
+                            SqlParameter[] progressParams = {
+                                new SqlParameter("@UserID", userId),
+                                new SqlParameter("@CountryID", countryId)
+                            };
+
+                            DBHelper.ExecuteNonQuery(insertProgressQuery, progressParams);
+
+                            System.Diagnostics.Debug.WriteLine($"✓ Country progress created: User {userId}, Country {countryId}");
+                        }
+                        else
+                        {
+                            // Update existing progress
+                            string updateProgressQuery = @"UPDATE UserProgress 
+                                                          SET Completed = 1, LastAccessDate = GETDATE() 
+                                                          WHERE UserID = @UserID AND CountryID = @CountryID";
+                            SqlParameter[] updateProgressParams = {
+                                new SqlParameter("@UserID", userId),
+                                new SqlParameter("@CountryID", countryId)
+                            };
+
+                            DBHelper.ExecuteNonQuery(updateProgressQuery, updateProgressParams);
+
+                            System.Diagnostics.Debug.WriteLine($"✓ Country progress updated: User {userId}, Country {countryId}");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error saving to UserProgress: {ex.Message}");
+                }
+
+                // ========================================
+                // Award badges
+                // ========================================
+
+                // Perfect score badge
                 if (score == totalQuestions && totalQuestions > 0)
                 {
-                    AwardBadge(userId, "Perfect Score");
+                    AwardBadge(userId, "Perfect Score", "Get 100% on a quiz");
+                }
+
+                // First Steps badge (first quiz completed)
+                string countQuizQuery = "SELECT COUNT(*) FROM UserQuizResults WHERE UserID = @UserID";
+                SqlParameter[] countQuizParams = { new SqlParameter("@UserID", userId) };
+                int quizCount = Convert.ToInt32(DBHelper.ExecuteScalar(countQuizQuery, countQuizParams));
+
+                if (quizCount == 1)
+                {
+                    AwardBadge(userId, "First Steps", "Complete your first quiz");
+                }
+                else if (quizCount == 10)
+                {
+                    AwardBadge(userId, "Quiz Master", "Take 10 quizzes");
+                }
+                else if (quizCount == 25)
+                {
+                    AwardBadge(userId, "Champion", "Take 25 quizzes");
+                }
+
+                // Country exploration badge
+                string countCountriesQuery = "SELECT COUNT(DISTINCT CountryID) FROM UserProgress WHERE UserID = @UserID AND Completed = 1";
+                SqlParameter[] countCountriesParams = { new SqlParameter("@UserID", userId) };
+                int countriesExplored = Convert.ToInt32(DBHelper.ExecuteScalar(countCountriesQuery, countCountriesParams));
+
+                if (countriesExplored == 5)
+                {
+                    AwardBadge(userId, "Explorer", "Visit 5 different countries");
                 }
             }
 
@@ -221,27 +332,42 @@ namespace GeoExpert_Assignment.Pages
             Response.Redirect("QuizResult.aspx");
         }
 
-        private void AwardBadge(int userId, string badgeName)
+        // ========================================
+        // FIXED: Award badge to UserBadges table
+        // ========================================
+        private void AwardBadge(int userId, string badgeName, string description)
         {
-            //  Check if badge already exists
-            string checkQuery = "SELECT COUNT(*) FROM Badges WHERE UserID = @UserID AND BadgeName = @BadgeName";
-            SqlParameter[] checkParams = {
-                new SqlParameter("@UserID", userId),
-                new SqlParameter("@BadgeName", badgeName)
-            };
-
-            int count = Convert.ToInt32(DBHelper.ExecuteScalar(checkQuery, checkParams));
-
-            if (count == 0)
+            try
             {
-                string insertQuery = "INSERT INTO Badges (UserID, BadgeName, BadgeDescription, AwardedDate) VALUES (@UserID, @BadgeName, @Description, GETDATE())";
-                SqlParameter[] insertParams = {
+                // Check if badge already exists in UserBadges table
+                string checkQuery = "SELECT COUNT(*) FROM UserBadges WHERE UserID = @UserID AND BadgeName = @BadgeName";
+                SqlParameter[] checkParams = {
                     new SqlParameter("@UserID", userId),
-                    new SqlParameter("@BadgeName", badgeName),
-                    new SqlParameter("@Description", "Achieved a perfect score on a quiz!")
+                    new SqlParameter("@BadgeName", badgeName)
                 };
 
-                DBHelper.ExecuteNonQuery(insertQuery, insertParams);
+                int count = Convert.ToInt32(DBHelper.ExecuteScalar(checkQuery, checkParams));
+
+                if (count == 0)
+                {
+                    // Insert into UserBadges table
+                    string insertQuery = @"INSERT INTO UserBadges 
+                                          (UserID, BadgeName, BadgeDescription, EarnedDate) 
+                                          VALUES (@UserID, @BadgeName, @Description, GETDATE())";
+                    SqlParameter[] insertParams = {
+                        new SqlParameter("@UserID", userId),
+                        new SqlParameter("@BadgeName", badgeName),
+                        new SqlParameter("@Description", description)
+                    };
+
+                    DBHelper.ExecuteNonQuery(insertQuery, insertParams);
+
+                    System.Diagnostics.Debug.WriteLine($"✓ Badge awarded: {badgeName} to User {userId}");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error awarding badge: {ex.Message}");
             }
         }
     }

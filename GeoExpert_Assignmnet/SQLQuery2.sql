@@ -1,2 +1,3 @@
-﻿ALTER TABLE Countries ADD Region NVARCHAR(50);
-ALTER TABLE Countries ADD ViewCount INT DEFAULT 0;
+﻿ALTER TABLE Users
+ADD FailedLoginAttempts INT DEFAULT 0,
+    LockoutEnd DATETIME NULL;

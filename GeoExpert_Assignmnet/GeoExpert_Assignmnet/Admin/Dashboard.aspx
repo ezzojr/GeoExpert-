@@ -132,8 +132,8 @@
 
         <div class="admin-links">
             <h3>⚙️ Quick Actions</h3>
-            <a href="ManageCountries.aspx">Manage Countries</a>
-            <a href="ManageQuizzes.aspx">Manage Quizzes</a>
+            
+            <a href="ViewQuizzes.aspx">View Quizzes</a>
             <a href="ManageUsers.aspx">Manage Users</a>
         </div>
     </div>
