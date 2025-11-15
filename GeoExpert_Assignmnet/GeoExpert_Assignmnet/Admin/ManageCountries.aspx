@@ -113,6 +113,7 @@
             const msg = document.getElementById('<%= lblMessage.ClientID %>');
             if (msg) msg.style.opacity = 0;
         }, 3000);
+
         document.addEventListener("DOMContentLoaded", function () {
 
             var fileInput = document.getElementById("<%= fuFlagImage.ClientID %>");
