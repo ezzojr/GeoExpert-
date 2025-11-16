@@ -168,6 +168,15 @@ namespace GeoExpert_Assignment.Pages
         protected global::System.Web.UI.WebControls.Literal litCountriesCount;
 
         /// <summary>
+        /// litTotalCountries control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litTotalCountries;
+
+        /// <summary>
         /// countriesProgressBar control.
         /// </summary>
         /// <remarks>
@@ -193,6 +202,15 @@ namespace GeoExpert_Assignment.Pages
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl quizzesProgressBar;
+
+        /// <summary>
+        /// Literal1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal Literal1;
 
         /// <summary>
         /// litBadgesProgress control.

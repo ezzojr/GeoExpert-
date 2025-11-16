@@ -420,6 +420,23 @@
                 justify-content: center;
             }
         }
+        .country-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.country-flag-large {
+    width: 120px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 6px;
+    justify-self: end;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
     </style>
 
     <!-- Breadcrumb -->
@@ -437,6 +454,7 @@
             <asp:Literal ID="litFlag" runat="server"></asp:Literal>
         </div>
         <div class="hero-content">
+
             <h1><asp:Literal ID="litCountryName" runat="server"></asp:Literal></h1>
             <div class="hero-badges">
                 <span class="badge">
@@ -448,7 +466,15 @@
                     <asp:Literal ID="litViews" runat="server"></asp:Literal> Views
                 </span>
             </div>
-        </div>
+            </div>                
+        <div class="country-header-left">
+<asp:Image ID="imgFlagLarge" runat="server"
+    ImageUrl='<%# string.IsNullOrEmpty(Eval("FlagImage").ToString()) ? "" : ResolveUrl(Eval("FlagImage").ToString()) %>'
+    CssClass="country-flag-large"
+    Visible='<%# !string.IsNullOrEmpty(Eval("FlagImage").ToString()) %>'
+    AlternateText='<%# Eval("Name") + " Flag" %>' />
+             </div>
+
     </div>
 
     <!-- Content Grid -->

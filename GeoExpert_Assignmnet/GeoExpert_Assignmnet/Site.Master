@@ -349,68 +349,25 @@
             </div>
         </footer>
     </form>
-    <script>
-    let shareImageDataUrl = null;
 
-    function openShareOverlay(userName, mainText, badgesText, titleText) {
-        document.getElementById('shareUserName').innerText = userName || 'GeoExpert learner';
-        document.getElementById('shareMainText').innerText = mainText || 'is learning about the world!';
-        document.getElementById('shareBadgesText').innerText = badgesText || 'Keep exploring new countries on GeoExpert.';
-        document.getElementById('shareTitle').innerText = titleText || 'Share your GeoExpert moment';
-
-        document.getElementById('shareGeneratedImage').style.display = 'none';
-        shareImageDataUrl = null;
-
-        const overlay = document.getElementById('shareOverlay');
-        overlay.style.display = 'flex';
-
-        const content = document.getElementById('shareCardContent');
-        html2canvas(content).then(canvas => {
-            shareImageDataUrl = canvas.toDataURL('image/png');
-            const img = document.getElementById('shareGeneratedImage');
-            img.src = shareImageDataUrl;
-            img.style.display = 'block';
-        });
+<script>
+    function shareOnWhatsApp(text, link) {
+        var msg = encodeURIComponent(text + "\n\n " + link);
+        window.open("https://wa.me/?text=" + msg, "_blank");
     }
 
-    function closeShareOverlay() {
-        document.getElementById('shareOverlay').style.display = 'none';
+    function inviteFriends() {
+        var text = "Explore the  World Like Never Before!\n\n" +
+            "Come join me on my journey!\n" +
+            "Discover countries, cultures, foods and traditions.\n" +
+            "Learn, play and unlock badges to become a GeoExpert!";
+
+        var link = window.location.origin + '<%= ResolveUrl("~/Default.aspx") %>';
+        shareOnWhatsApp(text, link);
     }
 
-    function downloadShareImage() {
-        if (!shareImageDataUrl) return;
-        const a = document.createElement('a');
-        a.href = shareImageDataUrl;
-        a.download = 'geoexpert_achievement.png';
-        a.click();
-    }
-
-    function shareToWhatsApp() {
-        const text = "Check out my GeoExpert achievement!";
-        window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank");
-    }
-
-    function shareToFacebook() {
-        const url = window.location.href;
-        window.open("https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(url), "_blank");
-    }
-
-    async function shareToGeneric() {
-        if (navigator.share) {
-            try {
-                await navigator.share({
-                    title: 'My GeoExpert achievement',
-                    text: 'Check out what I just achieved on GeoExpert!',
-                    url: window.location.href
-                });
-            } catch (e) {
-                console.log(e);
-            }
-        } else {
-            alert("Download the image and share it on Instagram or other apps.");
-        }
-    }
-    </script>
+    
+</script>
 
     <asp:ContentPlaceHolder ID="scripts" runat="server"></asp:ContentPlaceHolder>
 

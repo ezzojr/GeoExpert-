@@ -57,12 +57,7 @@
                 <asp:Literal ID="litMessage" runat="server"></asp:Literal>
             </p>
         </div>
-        <div class="mt-3">
-    <asp:Button ID="btnShareResult" runat="server"
-        Text="Share my result"
-        CssClass="btn btn-primary"
-        OnClientClick="shareQuizResult(); return false;" />
-</div>
+       
 
         
         <asp:Panel ID="pnlBadge" runat="server" Visible="false" 
@@ -92,9 +87,14 @@
         
         <div class="action-buttons">
             <a href="Countries.aspx" class="btn btn-secondary">Back to Countries</a>
-            <a href="Profile.aspx" class="btn btn-primary">View Profile</a>
+            <a href="Profile.aspx" class="btn btn-primary">View Profile</a> 
+            <asp:Button ID="btnShareResult" runat="server"
+        Text="Share my result"
+        CssClass="btn btn-primary"
+        OnClientClick="shareQuizResult(); return false;" />
         </div>
     </div>
+
     <script type="text/javascript">
     function shareQuizResult() {
         var username = '<%= (Session["Username"] ?? "GeoExpert learner").ToString() %>';
