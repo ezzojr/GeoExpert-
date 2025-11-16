@@ -264,6 +264,22 @@ namespace GeoExpert_Assignment.Pages
                     totalCountries = 195; 
                 }
 
+                // Get total number of countries in the database (for dynamic goal)
+                int totalCountries = 0;
+                try
+                {
+                    totalCountries = DBHelper.GetTotalCount("Countries");
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"LoadUserProgress totalCountries error: {ex.Message}");
+                    totalCountries = 195; 
+                }
+                if (totalCountries <= 0)
+                {
+                    totalCountries = 195; 
+                }
+
                 // Calculate overall progress
                 int totalGoals = totalCountries + 50 + 8 + 30; 
                 int completedGoals = countriesExplored + quizzesCompleted + badgesEarned + currentStreak;
