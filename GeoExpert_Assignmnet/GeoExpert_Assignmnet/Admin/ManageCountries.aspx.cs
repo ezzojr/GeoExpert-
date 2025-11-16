@@ -141,6 +141,28 @@ namespace GeoExpert_Assignment.Admin
                     lblMessage.ForeColor = System.Drawing.Color.Red;
                 }
             }
+                    //    object oldPicResult = DBHelper.ExecuteScalar(oldPicQuery, oldParams);
+
+                    //    if (oldPicResult != null && oldPicResult != DBNull.Value)
+                    //    {
+                    //        string oldPic = oldPicResult.ToString();
+                    //        if (!string.IsNullOrEmpty(oldPic))
+                    //        {
+                    //            string oldPath = Server.MapPath(oldPic);
+                    //            if (System.IO.File.Exists(oldPath))
+                    //            {
+                    //                System.IO.File.Delete(oldPath);
+                    //            }
+                    //        }
+                    //    }
+                    //}
+                    //catch { /* Ignore errors deleting old picture */ }
+
+                    fuFlagImage.SaveAs(filePath);
+
+                   
+                }
+            }
             catch (Exception ex)
             {
                 lblMessage.Text = "❌ Error: " + ex.Message + "<br/>Stack: " + ex.StackTrace;

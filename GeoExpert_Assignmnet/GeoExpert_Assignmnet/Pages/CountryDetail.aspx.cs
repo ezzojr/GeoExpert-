@@ -95,10 +95,29 @@ namespace GeoExpert_Assignment.Pages
                     // Flag  emoji
                         litFlag.Text = GetFlagEmoji(countryName);
 
-                // Views
-                int views = row["ViewCount"] != DBNull.Value ? Convert.ToInt32(row["ViewCount"]) : 0;
-                litViews.Text = views.ToString();
-                litViewCount.Text = views.ToString();
+                    // Flag image
+                    string path = row["FlagImage"].ToString();
+                    if (!string.IsNullOrEmpty(path))
+                    {
+                        imgFlagLarge.ImageUrl = path;
+                        imgFlagLarge.Visible = true;
+                     
+                    }
+                    else
+                    {
+                        imgFlagLarge.Visible  = false;
+                    }
+
+
+                    // Region
+                    string region = row["Region"].ToString();
+                    litRegion.Text = region;
+                    litRelatedRegion.Text = region;
+
+                    // Views
+                    int views = row["ViewCount"] != DBNull.Value ? Convert.ToInt32(row["ViewCount"]) : 0;
+                    litViews.Text = views.ToString();
+                    litViewCount.Text = views.ToString();
 
                 // Region                   
                 string region = row["Region"]; != DBNull.Value ? row["Region"].ToString() : "Unknown";

@@ -429,8 +429,8 @@
 }
 
 .country-flag-large {
-    width: 120px;
-    height: 80px;
+    width: 160px;
+    height: 106px;
     object-fit: cover;
     border-radius: 6px;
     justify-self: end;
@@ -469,7 +469,7 @@
             </div>                
         <div class="country-header-left">
 <asp:Image ID="imgFlagLarge" runat="server"
-    ImageUrl='<%# string.IsNullOrEmpty(Eval("FlagImage").ToString()) ? "" : ResolveUrl(Eval("FlagImage").ToString()) %>'
+    ImageUrl='<%#string.IsNullOrEmpty(Eval("FlagImage").ToString()) ? "" : ResolveUrl(Eval("FlagImage").ToString())%>'
     CssClass="country-flag-large"
     Visible='<%# !string.IsNullOrEmpty(Eval("FlagImage").ToString()) %>'
     AlternateText='<%# Eval("Name") + " Flag" %>' />
