@@ -2,8 +2,10 @@
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
+using System.Linq;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using WebGrease.Activities;
 
 namespace GeoExpert_Assignment.Admin
 {
@@ -345,5 +347,8 @@ namespace GeoExpert_Assignment.Admin
         //    return null;
         //}
 
+            ScriptManager.RegisterStartupScript(this, GetType(), "scrollToTop",
+                "window.scrollTo(0, 0);", true);
+        }
     }
 }

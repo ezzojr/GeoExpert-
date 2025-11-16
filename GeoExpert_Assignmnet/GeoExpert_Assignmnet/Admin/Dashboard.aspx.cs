@@ -41,11 +41,17 @@ namespace GeoExpert_Assignment.Admin
         private void LoadRecentActivity()
         {
             string query = @"
-                SELECT TOP 10 U.Username, Q.Question AS QuizName, UP.Score, UP.TotalQuestions, UP.CompletedDate
-                FROM UserProgress UP
-                INNER JOIN Users U ON UP.UserID = U.UserID
-                INNER JOIN Quizzes Q ON UP.QuizID = Q.QuizID
-                ORDER BY UP.CompletedDate DESC";
+                    SELECT TOP 10 
+                    U.Username, 
+                    C.Name AS QuizName, 
+                    UP.Score, 
+                    UP.TotalQuestions, 
+                    UP.CompletedDate
+                    FROM UserProgress UP
+                    INNER JOIN Users U ON UP.UserID = U.UserID
+                    INNER JOIN Quizzes Q ON UP.QuizID = Q.QuizID
+                    INNER JOIN Countries C ON Q.CountryID = C.CountryID
+                    ORDER BY UP.CompletedDate DESC";
 
             DataTable dt = DBHelper.ExecuteReader(query);
             gvRecentActivity.DataSource = dt;
