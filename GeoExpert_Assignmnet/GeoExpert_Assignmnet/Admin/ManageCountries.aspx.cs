@@ -2,8 +2,10 @@
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
+using System.Linq;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using WebGrease.Activities;
 
 namespace GeoExpert_Assignment.Admin
 {
@@ -81,6 +83,64 @@ namespace GeoExpert_Assignment.Admin
             {
                 lblMessage.Text = "❌ Error adding country.";
                 lblMessage.ForeColor = System.Drawing.Color.Red;
+            }
+        }
+        protected void btnUploadPicture_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (fuFlagImage.HasFile)
+                {
+                    string fileExt = System.IO.Path.GetExtension(fuFlagImage.FileName);
+                    string[] allowedExt = { ".jpg", ".jpeg", ".png" };
+
+                    if (!allowedExt.Contains(fileExt))
+                    {
+                        ShowError("Please upload an image file (JPG, PNG, or GIF)");
+                        return;
+                    }
+
+                    string folderPath = Server.MapPath("~/Assets/Flags/");
+                    if (!System.IO.Directory.Exists(folderPath))
+                    {
+                        System.IO.Directory.CreateDirectory(folderPath);
+                    }
+
+                    string fileName = $"{fuFlagImage.FileName}{fileExt}";
+                    string filePath = System.IO.Path.Combine(folderPath, fileName);
+                    string dbPath = $"~/Assets/Flags/{fileName}";
+
+                    //// Delete old profile picture
+                    //try
+                    //{
+                    //    string oldPicQuery = "SELECT ProfilePicture FROM Users WHERE UserID = @UserID";
+                    //    SqlParameter[] oldParams = { new SqlParameter("@UserID", userId) };
+                    //    object oldPicResult = DBHelper.ExecuteScalar(oldPicQuery, oldParams);
+
+                    //    if (oldPicResult != null && oldPicResult != DBNull.Value)
+                    //    {
+                    //        string oldPic = oldPicResult.ToString();
+                    //        if (!string.IsNullOrEmpty(oldPic))
+                    //        {
+                    //            string oldPath = Server.MapPath(oldPic);
+                    //            if (System.IO.File.Exists(oldPath))
+                    //            {
+                    //                System.IO.File.Delete(oldPath);
+                    //            }
+                    //        }
+                    //    }
+                    //}
+                    //catch { /* Ignore errors deleting old picture */ }
+
+                    fuFlagImage.SaveAs(filePath);
+
+                   
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"btnUploadPicture error: {ex.Message}");
+                ShowError("An error occurred while uploading your profile picture. Please try again.");
             }
         }
 
@@ -242,6 +302,14 @@ namespace GeoExpert_Assignment.Admin
 
             return null;
         }
+        private void ShowError(string message)
+        {
+            pnlError.Visible = true;
+            litError.Text = message;
+            pnlSuccess.Visible = false;
 
+            ScriptManager.RegisterStartupScript(this, GetType(), "scrollToTop",
+                "window.scrollTo(0, 0);", true);
+        }
     }
 }

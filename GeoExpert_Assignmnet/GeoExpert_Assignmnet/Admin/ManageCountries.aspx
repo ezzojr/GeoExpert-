@@ -32,6 +32,17 @@
 </div>
 
 <div class="form-group">
+            <!-- Success/Error Messages -->
+        <asp:Panel ID="pnlSuccess" runat="server" CssClass="success-message" Visible="false">
+            <strong>✓ Success!</strong>
+            <asp:Literal ID="litSuccess" runat="server"></asp:Literal>
+        </asp:Panel>
+
+        <asp:Panel ID="pnlError" runat="server" CssClass="error-message" Visible="false">
+            <strong>✗ Error!</strong>
+            <asp:Literal ID="litError" runat="server"></asp:Literal>
+        </asp:Panel>
+
     <label>Flag Image:</label>
 
     <!-- The visible button -->
@@ -40,7 +51,7 @@
     </button>
 
     <!-- The hidden file input -->
-    <asp:FileUpload ID="fuFlagImage" runat="server" Style="display:none;" />
+    <asp:FileUpload ID="fuFlagImage" runat="server" onchange="uploadProfilePicture();" accept="image/*" Style="display:none;" />
 
     <!-- Display the selected file name -->
     <span id="file-name" style="margin-left:10px; font-style:italic;"></span>
