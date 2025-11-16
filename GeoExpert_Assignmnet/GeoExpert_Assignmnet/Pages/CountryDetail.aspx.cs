@@ -110,9 +110,7 @@ namespace GeoExpert_Assignment.Pages
 
 
                     // Region
-                    string region = row["Region"].ToString();
-                    litRegion.Text = region;
-                    litRelatedRegion.Text = region;
+                    
 
                     // Views
                     int views = row["ViewCount"] != DBNull.Value ? Convert.ToInt32(row["ViewCount"]) : 0;
@@ -120,7 +118,7 @@ namespace GeoExpert_Assignment.Pages
                     litViewCount.Text = views.ToString();
 
                 // Region                   
-                string region = row["Region"]; != DBNull.Value ? row["Region"].ToString() : "Unknown";
+                string region = row["Region"] != DBNull.Value ? row["Region"].ToString() : "Unknown";
                     litRegion.Text = region;
                     litRelatedRegion.Text = region;
 

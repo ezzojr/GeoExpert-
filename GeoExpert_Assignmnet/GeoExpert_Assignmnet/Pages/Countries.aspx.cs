@@ -9,7 +9,7 @@ namespace GeoExpert_Assignment.Pages
 {
     public partial class Countries : Page
     {
-        private int pageSizeDefault = 2;
+        private int pageSizeDefault = 3;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -22,7 +22,7 @@ namespace GeoExpert_Assignment.Pages
             }
         }
 
-        private void LoadCountries(int pageNumber = 1, int pageSize = 2, string searchTerm = "", string region = "")
+        private void LoadCountries(int pageNumber = 1, int pageSize = 3, string searchTerm = "", string region = "")
         {
             try
             {

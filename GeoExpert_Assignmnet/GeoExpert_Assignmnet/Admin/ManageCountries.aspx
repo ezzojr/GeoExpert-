@@ -38,7 +38,7 @@
             <br />
             <asp:Image ID="imgPreview" runat="server" Width="100" Height="60" Visible="false"
                        style="margin-top: 10px; border: 1px solid #ddd;" />
-            <asp:HiddenField ID="hfExistingFlagPath" runat="server" />
+        <asp:HiddenField ID="hfExistingFlagPath" runat="server" />
         </div>
 
         <div class="form-group">

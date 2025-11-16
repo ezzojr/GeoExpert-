@@ -111,20 +111,20 @@ namespace GeoExpert_Assignment.Admin
                     return;
                 }
 
-                string query = @"INSERT INTO Countries 
+                 string query = @"INSERT INTO Countries 
                         (Name, FlagImage, FoodName, FoodDescription, CultureInfo, VideoURL, FunFact, Region, ViewCount) 
                         VALUES (@Name, @Flag, @FoodName, @FoodDesc, @Culture, @Video, @Fact, @Region, 0)";
 
                 SqlParameter[] parameters = {
-            new SqlParameter("@Name", string.IsNullOrEmpty(txtName.Text) ? (object)DBNull.Value : txtName.Text),
-            new SqlParameter("@Flag", flagImagePath),
-            new SqlParameter("@FoodName", string.IsNullOrEmpty(txtFoodName.Text) ? (object)DBNull.Value : txtFoodName.Text),
-            new SqlParameter("@FoodDesc", string.IsNullOrEmpty(txtFoodDesc.Text) ? (object)DBNull.Value : txtFoodDesc.Text),
-            new SqlParameter("@Culture", string.IsNullOrEmpty(txtCulture.Text) ? (object)DBNull.Value : txtCulture.Text),
-            new SqlParameter("@Video", string.IsNullOrEmpty(txtVideoURL.Text) ? (object)DBNull.Value : txtVideoURL.Text),
-            new SqlParameter("@Fact", string.IsNullOrEmpty(txtFunFact.Text) ? (object)DBNull.Value : txtFunFact.Text),
-             new SqlParameter("@Region", ddlRegion.SelectedValue)
-        };
+                        new SqlParameter("@Name", string.IsNullOrEmpty(txtName.Text) ? (object)DBNull.Value : txtName.Text),
+                     new SqlParameter("@Flag", flagImagePath),
+                        new SqlParameter("@FoodName", string.IsNullOrEmpty(txtFoodName.Text) ? (object)DBNull.Value : txtFoodName.Text),
+                    new SqlParameter("@FoodDesc", string.IsNullOrEmpty(txtFoodDesc.Text) ? (object)DBNull.Value : txtFoodDesc.Text),
+                    new SqlParameter("@Culture", string.IsNullOrEmpty(txtCulture.Text) ? (object)DBNull.Value : txtCulture.Text),
+                    new SqlParameter("@Video", string.IsNullOrEmpty(txtVideoURL.Text) ? (object)DBNull.Value : txtVideoURL.Text),
+                    new SqlParameter("@Fact", string.IsNullOrEmpty(txtFunFact.Text) ? (object)DBNull.Value : txtFunFact.Text),
+                     new SqlParameter("@Region", ddlRegion.SelectedValue)
+                 };
 
                 int result = DBHelper.ExecuteNonQuery(query, parameters);
 
@@ -140,28 +140,12 @@ namespace GeoExpert_Assignment.Admin
                     lblMessage.Text = "❌ Error adding country.";
                     lblMessage.ForeColor = System.Drawing.Color.Red;
                 }
-            }
-                    //    object oldPicResult = DBHelper.ExecuteScalar(oldPicQuery, oldParams);
+            
+   
+                    fuFlagImage.SaveAs(flagImagePath);
 
-                    //    if (oldPicResult != null && oldPicResult != DBNull.Value)
-                    //    {
-                    //        string oldPic = oldPicResult.ToString();
-                    //        if (!string.IsNullOrEmpty(oldPic))
-                    //        {
-                    //            string oldPath = Server.MapPath(oldPic);
-                    //            if (System.IO.File.Exists(oldPath))
-                    //            {
-                    //                System.IO.File.Delete(oldPath);
-                    //            }
-                    //        }
-                    //    }
-                    //}
-                    //catch { /* Ignore errors deleting old picture */ }
 
-                    fuFlagImage.SaveAs(filePath);
-
-                   
-                }
+                    
             }
             catch (Exception ex)
             {
@@ -179,95 +163,93 @@ namespace GeoExpert_Assignment.Admin
 
                 if (e.CommandName == "EditCountry")
                 {
-                    string query = "SELECT * FROM Countries WHERE CountryID = @CountryID";
-                    SqlParameter[] parameters = { new SqlParameter("@CountryID", countryId) };
-
+                     string query = "SELECT * FROM Countries WHERE CountryID = @CountryID";
+                     SqlParameter[] parameters = { new SqlParameter("@CountryID", countryId) };
+        
                     DataTable dt = DBHelper.ExecuteReader(query, parameters);
-                    if (dt.Rows.Count > 0)
-                    {
-                        DataRow row = dt.Rows[0];
-                        ViewState["EditCountryID"] = countryId;
-
-                    txtName.Text = row["Name"].ToString();
-                    imgCurrentFlag.ImageUrl = row["FlagImage"].ToString();
-                    imgCurrentFlag.Visible = true;
-                    txtFoodName.Text = row["FoodName"].ToString();
-                    txtFoodDesc.Text = row["FoodDescription"].ToString();
-                    txtCulture.Text = row["CultureInfo"].ToString();
-                    txtVideoURL.Text = row["VideoURL"].ToString();
-                    txtFunFact.Text = row["FunFact"].ToString();
-                    ddlRegion.SelectedValue = row["Region"].ToString();
-
-                        // Store existing flag path
-                        string existingFlag = row["FlagImage"].ToString();
-                        hfExistingFlagPath.Value = existingFlag;
-
-                        // Show preview of existing flag
-                        if (!string.IsNullOrEmpty(existingFlag))
+                        if (dt.Rows.Count > 0)
                         {
-                            imgPreview.ImageUrl = ResolveUrl(existingFlag);
-                            imgPreview.Visible = true;
-                        }
+                            DataRow row = dt.Rows[0];
+                            ViewState["EditCountryID"] = countryId;
 
-                        btnAdd.Visible = false;
-                        btnUpdate.Visible = true;
-                        btnCancel.Visible = true;
-                        lblFormTitle.Text = "Edit Country ✏️";
-                    }
-                }
-                else if (e.CommandName == "DeleteCountry")
+                            txtName.Text = row["Name"].ToString();
+                            txtFoodName.Text = row["FoodName"].ToString();
+                            txtFoodDesc.Text = row["FoodDescription"].ToString();
+                            txtCulture.Text = row["CultureInfo"].ToString();
+                            txtVideoURL.Text = row["VideoURL"].ToString();
+                            txtFunFact.Text = row["FunFact"].ToString();
+                            ddlRegion.SelectedValue = row["Region"].ToString();
+
+                // Store existing flag path
+                string existingFlag = row["FlagImage"].ToString();
+                hfExistingFlagPath.Value = existingFlag;
+
+                // Show preview of existing flag
+                if (!string.IsNullOrEmpty(existingFlag))
                 {
-                    // Get flag path before deleting
-                    string getFlagQuery = "SELECT FlagImage FROM Countries WHERE CountryID = @CountryID";
-                    SqlParameter[] getParams = { new SqlParameter("@CountryID", countryId) };
-                    object flagPath = DBHelper.ExecuteScalar(getFlagQuery, getParams);
-
-                    string query = "DELETE FROM Countries WHERE CountryID = @CountryID";
-                    SqlParameter[] parameters = { new SqlParameter("@CountryID", countryId) };
-
-                    int result = DBHelper.ExecuteNonQuery(query, parameters);
-
-                    if (result > 0)
-                    {
-                        // Delete the flag image file if it exists
-                        if (flagPath != null && !string.IsNullOrEmpty(flagPath.ToString()))
-                        {
-                            DeleteFlagImage(flagPath.ToString());
-                        }
-
-                        lblMessage.Text = "🗑️ Country deleted successfully!";
-                        lblMessage.ForeColor = System.Drawing.Color.Green;
-                        LoadCountries();
-                    }
+                    imgPreview.ImageUrl = ResolveUrl(existingFlag);
+                    imgPreview.Visible = true;
                 }
-            }
-            catch (Exception ex)
-            {
-                lblMessage.Text = "❌ Error: " + ex.Message;
-                lblMessage.ForeColor = System.Drawing.Color.Red;
+
+                btnAdd.Visible = false;
+                btnUpdate.Visible = true;
+                btnCancel.Visible = true;
+                lblFormTitle.Text = "Edit Country ✏️";
             }
         }
-
-        // Update country info
-        protected void btnUpdate_Click(object sender, EventArgs e)
+        else if (e.CommandName == "DeleteCountry")
         {
-            try
+            // Get flag path before deleting
+            string getFlagQuery = "SELECT FlagImage FROM Countries WHERE CountryID = @CountryID";
+            SqlParameter[] getParams = { new SqlParameter("@CountryID", countryId) };
+            object flagPath = DBHelper.ExecuteScalar(getFlagQuery, getParams);
+
+            string query = "DELETE FROM Countries WHERE CountryID = @CountryID";
+            SqlParameter[] parameters = { new SqlParameter("@CountryID", countryId) };
+
+            int result = DBHelper.ExecuteNonQuery(query, parameters);
+
+            if (result > 0)
             {
-                int countryId = Convert.ToInt32(ViewState["EditCountryID"]);
-
-                // Check if new image uploaded, otherwise keep existing
-                string flagImagePath = UploadFlagImage();
-                if (string.IsNullOrEmpty(flagImagePath))
+                // Delete the flag image file if it exists
+                if (flagPath != null && !string.IsNullOrEmpty(flagPath.ToString()))
                 {
-                    flagImagePath = hfExistingFlagPath.Value; // Keep existing image
-                }
-                else
-                {
-                    // Delete old image if new one uploaded
-                    DeleteFlagImage(hfExistingFlagPath.Value);
+                    DeleteFlagImage(flagPath.ToString());
                 }
 
-                string query = @"UPDATE Countries SET 
+                lblMessage.Text = "🗑️ Country deleted successfully!";
+                lblMessage.ForeColor = System.Drawing.Color.Green;
+                LoadCountries();
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        lblMessage.Text = "❌ Error: " + ex.Message;
+        lblMessage.ForeColor = System.Drawing.Color.Red;
+    }
+}
+
+// Update country info
+protected void btnUpdate_Click(object sender, EventArgs e)
+{
+    try
+    {
+        int countryId = Convert.ToInt32(ViewState["EditCountryID"]);
+
+        // Check if new image uploaded, otherwise keep existing
+        string flagImagePath = UploadFlagImage();
+        if (string.IsNullOrEmpty(flagImagePath))
+        {
+            flagImagePath = hfExistingFlagPath.Value; // Keep existing image
+        }
+        else
+        {
+            // Delete old image if new one uploaded
+            DeleteFlagImage(hfExistingFlagPath.Value);
+        }
+
+        string query = @"UPDATE Countries SET 
                                 Name = @Name, 
                                 FlagImage = @Flag, 
                                 FoodName = @FoodName, 
@@ -278,7 +260,7 @@ namespace GeoExpert_Assignment.Admin
                                 Region = @Region
                                 WHERE CountryID = @CountryID";
 
-                SqlParameter[] parameters = {
+        SqlParameter[] parameters = {
                     new SqlParameter("@CountryID", countryId),
                     new SqlParameter("@Name", string.IsNullOrEmpty(txtName.Text) ? (object)DBNull.Value : txtName.Text),
                     new SqlParameter("@Flag", flagImagePath),
@@ -290,87 +272,73 @@ namespace GeoExpert_Assignment.Admin
                     new SqlParameter("@Region", string.IsNullOrEmpty(ddlRegion.SelectedValue) ? (object)DBNull.Value :ddlRegion.SelectedValue)
                 };
 
-                int result = DBHelper.ExecuteNonQuery(query, parameters);
+        int result = DBHelper.ExecuteNonQuery(query, parameters);
 
-                if (result > 0)
-                {
-                    lblMessage.Text = "✅ Country updated successfully!";
-                    lblMessage.ForeColor = System.Drawing.Color.Green;
-                    ClearFields();
-                    LoadCountries();
-
-                    btnAdd.Visible = true;
-                    btnUpdate.Visible = false;
-                    btnCancel.Visible = false;
-                    lblFormTitle.Text = "Add New Country";
-                }
-            }
-            catch (Exception ex)
-            {
-                lblMessage.Text = "❌ Error: " + ex.Message + " | " + ex.StackTrace;
-                lblMessage.ForeColor = System.Drawing.Color.Red;
-            }
-        }
-
-        // Delete flag image file from server
-        private void DeleteFlagImage(string flagPath)
+        if (result > 0)
         {
-            try
-            {
-                if (!string.IsNullOrEmpty(flagPath) && flagPath.StartsWith("~/Uploads/"))
-                {
-                    string physicalPath = Server.MapPath(flagPath);
-                    if (File.Exists(physicalPath))
-                    {
-                        File.Delete(physicalPath);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                // Log error but don't show to user
-                System.Diagnostics.Debug.WriteLine("Error deleting flag image: " + ex.Message);
-            }
-        }
-
-        // Cancel editing
-        protected void btnCancel_Click(object sender, EventArgs e)
-        {
+            lblMessage.Text = "✅ Country updated successfully!";
+            lblMessage.ForeColor = System.Drawing.Color.Green;
             ClearFields();
+            LoadCountries();
+
             btnAdd.Visible = true;
             btnUpdate.Visible = false;
             btnCancel.Visible = false;
             lblFormTitle.Text = "Add New Country";
         }
+    }
+    catch (Exception ex)
+    {
+        lblMessage.Text = "❌ Error: " + ex.Message + " | " + ex.StackTrace;
+        lblMessage.ForeColor = System.Drawing.Color.Red;
+    }
+}
 
-        // Clear form inputs
-        private void ClearFields()
+// Delete flag image file from server
+private void DeleteFlagImage(string flagPath)
+{
+    try
+    {
+        if (!string.IsNullOrEmpty(flagPath) && flagPath.StartsWith("~/Uploads/"))
         {
-            txtName.Text = "";
-            imgCurrentFlag.Visible = false;
-            txtFoodName.Text = "";
-            txtFoodDesc.Text = "";
-            txtCulture.Text = "";
-            txtVideoURL.Text = "";
-            txtFunFact.Text = "";
-            hfExistingFlagPath.Value = "";
-            imgPreview.Visible = false;
-            ddlRegion.SelectedIndex = 0;
+            string physicalPath = Server.MapPath(flagPath);
+            if (File.Exists(physicalPath))
+            {
+                File.Delete(physicalPath);
+            }
         }
-        //private string GetCurrentFlagPath(int id)
-        //{
-        //    string query = "SELECT FlagImage FROM Countries WHERE CountryID = @ID";
-        //    SqlParameter[] p = { new SqlParameter("@ID", id) };
+    }
+    catch (Exception ex)
+    {
+        // Log error but don't show to user
+        System.Diagnostics.Debug.WriteLine("Error deleting flag image: " + ex.Message);
+    }
+}
 
-        //    DataTable dt = DBHelper.ExecuteReader(query, p);
-        //    if (dt.Rows.Count > 0)
-        //        return dt.Rows[0]["FlagImage"].ToString();
+// Cancel editing
+protected void btnCancel_Click(object sender, EventArgs e)
+{
+    ClearFields();
+    btnAdd.Visible = true;
+    btnUpdate.Visible = false;
+    btnCancel.Visible = false;
+    lblFormTitle.Text = "Add New Country";
+}
 
-        //    return null;
-        //}
+// Clear form inputs
+private void ClearFields()
+{
+    txtName.Text = "";
+    txtFoodName.Text = "";
+    txtFoodDesc.Text = "";
+    txtCulture.Text = "";
+    txtVideoURL.Text = "";
+    txtFunFact.Text = "";
+    hfExistingFlagPath.Value = "";
+    imgPreview.Visible = false;
+    ddlRegion.SelectedIndex = 0;
 
-            ScriptManager.RegisterStartupScript(this, GetType(), "scrollToTop",
-                "window.scrollTo(0, 0);", true);
+
         }
     }
 }
