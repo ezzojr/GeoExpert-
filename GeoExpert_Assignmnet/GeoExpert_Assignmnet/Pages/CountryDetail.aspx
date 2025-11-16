@@ -491,15 +491,29 @@
             </div>
 
             <!-- Action Buttons -->
-            <div class="action-buttons">
-                <asp:HyperLink ID="btnTakeQuiz" runat="server" CssClass="btn btn-primary">
-                    🎯 Take Quiz on this Country
-                </asp:HyperLink>
-                <a href="Countries.aspx" class="btn btn-secondary">
-                    ← Back to Countries
-                </a>
-            </div>
-        </div>
+<div class="row mt-3 align-items-center">
+    <div class="col-md-8">
+        <!-- your existing Take quiz + Back buttons here -->
+        <asp:HyperLink ID="btnTakeQuiz" runat="server"
+            CssClass="btn btn-primary mr-2">
+            Take quiz on this country
+        </asp:HyperLink>
+
+        <asp:HyperLink ID="lnkBackToCountries" runat="server"
+            NavigateUrl="~/Pages/Countries.aspx"
+            CssClass="btn btn-outline-secondary">
+            Back to countries
+        </asp:HyperLink>
+    </div>
+
+    <div class="col-md-4 text-right">
+        <asp:Button ID="btnInviteFriendsDetail" runat="server"
+            Text="Invite friends"
+            CssClass="btn btn-secondary"
+            OnClientClick="inviteFriendsGeoExpert(); return false;" />
+    </div>
+</div>
+
 
         <!-- Sidebar -->
         <div class="sidebar">

@@ -18,7 +18,17 @@
         </div>
         <div class="form-group">
     <label>Country Region:</label>
-    <asp:TextBox ID="txtRegion" runat="server"></asp:TextBox>
+<asp:DropDownList ID="ddlRegion" runat="server" CssClass="form-control">
+    <asp:ListItem Text="Select continent" Value=""></asp:ListItem>
+    <asp:ListItem Text="Africa" Value="Africa"></asp:ListItem>
+    <asp:ListItem Text="Asia" Value="Asia"></asp:ListItem>
+    <asp:ListItem Text="Europe" Value="Europe"></asp:ListItem>
+    <asp:ListItem Text="North America" Value="North America"></asp:ListItem>
+    <asp:ListItem Text="South America" Value="South America"></asp:ListItem>
+    <asp:ListItem Text="Oceania" Value="Oceania"></asp:ListItem>
+    <asp:ListItem Text="Antarctica" Value="Antarctica"></asp:ListItem>
+</asp:DropDownList>
+
 </div>
 
 <div class="form-group">

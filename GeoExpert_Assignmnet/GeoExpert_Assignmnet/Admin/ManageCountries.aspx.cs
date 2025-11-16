@@ -43,11 +43,11 @@ namespace GeoExpert_Assignment.Admin
                 flagPath = "/Assets/Flags/" + fileName;
 
                 string physicalPath = Server.MapPath(flagPath);
+                string folder = Path.GetDirectoryName(physicalPath);
 
-                if (!Directory.Exists(Path.GetDirectoryName(physicalPath)))
+                if (!Directory.Exists(folder))
                 {
-                    lblMessage.Text = "❌ Directory does not exist: " + Path.GetDirectoryName(physicalPath);
-                    return;
+                    Directory.CreateDirectory(folder);
                 }
 
                 fuFlagImage.SaveAs(physicalPath);
@@ -65,7 +65,7 @@ namespace GeoExpert_Assignment.Admin
                 new SqlParameter("@Culture", txtCulture.Text),
                 new SqlParameter("@Video", txtVideoURL.Text),
                 new SqlParameter("@Fact", txtFunFact.Text),
-                new SqlParameter("@Region", txtRegion.Text)
+              new SqlParameter("@Region", ddlRegion.SelectedValue)
             };
 
             int result = DBHelper.ExecuteNonQuery(query, parameters);
@@ -108,7 +108,7 @@ namespace GeoExpert_Assignment.Admin
                     txtCulture.Text = row["CultureInfo"].ToString();
                     txtVideoURL.Text = row["VideoURL"].ToString();
                     txtFunFact.Text = row["FunFact"].ToString();
-                    txtRegion.Text = row["Region"].ToString();
+                    ddlRegion.SelectedValue = row["Region"].ToString();
 
                     btnAdd.Visible = false;
                     btnUpdate.Visible = true;
@@ -152,12 +152,20 @@ namespace GeoExpert_Assignment.Admin
                 flagPath = "/Assets/Flags/" + fileName;
 
                 string physicalPath = Server.MapPath(flagPath);
+                string folder = Path.GetDirectoryName(physicalPath);
+
+                if (!Directory.Exists(folder))
+                {
+                    Directory.CreateDirectory(folder);
+                }
+
                 fuFlagImage.SaveAs(physicalPath);
             }
             else
             {
                 flagPath = oldFlagPath;
             }
+
 
 
             string query = @"UPDATE Countries SET 
@@ -180,7 +188,7 @@ namespace GeoExpert_Assignment.Admin
                 new SqlParameter("@Culture", txtCulture.Text),
                 new SqlParameter("@Video", txtVideoURL.Text),
                 new SqlParameter("@Fact", txtFunFact.Text),
-                new SqlParameter("@Region", txtRegion.Text)
+                new SqlParameter("@Region", ddlRegion.SelectedValue)
             };
 
             int result = DBHelper.ExecuteNonQuery(query, parameters);
@@ -216,13 +224,12 @@ namespace GeoExpert_Assignment.Admin
         {
             txtName.Text = "";
             imgCurrentFlag.Visible = false;
-            txtRegion.Text = "";
             txtFoodName.Text = "";
             txtFoodDesc.Text = "";
             txtCulture.Text = "";
             txtVideoURL.Text = "";
             txtFunFact.Text = "";
-            txtRegion.Text = "";
+            ddlRegion.SelectedIndex = 0;
         }
         private string GetCurrentFlagPath(int id)
         {

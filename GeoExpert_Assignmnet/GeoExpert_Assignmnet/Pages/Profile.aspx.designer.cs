@@ -168,6 +168,15 @@ namespace GeoExpert_Assignment.Pages
         protected global::System.Web.UI.WebControls.Literal litStreakProgress;
 
         /// <summary>
+        /// btnShareProgress control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnShareProgress;
+
+        /// <summary>
         /// litQuizzesTaken control.
         /// </summary>
         /// <remarks>
@@ -229,6 +238,24 @@ namespace GeoExpert_Assignment.Pages
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel pnlNoBadges;
+
+        /// <summary>
+        /// btnShareBadges control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnShareBadges;
+
+        /// <summary>
+        /// btnInviteFriendsProfile control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnInviteFriendsProfile;
 
         /// <summary>
         /// pnlEditForm control.

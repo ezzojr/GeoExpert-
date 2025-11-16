@@ -174,6 +174,58 @@
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
         }
 
+        /* Share button */
+            .share-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+    .share-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 20px;
+        max-width: 360px;
+        width: 90%;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        position: relative;
+        font-family: inherit;
+    }
+    .share-card h3 {
+        margin-bottom: 8px;
+        font-weight: 700;
+    }
+    .share-card img {
+        max-width: 100%;
+        border-radius: 16px;
+        margin: 12px 0;
+    }
+    .share-card-buttons {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 8px;
+    }
+    .share-btn-small {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+        border-radius: 999px;
+        border: none;
+        cursor: pointer;
+    }
+    .share-overlay-close {
+        position: absolute;
+        top: 8px;
+        right: 10px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
         /* Footer */
         .footer {
             background: rgba(0, 0, 0, 0.9);
@@ -186,7 +238,7 @@
     <asp:ContentPlaceHolder ID="head" runat="server"></asp:ContentPlaceHolder>
 </head>
 <body>
-    <form id="form1" runat="server">
+    <form id="form1" runat="server" enctype="multipart/form-data">
         <!-- Header -->
         <header class="header">
             <div class="header-container">
@@ -230,6 +282,36 @@
             <asp:ContentPlaceHolder ID="MainContent" runat="server"></asp:ContentPlaceHolder>
         </main>
 
+         <!-- Share feature -->
+        <div id="shareOverlay" class="share-overlay">
+    <div class="share-card">
+        <span class="share-overlay-close" onclick="closeShareOverlay()">×</span>
+        <h3 id="shareTitle">Share your GeoExpert moment</h3>
+
+        <!-- This block will be turned into an image -->
+        <div id="shareCardContent"
+             style="padding:18px;border-radius:18px;background:linear-gradient(135deg,#163a63,#4f8dd9);color:#fff;">
+            <div style="font-size:0.75rem;opacity:0.8;margin-bottom:4px;">GeoExpert • Achievement</div>
+            <h2 id="shareUserName" style="margin:0 0 4px;font-size:1.3rem;">Student Name</h2>
+            <p id="shareMainText" style="margin:0 0 8px;font-size:0.95rem;">just unlocked new badges!</p>
+            <div id="shareBadgesText"
+                 style="font-size:0.85rem;opacity:0.95;line-height:1.4;">
+                Badges: 🌍 Explorer, 🎯 Quiz Master
+            </div>
+        </div>
+
+        <img id="shareGeneratedImage" alt="Share image preview" style="display:none;" />
+
+        <div class="share-card-buttons">
+            <button type="button" class="share-btn-small" onclick="downloadShareImage()">Download</button>
+            <button type="button" class="share-btn-small" onclick="shareToWhatsApp()">WhatsApp</button>
+            <button type="button" class="share-btn-small" onclick="shareToFacebook()">Facebook</button>
+            <button type="button" class="share-btn-small" onclick="shareToGeneric()">More...</button>
+        </div>
+    </div>
+</div>
+
+
         <!-- Footer -->
         <footer class="footer">
             <div class="footer-bottom">
@@ -237,6 +319,68 @@
             </div>
         </footer>
     </form>
+    <script>
+    let shareImageDataUrl = null;
+
+    function openShareOverlay(userName, mainText, badgesText, titleText) {
+        document.getElementById('shareUserName').innerText = userName || 'GeoExpert learner';
+        document.getElementById('shareMainText').innerText = mainText || 'is learning about the world!';
+        document.getElementById('shareBadgesText').innerText = badgesText || 'Keep exploring new countries on GeoExpert.';
+        document.getElementById('shareTitle').innerText = titleText || 'Share your GeoExpert moment';
+
+        document.getElementById('shareGeneratedImage').style.display = 'none';
+        shareImageDataUrl = null;
+
+        const overlay = document.getElementById('shareOverlay');
+        overlay.style.display = 'flex';
+
+        const content = document.getElementById('shareCardContent');
+        html2canvas(content).then(canvas => {
+            shareImageDataUrl = canvas.toDataURL('image/png');
+            const img = document.getElementById('shareGeneratedImage');
+            img.src = shareImageDataUrl;
+            img.style.display = 'block';
+        });
+    }
+
+    function closeShareOverlay() {
+        document.getElementById('shareOverlay').style.display = 'none';
+    }
+
+    function downloadShareImage() {
+        if (!shareImageDataUrl) return;
+        const a = document.createElement('a');
+        a.href = shareImageDataUrl;
+        a.download = 'geoexpert_achievement.png';
+        a.click();
+    }
+
+    function shareToWhatsApp() {
+        const text = "Check out my GeoExpert achievement!";
+        window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank");
+    }
+
+    function shareToFacebook() {
+        const url = window.location.href;
+        window.open("https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(url), "_blank");
+    }
+
+    async function shareToGeneric() {
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'My GeoExpert achievement',
+                    text: 'Check out what I just achieved on GeoExpert!',
+                    url: window.location.href
+                });
+            } catch (e) {
+                console.log(e);
+            }
+        } else {
+            alert("Download the image and share it on Instagram or other apps.");
+        }
+    }
+    </script>
 
     <asp:ContentPlaceHolder ID="scripts" runat="server"></asp:ContentPlaceHolder>
 </body>

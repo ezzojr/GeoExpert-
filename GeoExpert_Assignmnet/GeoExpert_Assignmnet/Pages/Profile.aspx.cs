@@ -210,8 +210,24 @@ namespace GeoExpert_Assignment.Pages
                 int currentStreak = streakResult != null && streakResult != DBNull.Value
                     ? Convert.ToInt32(streakResult) : 0;
 
+                // Get total number of countries in the database (for dynamic goal)
+                int totalCountries = 0;
+                try
+                {
+                    totalCountries = DBHelper.GetTotalCount("Countries");
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"LoadUserProgress totalCountries error: {ex.Message}");
+                    totalCountries = 195; 
+                }
+                if (totalCountries <= 0)
+                {
+                    totalCountries = 195; 
+                }
+
                 // Calculate overall progress
-                int totalGoals = 50 + 50 + 8 + 30; // 138 total
+                int totalGoals = totalCountries + 50 + 8 + 30; 
                 int completedGoals = countriesExplored + quizzesCompleted + badgesEarned + currentStreak;
                 int overallPercent = (int)Math.Round((double)completedGoals / totalGoals * 100);
 

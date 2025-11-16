@@ -687,6 +687,7 @@
                     <div class="progress-bar-fill badges" style="width: 0%;" id="badgesProgressBar"></div>
                 </div>
             </div>
+            
 
             <!-- Current Streak -->
             <div class="progress-item">
@@ -720,6 +721,14 @@
                     </div>
                 </div>
             </div>
+                                                    <!-- Share progress -->
+            <div class="mt-3">
+    <asp:Button ID="btnShareProgress" runat="server"
+        Text="Share my progress"
+        CssClass="btn btn-primary"
+        OnClientClick="shareProfileProgress(); return false;" />
+</div>
+
         </div>
 
         <!-- Stats Grid -->
@@ -776,6 +785,19 @@
                 <h3>No badges yet!</h3>
                 <p>Complete quizzes and explore countries to earn achievements</p>
             </asp:Panel>
+                                    <!-- Share Badges -->
+            <div class="mt-3">
+    <asp:Button ID="btnShareBadges" runat="server"
+        Text="Share my badges"
+        CssClass="btn btn-outline-primary mt-1"
+        OnClientClick="shareProfileBadges(); return false;" />
+
+    <asp:Button ID="btnInviteFriendsProfile" runat="server"
+        Text="Invite friends"
+        CssClass="btn btn-secondary mt-1"
+        OnClientClick="inviteFriendsGeoExpert(); return false;" />
+</div>
+
         </div>
 
         <!-- Edit Profile Section -->
@@ -1000,4 +1022,36 @@
             });
         });
     </script>
+    <script type="text/javascript">
+        function shareProfileProgress() {
+            var username = document.getElementById('<%= litUsername.ClientID %>').innerText || 'GeoExpert learner';
+        var countries = document.getElementById('<%= litCountriesCount.ClientID %>').innerText || '0';
+        var quizzes = document.getElementById('<%= litQuizzesProgress.ClientID %>').innerText || '0';
+        var badges = document.getElementById('<%= litBadgesProgress.ClientID %>').innerText || '0';
+
+        var mainText = "is making progress on GeoExpert!";
+        var badgesText = "Explored " + countries + " countries, completed " + quizzes +
+            " quizzes, and earned " + badges + " badges so far.";
+
+        openShareOverlay(username, mainText, badgesText, "My GeoExpert Progress");
+    }
+
+    function shareProfileBadges() {
+        var username = document.getElementById('<%= litUsername.ClientID %>').innerText || 'GeoExpert learner';
+        var badgesCount = document.getElementById('<%= litBadges.ClientID %>').innerText || '0';
+
+        var mainText = "is proud of their GeoExpert badges!";
+        var badgesText = "I have earned " + badgesCount +
+            " badges by exploring countries and mastering quizzes.";
+
+        openShareOverlay(username, mainText, badgesText, "My GeoExpert Badges");
+    }
+
+    function inviteFriendsGeoExpert() {
+        var inviteText = "Join me on GeoExpert and learn about countries! " +
+            window.location.origin + "<%= ResolveUrl("~/Default.aspx") %>";
+            window.open("https://wa.me/?text=" + encodeURIComponent(inviteText), "_blank");
+        }
+    </script>
+
 </asp:Content>
