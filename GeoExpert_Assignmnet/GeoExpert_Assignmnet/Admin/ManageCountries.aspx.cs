@@ -110,28 +110,6 @@ namespace GeoExpert_Assignment.Admin
                     string filePath = System.IO.Path.Combine(folderPath, fileName);
                     string dbPath = $"~/Assets/Flags/{fileName}";
 
-                    //// Delete old profile picture
-                    //try
-                    //{
-                    //    string oldPicQuery = "SELECT ProfilePicture FROM Users WHERE UserID = @UserID";
-                    //    SqlParameter[] oldParams = { new SqlParameter("@UserID", userId) };
-                    //    object oldPicResult = DBHelper.ExecuteScalar(oldPicQuery, oldParams);
-
-                    //    if (oldPicResult != null && oldPicResult != DBNull.Value)
-                    //    {
-                    //        string oldPic = oldPicResult.ToString();
-                    //        if (!string.IsNullOrEmpty(oldPic))
-                    //        {
-                    //            string oldPath = Server.MapPath(oldPic);
-                    //            if (System.IO.File.Exists(oldPath))
-                    //            {
-                    //                System.IO.File.Delete(oldPath);
-                    //            }
-                    //        }
-                    //    }
-                    //}
-                    //catch { /* Ignore errors deleting old picture */ }
-
                     fuFlagImage.SaveAs(filePath);
 
                    
