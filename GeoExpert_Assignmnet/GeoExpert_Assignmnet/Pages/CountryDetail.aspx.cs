@@ -60,18 +60,8 @@ namespace GeoExpert_Assignment.Pages
                     litCountryName.Text = countryName;
                     litBreadcrumb.Text = countryName;
 
-                    // Flag (image if available, else emoji)
-                    string flagPath = row["FlagImage"] != DBNull.Value ? row["FlagImage"].ToString() : null;
-
-                    if (!string.IsNullOrEmpty(flagPath))
-                    {
-                        string resolved = ResolveUrl(flagPath);
-                        litFlag.Text = $"<img src='{resolved}' alt='{countryName} flag' class='country-flag-detail' />";
-                    }
-                    else
-                    {
+                    // Flag  emoji
                         litFlag.Text = GetFlagEmoji(countryName);
-                    }
 
                     // Region
                     string region = row["Region"].ToString();

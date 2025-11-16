@@ -650,7 +650,9 @@
                         🌍 Countries Explored
                     </div>
                     <div class="progress-percentage">
-                        <asp:Literal ID="litCountriesCount" runat="server" Text="0"></asp:Literal>/50
+                        <asp:Literal ID="litCountriesCount" runat="server" Text="0"></asp:Literal>
+                        / <asp:Literal ID="litTotalCountries" runat="server" Text="195"></asp:Literal>
+
                     </div>
                 </div>
                 <div class="progress-bar-container">
@@ -665,7 +667,9 @@
                         🎯 Quizzes Completed
                     </div>
                     <div class="progress-percentage">
-                        <asp:Literal ID="litQuizzesProgress" runat="server" Text="0"></asp:Literal>/50
+                        <asp:Literal ID="litQuizzesProgress" runat="server" Text="0"></asp:Literal>/
+                        <asp:Literal ID="Literal1" runat="server" Text="195"></asp:Literal>
+
                     </div>
                 </div>
                 <div class="progress-bar-container">
@@ -722,12 +726,11 @@
                 </div>
             </div>
                                                     <!-- Share progress -->
-            <div class="mt-3">
-    <asp:Button ID="btnShareProgress" runat="server"
-        Text="Share my progress"
-        CssClass="btn btn-primary"
-        OnClientClick="shareProfileProgress(); return false;" />
-</div>
+<asp:Button ID="btnShareProgress" runat="server"
+    Text="Share Progress"
+    CssClass="btn btn-primary mt-2"
+    OnClientClick="shareProgress(); return false;" />
+
 
         </div>
 
@@ -786,19 +789,15 @@
                 <p>Complete quizzes and explore countries to earn achievements</p>
             </asp:Panel>
                                     <!-- Share Badges -->
-            <div class="mt-3">
-    <asp:Button ID="btnShareBadges" runat="server"
-        Text="Share my badges"
-        CssClass="btn btn-outline-primary mt-1"
-        OnClientClick="shareProfileBadges(); return false;" />
+ <asp:Button ID="btnShareBadges" runat="server"
+    Text="Share Badges"
+    CssClass="btn btn-primary mt-2"
+    OnClientClick="shareBadges(); return false;" />
+<asp:Button ID="btnInviteFriendsProfile" runat="server"
+    Text="Invite Friends"
+    CssClass="btn btn-secondary mt-2"
+    OnClientClick="inviteFriends(); return false;" />
 
-    <asp:Button ID="btnInviteFriendsProfile" runat="server"
-        Text="Invite friends"
-        CssClass="btn btn-secondary mt-1"
-        OnClientClick="inviteFriendsGeoExpert(); return false;" />
-</div>
-
-        </div>
 
         <!-- Edit Profile Section -->
         <asp:Panel ID="pnlEditForm" runat="server" CssClass="edit-section">
@@ -994,12 +993,12 @@
             
             // Countries
             const countriesCount = parseInt('<%= litCountriesCount.Text %>') || 0;
-            const countriesPercent = (countriesCount / 50) * 100;
+            const countriesPercent = (countriesCount / litTotalCountries) * 100;
             document.getElementById('countriesProgressBar').style.width = countriesPercent + '%';
             
             // Quizzes
             const quizzesCount = parseInt('<%= litQuizzesProgress.Text %>') || 0;
-            const quizzesPercent = (quizzesCount / 50) * 100;
+            const quizzesPercent = (quizzesCount / litTotalCountries) * 100;
             document.getElementById('quizzesProgressBar').style.width = quizzesPercent + '%';
             
             // Badges
@@ -1022,36 +1021,43 @@
             });
         });
     </script>
-    <script type="text/javascript">
-        function shareProfileProgress() {
-            var username = document.getElementById('<%= litUsername.ClientID %>').innerText || 'GeoExpert learner';
-        var countries = document.getElementById('<%= litCountriesCount.ClientID %>').innerText || '0';
-        var quizzes = document.getElementById('<%= litQuizzesProgress.ClientID %>').innerText || '0';
-        var badges = document.getElementById('<%= litBadgesProgress.ClientID %>').innerText || '0';
+<script type="text/javascript">
 
-        var mainText = "is making progress on GeoExpert!";
-        var badgesText = "Explored " + countries + " countries, completed " + quizzes +
-            " quizzes, and earned " + badges + " badges so far.";
+    function shareBadges() {
+        var nameEl = document.getElementById('<%= litUsername.ClientID %>');
+        var badgesEl = document.getElementById('<%= litBadges.ClientID %>');
 
-        openShareOverlay(username, mainText, badgesText, "My GeoExpert Progress");
+        var name = nameEl ? nameEl.innerText : 'GeoExpert learner';
+        var badges = badgesEl ? badgesEl.innerText : '0';
+
+        var text = name + " just earned " + badges + " badges on GeoExpert!\n" +
+            "Learn countries, play quizzes and unlock achievements!";
+
+        var link = window.location.href;
+
+        shareOnWhatsApp(text, link);
     }
 
-    function shareProfileBadges() {
-        var username = document.getElementById('<%= litUsername.ClientID %>').innerText || 'GeoExpert learner';
-        var badgesCount = document.getElementById('<%= litBadges.ClientID %>').innerText || '0';
+    function shareProgress() {
+        var nameEl = document.getElementById('<%= litUsername.ClientID %>');
+        var countriesEl = document.getElementById('<%= litCountriesCount.ClientID %>');
+        var quizzesEl = document.getElementById('<%= litQuizzesProgress.ClientID %>');
 
-        var mainText = "is proud of their GeoExpert badges!";
-        var badgesText = "I have earned " + badgesCount +
-            " badges by exploring countries and mastering quizzes.";
+        var name = nameEl ? nameEl.innerText : 'GeoExpert learner';
+        var countries = countriesEl ? countriesEl.innerText : '0';
+        var quizzes = quizzesEl ? quizzesEl.innerText : '0';
 
-        openShareOverlay(username, mainText, badgesText, "My GeoExpert Badges");
+        var text = name + " is making progress on GeoExpert!\n" +
+            "Countries explored: " + countries + "\n" +
+            "Quizzes completed: " + quizzes + "\n" +
+            "Join me on GeoExpert!";
+
+        var link = window.location.href;
+
+        shareOnWhatsApp(text, link);
     }
 
-    function inviteFriendsGeoExpert() {
-        var inviteText = "Join me on GeoExpert and learn about countries! " +
-            window.location.origin + "<%= ResolveUrl("~/Default.aspx") %>";
-            window.open("https://wa.me/?text=" + encodeURIComponent(inviteText), "_blank");
-        }
-    </script>
+</script>
+
 
 </asp:Content>

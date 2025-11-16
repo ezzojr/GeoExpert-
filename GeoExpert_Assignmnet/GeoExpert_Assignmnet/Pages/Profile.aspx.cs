@@ -238,6 +238,7 @@ namespace GeoExpert_Assignment.Pages
                 litQuizzesProgress.Text = quizzesCompleted.ToString();
                 litBadgesProgress.Text = badgesEarned.ToString();
                 litStreakProgress.Text = currentStreak.ToString();
+                litTotalCountries.Text = totalCountries.ToString();
             }
             catch (Exception ex)
             {

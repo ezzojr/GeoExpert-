@@ -421,6 +421,23 @@
                 justify-content: center;
             }
         }
+        .country-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.country-flag-large {
+    width: 120px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 6px;
+    justify-self: end;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
     </style>
 
     <!-- Breadcrumb -->
@@ -438,6 +455,7 @@
             <asp:Literal ID="litFlag" runat="server"></asp:Literal>
         </div>
         <div class="hero-content">
+
             <h1><asp:Literal ID="litCountryName" runat="server"></asp:Literal></h1>
             <div class="hero-badges">
                 <span class="badge">
@@ -449,7 +467,15 @@
                     <asp:Literal ID="litViews" runat="server"></asp:Literal> Views
                 </span>
             </div>
-        </div>
+            </div>                
+        <div class="country-header-left">
+<asp:Image ID="imgFlagLarge" runat="server"
+    ImageUrl='<%# string.IsNullOrEmpty(Eval("FlagImage").ToString()) ? "" : ResolveUrl(Eval("FlagImage").ToString()) %>'
+    CssClass="country-flag-large"
+    Visible='<%# !string.IsNullOrEmpty(Eval("FlagImage").ToString()) %>'
+    AlternateText='<%# Eval("Name") + " Flag" %>' />
+             </div>
+
     </div>
 
     <!-- Content Grid -->
@@ -489,29 +515,17 @@
                     <p style="text-align: center; color: #666; padding: 2rem;">📹 No video available for this country yet.</p>
                 </asp:Panel>
             </div>
-
             <!-- Action Buttons -->
-<div class="row mt-3 align-items-center">
-    <div class="col-md-8">
-        <!-- your existing Take quiz + Back buttons here -->
-        <asp:HyperLink ID="btnTakeQuiz" runat="server"
-            CssClass="btn btn-primary mr-2">
-            Take quiz on this country
-        </asp:HyperLink>
-
-        <asp:HyperLink ID="lnkBackToCountries" runat="server"
-            NavigateUrl="~/Pages/Countries.aspx"
-            CssClass="btn btn-outline-secondary">
-            Back to countries
-        </asp:HyperLink>
+            <div class="action-buttons">
+                <asp:HyperLink ID="btnTakeQuiz" runat="server" CssClass="btn btn-primary">
+                    🎯 Take Quiz on this Country
+                     </asp:HyperLink>
+          <a href="Countries.aspx" class="btn btn-secondary">
+        ← Back to Countries
+    </a>
     </div>
 
-    <div class="col-md-4 text-right">
-        <asp:Button ID="btnInviteFriendsDetail" runat="server"
-            Text="Invite friends"
-            CssClass="btn btn-secondary"
-            OnClientClick="inviteFriendsGeoExpert(); return false;" />
-    </div>
+
 </div>
 
 
@@ -549,7 +563,17 @@
                     </ItemTemplate>
                 </asp:Repeater>
             </div>
+       
+        <asp:Button ID="btnInviteFriendsDetail" runat="server"
+            Text="Invite friends"
+            CssClass="btn btn-secondary"
+            OnClientClick="inviteFriends(); return false;" />
+  
         </div>
+                    
+        <!-- Only show quiz button for regular users -->
+        <asp:Panel ID="pnlQuizButton" runat="server" Visible="false">
+            <a href='Quiz.aspx?countryid=<%=Request.QueryString["id"] %>' class="btn btn-primary">Take Quiz on this Country</a>
+        </asp:Panel>
     </div>
-
 </asp:Content>

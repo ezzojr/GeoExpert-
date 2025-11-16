@@ -440,6 +440,27 @@
                 color: #000;
                 font-weight: 700;
             }
+            .country-meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 6px;
+}
+
+.country-meta-left {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.country-flag-small {
+    width: 42px;
+    height: 28px;
+    object-fit: cover;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
     </style>
 
     <!-- Hero Section -->
@@ -507,21 +528,23 @@
                         <div class="flag-emoji"><%# GetFlagEmoji(Eval("Name").ToString()) %></div>
                     </div>
                     <div class="country-content">
-                       <div class="d-flex align-items-center" style="gap:8px;">
-    <asp:Image ID="imgFlag" runat="server"
-        ImageUrl='<%# Eval("FlagImage") %>'
-        AlternateText="Flag"
-        CssClass="country-flag-list" />
-    <h3 class="mb-0">
-        <%# Eval("Name") %>
-    </h3>
-</div>
+                       <h3 class="country-name"><%# Eval("Name") %></h3>
+
+                    <div class="country-meta-row">
+                        <div class="country-meta-left">
 
                         <span class="country-region">📍 <%# Eval("Region") %></span>
 
                         <div class="country-info-row">
                             <span>🍽️</span>
                             <strong>Food:</strong> <%# Eval("FoodName") %>
+                        </div>
+                         </div>
+                          <asp:Image ID="imgFlagSmall" runat="server"
+        ImageUrl='<%# ResolveUrl(Eval("FlagImage").ToString()) %>'
+        CssClass="country-flag-small"
+        AlternateText='<%# Eval("Name") + " flag" %>'
+        Visible='<%# Eval("FlagImage") != DBNull.Value && Eval("FlagImage") != null %>' />
                         </div>
 
                         <div class="country-fun-fact">
@@ -562,7 +585,7 @@
     <asp:Button ID="btnInviteFriendsCountries" runat="server"
         Text="Invite friends"
         CssClass="btn btn-secondary"
-        OnClientClick="inviteFriendsGeoExpert(); return false;" />
+        OnClientClick="inviteFriends(); return false;" />
 </div>
 
 
