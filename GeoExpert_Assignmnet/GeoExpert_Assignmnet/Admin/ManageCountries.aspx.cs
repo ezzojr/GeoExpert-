@@ -81,7 +81,7 @@ namespace GeoExpert_Assignment.Admin
                     fuFlagImage.SaveAs(filePath);
 
                     // Return relative path for database
-                    return "~/Uploads/Flags/" + fileName;
+                    return "~/Assets/Flags/" + fileName;
                 }
                 catch (Exception ex)
                 {
@@ -121,7 +121,7 @@ namespace GeoExpert_Assignment.Admin
             new SqlParameter("@Culture", string.IsNullOrEmpty(txtCulture.Text) ? (object)DBNull.Value : txtCulture.Text),
             new SqlParameter("@Video", string.IsNullOrEmpty(txtVideoURL.Text) ? (object)DBNull.Value : txtVideoURL.Text),
             new SqlParameter("@Fact", string.IsNullOrEmpty(txtFunFact.Text) ? (object)DBNull.Value : txtFunFact.Text),
-            new SqlParameter("@Region", txtRegion.Text)
+             new SqlParameter("@Region", ddlRegion.SelectedValue)
         };
 
                 int result = DBHelper.ExecuteNonQuery(query, parameters);
@@ -172,7 +172,7 @@ namespace GeoExpert_Assignment.Admin
                     txtCulture.Text = row["CultureInfo"].ToString();
                     txtVideoURL.Text = row["VideoURL"].ToString();
                     txtFunFact.Text = row["FunFact"].ToString();
-                    txtRegion.Text = row["Region"].ToString();
+                    ddlRegion.SelectedValue = row["Region"].ToString();
 
                         // Store existing flag path
                         string existingFlag = row["FlagImage"].ToString();
@@ -263,7 +263,7 @@ namespace GeoExpert_Assignment.Admin
                     new SqlParameter("@Culture", string.IsNullOrEmpty(txtCulture.Text) ? (object)DBNull.Value : txtCulture.Text),
                     new SqlParameter("@Video", string.IsNullOrEmpty(txtVideoURL.Text) ? (object)DBNull.Value : txtVideoURL.Text),
                     new SqlParameter("@Fact", string.IsNullOrEmpty(txtFunFact.Text) ? (object)DBNull.Value : txtFunFact.Text),
-                    new SqlParameter("@Region", string.IsNullOrEmpty(txtRegion.Text) ? (object)DBNull.Value :txtRegion.Text)
+                    new SqlParameter("@Region", string.IsNullOrEmpty(ddlRegion.SelectedValue) ? (object)DBNull.Value :ddlRegion.SelectedValue)
                 };
 
                 int result = DBHelper.ExecuteNonQuery(query, parameters);
@@ -324,7 +324,6 @@ namespace GeoExpert_Assignment.Admin
         {
             txtName.Text = "";
             imgCurrentFlag.Visible = false;
-            txtRegion.Text = "";
             txtFoodName.Text = "";
             txtFoodDesc.Text = "";
             txtCulture.Text = "";
@@ -332,7 +331,7 @@ namespace GeoExpert_Assignment.Admin
             txtFunFact.Text = "";
             hfExistingFlagPath.Value = "";
             imgPreview.Visible = false;
-            txtRegion.Text = "";
+            ddlRegion.SelectedIndex = 0;
         }
         //private string GetCurrentFlagPath(int id)
         //{

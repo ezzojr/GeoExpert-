@@ -87,16 +87,33 @@ namespace GeoExpert_Assignment.Pages
 
                 DataRow row = dt.Rows[0];
 
-                string countryName = row["Name"].ToString();
-                string region = row["Region"] != DBNull.Value ? row["Region"].ToString() : "Unknown";
+                    // Basic Info
+                    string countryName = row["Name"].ToString();
+                    litCountryName.Text = countryName;
+                    litBreadcrumb.Text = countryName;
 
-                litCountryName.Text = countryName;
-                litBreadcrumb.Text = countryName;
-                litFlag.Text = GetFlagEmoji(countryName);
-                litRegion.Text = region;
-                litViews.Text = row["ViewCount"].ToString();
-                litViewCount.Text = row["ViewCount"].ToString();
-                litRelatedRegion.Text = region;
+                    // Flag (image if available, else emoji)
+                    string flagPath = row["FlagImage"] != DBNull.Value ? row["FlagImage"].ToString() : null;
+
+                    if (!string.IsNullOrEmpty(flagPath))
+                    {
+                        string resolved = ResolveUrl(flagPath);
+                        litFlag.Text = $"<img src='{resolved}' alt='{countryName} flag' class='country-flag-detail' />";
+                    }
+                    else
+                    {
+                        litFlag.Text = GetFlagEmoji(countryName);
+                    }
+
+                // Views
+                int views = row["ViewCount"] != DBNull.Value ? Convert.ToInt32(row["ViewCount"]) : 0;
+                litViews.Text = views.ToString();
+                litViewCount.Text = views.ToString();
+
+                // Region                   
+                string region = row["Region"]; != DBNull.Value ? row["Region"].ToString() : "Unknown";
+                    litRegion.Text = region;
+                    litRelatedRegion.Text = region;
 
                 litFoodName.Text = row["FoodName"].ToString();
                 litFoodDesc.Text = row["FoodDescription"].ToString();

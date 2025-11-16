@@ -57,6 +57,13 @@
                 <asp:Literal ID="litMessage" runat="server"></asp:Literal>
             </p>
         </div>
+        <div class="mt-3">
+    <asp:Button ID="btnShareResult" runat="server"
+        Text="Share my result"
+        CssClass="btn btn-primary"
+        OnClientClick="shareQuizResult(); return false;" />
+</div>
+
         
         <asp:Panel ID="pnlBadge" runat="server" Visible="false" 
                    style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 165, 0, 0.1) 100%);
@@ -88,4 +95,20 @@
             <a href="Profile.aspx" class="btn btn-primary">View Profile</a>
         </div>
     </div>
+    <script type="text/javascript">
+    function shareQuizResult() {
+        var username = '<%= (Session["Username"] ?? "GeoExpert learner").ToString() %>';
+
+        var score = document.getElementById('<%= litScore.ClientID %>').innerText || '0';
+        var total = document.getElementById('<%= litTotal.ClientID %>').innerText || '0';
+        var percentage = document.getElementById('<%= litPercentage.ClientID %>').innerText || '0';
+
+        var mainText = "just finished a GeoExpert quiz!";
+        var badgesText = "Result: " + score + " / " + total + " (" + percentage + "%). " +
+            "Try to beat my score!";
+
+        openShareOverlay(username, mainText, badgesText, "My Quiz Result");
+    }
+    </script>
+
 </asp:Content>

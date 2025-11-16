@@ -488,7 +488,7 @@
                     <p style="text-align: center; color: #666; padding: 2rem;">📹 No video available for this country yet.</p>
                 </asp:Panel>
             </div>
-        </div>
+
 
         <!-- Sidebar -->
         <div class="sidebar">
@@ -527,6 +527,10 @@
         </div>
     </div>
 
+            <!-- Action Buttons -->
+<div class="row mt-3 align-items-center">
+    <div class="col-md-8">
+      
     <!-- Quiz Button - Only visible for regular users -->
     <asp:Panel ID="pnlQuizButton" runat="server" Visible="false">
         <div class="action-buttons">
@@ -538,5 +542,14 @@
             </a>
         </div>
     </asp:Panel>
+    </div>
+
+    <div class="col-md-4 text-right">
+        <asp:Button ID="btnInviteFriendsDetail" runat="server"
+            Text="Invite friends"
+            CssClass="btn btn-secondary"
+            OnClientClick="inviteFriendsGeoExpert(); return false;" />
+    </div>
+</div>
 
 </asp:Content>

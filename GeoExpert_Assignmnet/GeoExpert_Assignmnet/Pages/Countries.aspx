@@ -507,7 +507,16 @@
                         <div class="flag-emoji"><%# GetFlagEmoji(Eval("Name").ToString()) %></div>
                     </div>
                     <div class="country-content">
-                        <h3 class="country-name"><%# Eval("Name") %></h3>
+                       <div class="d-flex align-items-center" style="gap:8px;">
+    <asp:Image ID="imgFlag" runat="server"
+        ImageUrl='<%# Eval("FlagImage") %>'
+        AlternateText="Flag"
+        CssClass="country-flag-list" />
+    <h3 class="mb-0">
+        <%# Eval("Name") %>
+    </h3>
+</div>
+
                         <span class="country-region">📍 <%# Eval("Region") %></span>
 
                         <div class="country-info-row">
@@ -548,5 +557,13 @@
         </asp:Repeater>
         <asp:LinkButton ID="btnNext" runat="server" Text="→" CssClass="btn" OnClick="btnNext_Click" />
     </div>
+
+    <div class="mt-3 text-right">
+    <asp:Button ID="btnInviteFriendsCountries" runat="server"
+        Text="Invite friends"
+        CssClass="btn btn-secondary"
+        OnClientClick="inviteFriendsGeoExpert(); return false;" />
+</div>
+
 
 </asp:Content>
