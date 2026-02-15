@@ -1,2 +1,3 @@
-﻿-- Add LastLoginDate column if not exists
-ALTER TABLE Users ADD LastLoginDate DATE;
+﻿UPDATE Users
+SET Role = 'Admin'
+WHERE UserID = 7;
